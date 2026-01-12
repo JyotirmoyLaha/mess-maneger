@@ -2,246 +2,387 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Mess Manager</title>
+    
+    <!-- PWA Settings -->
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#0f172a">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Mess Manager">
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Lucide Icons -->
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
-        /* Smooth transitions */
-        .fade-in {
-            animation: fadeIn 0.3s ease-in-out;
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: #0f172a; /* Fallback */
+            color: #1e293b;
+            overscroll-behavior-y: none;
         }
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
+
+        /* --- PREMIUM ANIMATED BACKGROUND --- */
+        .animated-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -3;
+            /* Richer, deeper gradient for premium feel */
+            background: linear-gradient(135deg, #f0f9ff 0%, #cffafe 25%, #d1fae5 50%, #e0e7ff 75%, #f3e8ff 100%);
+            background-size: 300% 300%;
+            animation: gradientMove 20s ease infinite;
         }
-        /* Hide scrollbar for clean UI */
-        .no-scrollbar::-webkit-scrollbar {
-            display: none;
+
+        @keyframes gradientMove {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
         }
-        .no-scrollbar {
-            -ms-overflow-style: none;
-            scrollbar-width: none;
+
+        /* --- FLOATING PARTICLES --- */
+        .particles-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -2;
+            overflow: hidden;
+            pointer-events: none;
         }
+
+        .particles {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            margin: 0;
+            padding: 0;
+        }
+
+        .particles li {
+            position: absolute;
+            display: block;
+            list-style: none;
+            width: 20px;
+            height: 20px;
+            background: rgba(255, 255, 255, 0.4);
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.05);
+            backdrop-filter: blur(5px);
+            animation: floatUp 25s linear infinite;
+            bottom: -150px;
+            border-radius: 20%; /* Squarish initially */
+        }
+
+        /* Diverse particles for organic premium feel */
+        .particles li:nth-child(1) { left: 25%; width: 80px; height: 80px; animation-delay: 0s; background: rgba(16, 185, 129, 0.1); }
+        .particles li:nth-child(2) { left: 10%; width: 20px; height: 20px; animation-delay: 2s; animation-duration: 12s; background: rgba(59, 130, 246, 0.1); }
+        .particles li:nth-child(3) { left: 70%; width: 20px; height: 20px; animation-delay: 4s; background: rgba(245, 158, 11, 0.1); }
+        .particles li:nth-child(4) { left: 40%; width: 60px; height: 60px; animation-delay: 0s; animation-duration: 18s; background: rgba(139, 92, 246, 0.1); }
+        .particles li:nth-child(5) { left: 65%; width: 20px; height: 20px; animation-delay: 0s; background: rgba(236, 72, 153, 0.1); }
+        .particles li:nth-child(6) { left: 75%; width: 110px; height: 110px; animation-delay: 3s; background: rgba(16, 185, 129, 0.15); }
+        .particles li:nth-child(7) { left: 35%; width: 150px; height: 150px; animation-delay: 7s; background: rgba(59, 130, 246, 0.1); }
+        .particles li:nth-child(8) { left: 50%; width: 25px; height: 25px; animation-delay: 15s; animation-duration: 45s; }
+        .particles li:nth-child(9) { left: 20%; width: 15px; height: 15px; animation-delay: 2s; animation-duration: 35s; }
+        .particles li:nth-child(10) { left: 85%; width: 150px; height: 150px; animation-delay: 0s; animation-duration: 11s; }
+
+        @keyframes floatUp {
+            0% {
+                transform: translateY(0) rotate(0deg);
+                opacity: 1;
+                border-radius: 20%;
+            }
+            100% {
+                transform: translateY(-1000px) rotate(720deg);
+                opacity: 0;
+                border-radius: 50%;
+            }
+        }
+
+        /* Premium Glass Card Effect */
+        .glass-card {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.07);
+        }
+
+        /* Custom Scrollbar */
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+        /* Smooth Fade In */
+        .fade-in { animation: fadeIn 0.4s cubic-bezier(0.4, 0, 0.2, 1) forwards; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
-<body class="bg-gray-50 text-gray-800 min-h-screen font-sans">
+<body class="min-h-screen relative overflow-x-hidden selection:bg-emerald-200 selection:text-emerald-900">
+
+    <!-- Background Elements -->
+    <div class="animated-bg"></div>
+    <div class="particles-container">
+        <ul class="particles">
+            <li></li><li></li><li></li><li></li><li></li>
+            <li></li><li></li><li></li><li></li><li></li>
+        </ul>
+    </div>
 
     <!-- APP CONTAINER -->
-    <div id="app" class="w-full relative">
+    <div id="app" class="w-full relative max-w-md mx-auto min-h-screen flex flex-col">
         
         <!-- LOADING VIEW -->
-        <div id="loading-view" class="flex flex-col items-center justify-center h-screen bg-gray-50 text-emerald-600">
-            <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-emerald-600 mb-4"></div>
-            <p id="loading-text" class="text-gray-500 text-sm">Connecting to Mess Manager...</p>
+        <div id="loading-view" class="flex flex-col items-center justify-center h-screen fixed inset-0 z-50 bg-white/30 backdrop-blur-xl">
+            <div class="relative">
+                <div class="w-16 h-16 border-4 border-emerald-200 border-t-emerald-600 rounded-full animate-spin"></div>
+                <div class="absolute inset-0 flex items-center justify-center">
+                    <i data-lucide="chef-hat" class="w-6 h-6 text-emerald-600"></i>
+                </div>
+            </div>
+            <p id="loading-text" class="mt-4 font-semibold text-slate-600 text-sm tracking-wide animate-pulse">Initializing...</p>
         </div>
 
         <!-- LOGIN VIEW -->
-        <div id="login-view" class="hidden min-h-screen bg-gray-100 flex flex-col items-center justify-center p-4">
-            <div class="bg-white p-8 rounded-2xl shadow-xl w-full max-w-md fade-in relative text-center">
+        <div id="login-view" class="hidden h-screen flex flex-col items-center justify-center p-6">
+            <div class="glass-card w-full p-8 rounded-3xl text-center relative overflow-hidden group">
+                <!-- Decorative sheen -->
+                <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-emerald-400 to-transparent opacity-50"></div>
+                
                 <div class="flex justify-center mb-6">
-                    <div class="bg-emerald-100 p-4 rounded-full">
-                        <i data-lucide="chef-hat" class="w-10 h-10 text-emerald-600"></i>
+                    <div class="bg-gradient-to-br from-emerald-500 to-teal-700 p-5 rounded-2xl shadow-lg shadow-emerald-200 transform group-hover:scale-105 transition duration-500">
+                        <i data-lucide="chef-hat" class="w-10 h-10 text-white"></i>
                     </div>
                 </div>
-                <h1 class="text-2xl font-bold text-gray-800 mb-2">Mess Manager</h1>
-                <p class="text-gray-500 mb-8">Track daily shopping expenses easily.</p>
                 
-                <div id="login-error" class="hidden bg-red-50 text-red-600 p-3 rounded-lg mb-6 text-sm border border-red-200 flex items-start gap-2 text-left">
+                <h1 class="text-3xl font-extrabold text-slate-800 mb-2 tracking-tight">Mess Manager</h1>
+                <p class="text-slate-500 mb-10 text-sm font-medium">Smart expense tracking for your group.</p>
+                
+                <div id="login-error" class="hidden bg-red-50/80 backdrop-blur-sm text-red-600 p-4 rounded-xl mb-6 text-xs border border-red-200 flex items-start gap-3 text-left shadow-sm">
                     <i data-lucide="alert-circle" class="w-4 h-4 mt-0.5 flex-shrink-0"></i>
                     <span id="login-error-text"></span>
                 </div>
 
-                <!-- GOOGLE LOGIN BUTTON -->
                 <button 
                     id="google-login-btn"
-                    class="w-full bg-white border border-gray-300 hover:bg-gray-50 text-gray-700 font-bold py-3 px-4 rounded-lg shadow-sm transition-all flex items-center justify-center gap-3"
+                    class="w-full bg-white hover:bg-gray-50 text-slate-700 font-bold py-4 px-6 rounded-xl border border-gray-200 shadow-sm hover:shadow-md transition-all duration-200 flex items-center justify-center gap-3 group/btn"
                 >
-                    <!-- Google SVG Icon -->
-                    <svg class="w-5 h-5" viewBox="0 0 24 24">
-                        <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
-                        <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
-                        <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/>
-                        <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
-                    </svg>
-                    Sign in with Google
+                    <img src="https://www.svgrepo.com/show/475656/google-color.svg" class="w-6 h-6 group-hover/btn:scale-110 transition-transform" alt="Google">
+                    <span>Continue with Google</span>
                 </button>
+                
+                <p class="mt-8 text-[10px] text-slate-400 uppercase tracking-widest font-bold">Secure • Fast • Simple</p>
             </div>
         </div>
 
         <!-- DASHBOARD VIEW -->
-        <div id="dashboard-view" class="hidden min-h-screen bg-gray-50 pb-20">
+        <div id="dashboard-view" class="hidden flex-1 pb-24">
+            
             <!-- Header -->
-            <div class="bg-emerald-600 text-white p-6 rounded-b-3xl shadow-lg">
-                <div class="flex justify-between items-center mb-4">
-                    <div>
-                        <h1 class="text-2xl font-bold">Mess Expense</h1>
-                        <p class="text-emerald-100 text-sm flex items-center gap-1">
-                            Hi, <span id="display-username" class="font-semibold">User</span>
-                        </p>
-                    </div>
-                    <button id="logout-btn" class="p-2 bg-emerald-700 rounded-full hover:bg-emerald-800 transition" title="Logout">
-                        <i data-lucide="log-out" class="w-5 h-5"></i>
-                    </button>
+            <header class="pt-8 pb-4 px-6 flex justify-between items-center">
+                <div>
+                    <p class="text-slate-500 text-xs font-bold uppercase tracking-wider mb-0.5">Mess Expense</p>
+                    <h1 class="text-2xl font-extrabold text-slate-800 flex items-center gap-2">
+                        Hi, <span id="display-username" class="truncate max-w-[150px]">User</span>
+                        <span class="text-emerald-500">👋</span>
+                    </h1>
                 </div>
-            </div>
+                <button id="logout-btn" class="bg-white/50 hover:bg-white p-3 rounded-full shadow-sm hover:shadow-md transition-all border border-white backdrop-blur-sm text-slate-600">
+                    <i data-lucide="log-out" class="w-5 h-5"></i>
+                </button>
+            </header>
 
-            <div class="max-w-3xl mx-auto px-4 -mt-10">
+            <div class="px-4 space-y-6">
                 
-                <!-- FUND STATUS CARD (Replaces AI Section) -->
-                <div class="bg-white rounded-xl shadow-lg p-5 mb-6 fade-in border border-gray-100 relative overflow-hidden">
-                    <div class="flex flex-col gap-4">
-                        <!-- Top Row: Balance -->
-                        <div class="flex justify-between items-center border-b border-gray-100 pb-4">
+                <!-- FUND STATUS CARD (Premium Credit Card Look) -->
+                <div class="relative w-full overflow-hidden rounded-3xl shadow-xl shadow-emerald-900/20 transform transition-transform hover:scale-[1.01] duration-300">
+                    <!-- Gradient Background -->
+                    <div class="absolute inset-0 bg-gradient-to-br from-slate-800 via-slate-900 to-black z-0"></div>
+                    <!-- Decorative Circles -->
+                    <div class="absolute top-[-50px] right-[-50px] w-40 h-40 bg-emerald-500 rounded-full opacity-20 blur-2xl"></div>
+                    <div class="absolute bottom-[-30px] left-[-30px] w-32 h-32 bg-blue-500 rounded-full opacity-20 blur-2xl"></div>
+                    
+                    <div class="relative z-10 p-6 text-white">
+                        <div class="flex justify-between items-start mb-8">
                             <div>
-                                <p class="text-xs text-gray-500 font-semibold uppercase tracking-wider">Remaining Balance</p>
-                                <p class="text-3xl font-bold mt-1" id="fund-balance">₹0.00</p>
-                            </div>
-                            <div class="p-3 bg-emerald-50 rounded-full">
-                                <i data-lucide="wallet" class="w-6 h-6 text-emerald-600"></i>
-                            </div>
-                        </div>
-
-                        <!-- Details Row -->
-                        <div class="grid grid-cols-2 gap-4">
-                            <div>
-                                <div class="flex items-center gap-2 mb-1">
-                                    <p class="text-xs text-gray-500 font-medium">Total Fund</p>
-                                    <button id="edit-fund-btn" class="text-blue-500 hover:text-blue-700 p-1 rounded-full hover:bg-blue-50 transition" title="Update Fund Amount">
-                                        <i data-lucide="edit-2" class="w-3 h-3"></i>
+                                <p class="text-slate-400 text-xs font-semibold uppercase tracking-widest mb-1">Total Fund</p>
+                                <div class="flex items-center gap-2">
+                                    <h2 class="text-2xl font-bold tracking-tight" id="total-fund">₹0.00</h2>
+                                    <button id="edit-fund-btn" class="bg-white/10 hover:bg-white/20 p-1.5 rounded-lg transition backdrop-blur-md">
+                                        <i data-lucide="edit-2" class="w-3.5 h-3.5 text-emerald-300"></i>
                                     </button>
                                 </div>
-                                <p class="text-lg font-semibold text-gray-800" id="total-fund">₹0.00</p>
                             </div>
+                            <div class="bg-white/10 p-2.5 rounded-xl backdrop-blur-md border border-white/10">
+                                <i data-lucide="wallet" class="w-6 h-6 text-emerald-300"></i>
+                            </div>
+                        </div>
+
+                        <div class="flex justify-between items-end">
                             <div>
-                                <p class="text-xs text-gray-500 font-medium mb-1">Total Spent</p>
-                                <p class="text-lg font-semibold text-red-500" id="total-spent">₹0.00</p>
+                                <p class="text-slate-400 text-xs font-medium mb-1">Current Balance</p>
+                                <p class="text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-emerald-200 to-teal-100" id="fund-balance">₹0.00</p>
+                            </div>
+                            <div class="text-right">
+                                <p class="text-slate-400 text-[10px] uppercase font-bold mb-1">Spent</p>
+                                <p class="text-sm font-semibold text-red-300 bg-red-500/10 px-2 py-1 rounded-md" id="total-spent">₹0.00</p>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <!-- Manual Input Form -->
-                <div class="bg-white rounded-xl shadow-lg p-5 mb-6 fade-in">
-                    <div id="dashboard-error" class="hidden bg-red-50 text-red-600 p-3 rounded-lg mb-4 text-sm border border-red-200 flex items-start gap-2">
-                        <i data-lucide="alert-circle" class="w-4 h-4 mt-0.5 flex-shrink-0"></i>
+                <!-- ADD EXPENSE (Clean Input) -->
+                <div class="glass-card rounded-2xl p-1 relative overflow-hidden">
+                    <!-- Progress Bar style decoration -->
+                    <div class="absolute bottom-0 left-0 h-[2px] w-full bg-gradient-to-r from-emerald-400 via-blue-500 to-emerald-400 opacity-50"></div>
+                    
+                    <div id="dashboard-error" class="hidden mx-4 mt-4 bg-red-50 text-red-600 p-3 rounded-lg text-xs flex items-center gap-2">
+                        <i data-lucide="alert-circle" class="w-4 h-4"></i>
                         <span id="dashboard-error-text"></span>
                     </div>
 
-                    <div class="flex items-center justify-between mb-4">
-                        <h3 class="font-bold text-gray-700 flex items-center gap-2" id="form-title">
-                            <i data-lucide="plus-circle" class="text-emerald-500 w-5 h-5" id="form-icon"></i>
-                            <span id="form-title-text">Add Expense</span>
-                        </h3>
-                        <button id="cancel-edit-btn" class="hidden text-xs text-red-500 font-medium hover:underline">
-                            Cancel Edit
-                        </button>
-                    </div>
+                    <!-- Header/Toggle hidden for cleaner look, integrated into form -->
                     
-                    <form id="expense-form" class="flex flex-col gap-3">
+                    <form id="expense-form" class="p-4 flex flex-col gap-3">
+                        <div class="flex justify-between items-center mb-1">
+                            <h3 class="text-sm font-bold text-slate-700 flex items-center gap-2">
+                                <i data-lucide="plus-circle" class="w-4 h-4 text-emerald-600"></i>
+                                Add Expense
+                            </h3>
+                            <button id="cancel-edit-btn" type="button" class="hidden text-xs text-red-500 font-bold hover:bg-red-50 px-2 py-1 rounded transition">Cancel</button>
+                        </div>
                         <input type="hidden" id="edit-id">
+                        
                         <div class="flex gap-3">
-                            <input 
-                                type="text" 
-                                id="item-name"
-                                placeholder="Item name" 
-                                class="flex-1 p-3 bg-gray-50 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500"
-                                required
-                            />
-                            <input 
-                                type="number" 
-                                id="item-cost"
-                                placeholder="₹ Cost" 
-                                class="w-24 p-3 bg-gray-50 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500"
-                                required
-                                step="0.01"
-                            />
+                            <div class="flex-1 relative group">
+                                <div class="absolute inset-y-0 left-3 flex items-center pointer-events-none">
+                                    <i data-lucide="shopping-bag" class="w-4 h-4 text-slate-400 group-focus-within:text-emerald-500 transition-colors"></i>
+                                </div>
+                                <input 
+                                    type="text" 
+                                    id="item-name"
+                                    placeholder="What did you buy?" 
+                                    class="w-full pl-10 pr-4 py-3 bg-slate-50 border-none rounded-xl text-slate-700 text-sm font-medium focus:ring-2 focus:ring-emerald-500/20 focus:bg-white transition-all placeholder:text-slate-400"
+                                    required
+                                />
+                            </div>
+                            <div class="w-28 relative group">
+                                <div class="absolute inset-y-0 left-3 flex items-center pointer-events-none">
+                                    <span class="text-slate-400 font-bold group-focus-within:text-emerald-500 transition-colors">₹</span>
+                                </div>
+                                <input 
+                                    type="number" 
+                                    id="item-cost"
+                                    placeholder="0" 
+                                    class="w-full pl-8 pr-4 py-3 bg-slate-50 border-none rounded-xl text-slate-700 text-sm font-bold focus:ring-2 focus:ring-emerald-500/20 focus:bg-white transition-all placeholder:text-slate-400"
+                                    required
+                                    step="0.01"
+                                />
+                            </div>
                         </div>
                         <button 
                             type="submit" 
                             id="submit-btn"
-                            class="w-full py-3 rounded-lg font-semibold text-white shadow-sm transition-colors flex items-center justify-center gap-2 bg-emerald-600 hover:bg-emerald-700"
+                            class="w-full py-3.5 rounded-xl font-bold text-white shadow-lg shadow-emerald-500/30 flex items-center justify-center gap-2 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 active:scale-[0.98] transition-all"
                         >
-                            <i data-lucide="plus" class="w-5 h-5" id="btn-icon"></i> 
-                            <span id="btn-text">Add to List</span>
+                            <span id="btn-text">Add Item</span>
+                            <i data-lucide="arrow-right" class="w-4 h-4"></i>
                         </button>
                     </form>
                 </div>
 
-                <!-- View Toggle & List -->
-                <div class="space-y-3">
-                    <div class="flex justify-between items-end mb-2">
-                        <h3 class="text-gray-500 text-sm font-semibold uppercase tracking-wide ml-1">Records</h3>
+                <!-- LIST SECTION -->
+                <div>
+                    <div class="flex justify-between items-center mb-4 px-1">
+                        <h3 class="text-slate-800 text-sm font-bold flex items-center gap-2">
+                            <i data-lucide="history" class="w-4 h-4 text-slate-400"></i>
+                            Recent
+                        </h3>
                         
-                        <!-- View Toggle -->
-                        <div class="flex bg-gray-200 p-1 rounded-lg">
-                            <button id="view-daily" class="px-4 py-1.5 text-xs font-semibold rounded-md shadow-sm bg-white text-emerald-700 transition-all">
+                        <div class="flex bg-white/60 p-1 rounded-xl backdrop-blur-md shadow-sm border border-white/40">
+                            <button id="view-daily" class="px-3 py-1.5 text-[10px] font-bold uppercase rounded-lg shadow-sm bg-slate-800 text-white transition-all">
                                 Daily
                             </button>
-                            <button id="view-monthly" class="px-4 py-1.5 text-xs font-semibold rounded-md text-gray-500 hover:text-gray-700 transition-all">
+                            <button id="view-monthly" class="px-3 py-1.5 text-[10px] font-bold uppercase rounded-lg text-slate-500 hover:bg-slate-100 transition-all">
                                 Monthly
                             </button>
                         </div>
                     </div>
 
-                    <div id="expenses-list" class="space-y-6 pb-10">
+                    <div id="expenses-list" class="space-y-4">
                         <!-- Items injected here -->
                     </div>
                     
-                    <div id="empty-state" class="hidden text-center py-10 bg-white rounded-xl shadow-sm border border-dashed border-gray-300">
-                        <p class="text-gray-400">No expenses added yet.</p>
+                    <div id="empty-state" class="hidden flex flex-col items-center justify-center py-12 glass-card rounded-2xl border-dashed border-2 border-slate-300">
+                        <div class="bg-slate-100 p-4 rounded-full mb-3">
+                            <i data-lucide="clipboard-list" class="w-8 h-8 text-slate-300"></i>
+                        </div>
+                        <p class="text-slate-400 font-medium text-sm">No expenses yet</p>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- UPDATE FUND MODAL -->
-        <div id="fund-modal" class="hidden fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4 backdrop-blur-sm fade-in">
-            <div class="bg-white rounded-xl shadow-2xl p-6 w-full max-w-sm">
-                <div class="flex flex-col items-center text-center mb-6">
-                    <div class="bg-blue-100 p-3 rounded-full mb-4">
-                        <i data-lucide="piggy-bank" class="w-8 h-8 text-blue-600"></i>
+        <!-- MODALS -->
+        
+        <!-- Fund Modal -->
+        <div id="fund-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-6 bg-slate-900/60 backdrop-blur-sm fade-in">
+            <div class="bg-white w-full max-w-sm rounded-3xl p-6 shadow-2xl scale-100 transition-all">
+                <div class="text-center mb-6">
+                    <div class="w-14 h-14 bg-blue-50 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                        <i data-lucide="piggy-bank" class="w-7 h-7 text-blue-600"></i>
                     </div>
-                    <h3 class="text-lg font-bold text-gray-800">Update Mess Fund</h3>
-                    <p class="text-gray-500 text-sm mt-2">Enter the new total amount collected.</p>
+                    <h3 class="text-xl font-bold text-slate-800">Update Fund</h3>
+                    <p class="text-slate-500 text-sm mt-1">Total collected amount</p>
                 </div>
                 <form id="fund-form">
-                    <input 
-                        type="number" 
-                        id="fund-input" 
-                        class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none text-center text-2xl font-bold mb-4" 
-                        placeholder="0.00" 
-                        step="0.01" 
-                        required 
-                    />
+                    <div class="relative mb-6">
+                        <span class="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 font-bold text-lg">₹</span>
+                        <input 
+                            type="number" 
+                            id="fund-input" 
+                            class="w-full pl-10 pr-4 py-4 bg-slate-50 border-2 border-transparent focus:border-blue-500/20 focus:bg-white rounded-xl text-slate-800 text-2xl font-bold outline-none transition-all placeholder:text-slate-300" 
+                            placeholder="0.00" 
+                            step="0.01" 
+                            required 
+                        />
+                    </div>
                     <div class="flex gap-3">
-                        <button type="button" id="cancel-fund-btn" class="flex-1 py-2.5 border border-gray-300 rounded-lg font-semibold text-gray-700 hover:bg-gray-50 transition">
+                        <button type="button" id="cancel-fund-btn" class="flex-1 py-3.5 rounded-xl font-bold text-slate-600 bg-slate-100 hover:bg-slate-200 transition">
                             Cancel
                         </button>
-                        <button type="submit" class="flex-1 py-2.5 bg-blue-600 hover:bg-blue-700 rounded-lg font-semibold text-white shadow-md transition">
-                            Update
+                        <button type="submit" class="flex-1 py-3.5 rounded-xl font-bold text-white bg-blue-600 hover:bg-blue-700 shadow-lg shadow-blue-500/30 transition">
+                            Save
                         </button>
                     </div>
                 </form>
             </div>
         </div>
 
-        <!-- DELETE MODAL -->
-        <div id="delete-modal" class="hidden fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4 backdrop-blur-sm fade-in">
-            <div class="bg-white rounded-xl shadow-2xl p-6 w-full max-w-sm">
-                <div class="flex flex-col items-center text-center mb-6">
-                    <div class="bg-red-100 p-3 rounded-full mb-4">
-                        <i data-lucide="trash-2" class="w-8 h-8 text-red-600"></i>
+        <!-- Delete Modal -->
+        <div id="delete-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-6 bg-slate-900/60 backdrop-blur-sm fade-in">
+            <div class="bg-white w-full max-w-sm rounded-3xl p-6 shadow-2xl">
+                <div class="text-center mb-6">
+                    <div class="w-14 h-14 bg-red-50 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                        <i data-lucide="trash-2" class="w-7 h-7 text-red-500"></i>
                     </div>
-                    <h3 class="text-lg font-bold text-gray-800">Delete Item?</h3>
-                    <p class="text-gray-500 text-sm mt-2">Are you sure you want to remove this expense? This action cannot be undone.</p>
+                    <h3 class="text-xl font-bold text-slate-800">Delete Item?</h3>
+                    <p class="text-slate-500 text-sm mt-1">This action cannot be undone.</p>
                 </div>
                 <div class="flex gap-3">
-                    <button id="cancel-delete-btn" class="flex-1 py-2.5 border border-gray-300 rounded-lg font-semibold text-gray-700 hover:bg-gray-50 transition">
-                        Cancel
+                    <button id="cancel-delete-btn" class="flex-1 py-3.5 rounded-xl font-bold text-slate-600 bg-slate-100 hover:bg-slate-200 transition">
+                        Keep
                     </button>
-                    <button id="confirm-delete-btn" class="flex-1 py-2.5 bg-red-600 hover:bg-red-700 rounded-lg font-semibold text-white shadow-md transition flex justify-center items-center">
+                    <button id="confirm-delete-btn" class="flex-1 py-3.5 rounded-xl font-bold text-white bg-red-500 hover:bg-red-600 shadow-lg shadow-red-500/30 transition flex items-center justify-center">
                         Delete
                     </button>
                 </div>
@@ -249,7 +390,7 @@
         </div>
     </div>
 
-    <!-- FIREBASE LOGIC -->
+    <!-- FIREBASE LOGIC (Unchanged functionality) -->
     <script type="module">
         import { initializeApp } from 'https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js';
         import { 
@@ -260,18 +401,13 @@
         } from 'https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js';
 
         // --- Configuration ---
-        const apiKey = ""; // Runtime handles this
-        
-        // FOR CANVAS ENVIRONMENT (DO NOT DELETE)
+        const apiKey = ""; 
         const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
-        
         let firebaseConfig;
 
         if (typeof __firebase_config !== 'undefined') {
-            // Case 1: Running inside Canvas (Automatic)
             firebaseConfig = JSON.parse(__firebase_config);
         } else {
-            // Case 2: External Deployment (Netlify, Vercel, etc.)
             firebaseConfig = {
                 apiKey: "AIzaSyC7z-IuvKCSer2rTRatJW5DRtO9NDZdPeg",
                 authDomain: "messjyotirmoy.firebaseapp.com",
@@ -282,12 +418,10 @@
             };
         }
         
-        // --- Initialization ---
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
         const googleProvider = new GoogleAuthProvider();
         
-        // Connectivity settings
         let db;
         try {
             db = initializeFirestore(app, { 
@@ -295,103 +429,48 @@
                 useFetchStreams: false 
             });
         } catch (e) {
-            console.log("Using existing Firestore instance");
             db = getFirestore(app);
         }
 
-        // --- State ---
         let state = {
-            user: null,
-            username: '',
-            userPhoto: '',
-            expenses: [],
-            totalFund: 0, // NEW: Store total fund
-            editId: null,
-            deleteTargetId: null,
-            loading: true,
-            hasJoined: false,
-            viewMode: 'daily'
+            user: null, username: '', userPhoto: '', expenses: [], totalFund: 0, editId: null, deleteTargetId: null, loading: true, hasJoined: false, viewMode: 'daily'
         };
 
-        // --- UI References ---
-        const views = {
-            loading: document.getElementById('loading-view'),
-            login: document.getElementById('login-view'),
-            dashboard: document.getElementById('dashboard-view')
-        };
-
+        const views = { loading: document.getElementById('loading-view'), login: document.getElementById('login-view'), dashboard: document.getElementById('dashboard-view') };
+        
         const elements = {
-            googleLoginBtn: document.getElementById('google-login-btn'),
-            displayUsername: document.getElementById('display-username'),
-            logoutBtn: document.getElementById('logout-btn'),
-            
-            // Stats Elements
-            fundBalance: document.getElementById('fund-balance'),
-            totalFund: document.getElementById('total-fund'),
-            totalSpent: document.getElementById('total-spent'),
-            editFundBtn: document.getElementById('edit-fund-btn'),
-            
-            expenseForm: document.getElementById('expense-form'),
-            itemName: document.getElementById('item-name'),
-            itemCost: document.getElementById('item-cost'),
-            editId: document.getElementById('edit-id'),
-            cancelEditBtn: document.getElementById('cancel-edit-btn'),
-            expensesList: document.getElementById('expenses-list'),
-            emptyState: document.getElementById('empty-state'),
-            loginError: document.getElementById('login-error'),
-            loginErrorText: document.getElementById('login-error-text'),
-            dashError: document.getElementById('dashboard-error'),
-            dashErrorText: document.getElementById('dashboard-error-text'),
-            viewDailyBtn: document.getElementById('view-daily'),
-            viewMonthlyBtn: document.getElementById('view-monthly'),
-            
-            // Modals
-            deleteModal: document.getElementById('delete-modal'),
-            cancelDeleteBtn: document.getElementById('cancel-delete-btn'),
-            confirmDeleteBtn: document.getElementById('confirm-delete-btn'),
-            fundModal: document.getElementById('fund-modal'),
-            fundForm: document.getElementById('fund-form'),
-            fundInput: document.getElementById('fund-input'),
-            cancelFundBtn: document.getElementById('cancel-fund-btn')
+            googleLoginBtn: document.getElementById('google-login-btn'), displayUsername: document.getElementById('display-username'), logoutBtn: document.getElementById('logout-btn'),
+            fundBalance: document.getElementById('fund-balance'), totalFund: document.getElementById('total-fund'), totalSpent: document.getElementById('total-spent'), editFundBtn: document.getElementById('edit-fund-btn'),
+            expenseForm: document.getElementById('expense-form'), itemName: document.getElementById('item-name'), itemCost: document.getElementById('item-cost'), editId: document.getElementById('edit-id'), cancelEditBtn: document.getElementById('cancel-edit-btn'),
+            expensesList: document.getElementById('expenses-list'), emptyState: document.getElementById('empty-state'), loginError: document.getElementById('login-error'), loginErrorText: document.getElementById('login-error-text'),
+            dashError: document.getElementById('dashboard-error'), dashErrorText: document.getElementById('dashboard-error-text'), viewDailyBtn: document.getElementById('view-daily'), viewMonthlyBtn: document.getElementById('view-monthly'),
+            deleteModal: document.getElementById('delete-modal'), cancelDeleteBtn: document.getElementById('cancel-delete-btn'), confirmDeleteBtn: document.getElementById('confirm-delete-btn'),
+            fundModal: document.getElementById('fund-modal'), fundForm: document.getElementById('fund-form'), fundInput: document.getElementById('fund-input'), cancelFundBtn: document.getElementById('cancel-fund-btn')
         };
 
-        // --- Auth Setup ---
         async function initAuth() {
             if (firebaseConfig.apiKey === "PASTE_API_KEY_HERE") {
-                state.loading = false;
-                render(); 
-                setTimeout(() => showError("Config Error: Update index.html with keys.", true), 100);
-                return;
+                state.loading = false; render(); 
+                setTimeout(() => showError("Config Error: Update index.html with keys.", true), 100); return;
             }
             if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
-                try {
-                    await signInWithCustomToken(auth, __initial_auth_token);
-                } catch(e) { console.error("Canvas Auth Failed", e); }
+                try { await signInWithCustomToken(auth, __initial_auth_token); } catch(e) { }
             }
         }
 
-        // --- Google Login Handler ---
         elements.googleLoginBtn.addEventListener('click', async () => {
             hideError(true);
+            const originalContent = elements.googleLoginBtn.innerHTML;
             elements.googleLoginBtn.disabled = true;
-            elements.googleLoginBtn.innerHTML = `<div class="animate-spin rounded-full h-5 w-5 border-b-2 border-gray-600"></div> Signing in...`;
+            elements.googleLoginBtn.innerHTML = `<div class="animate-spin rounded-full h-5 w-5 border-b-2 border-slate-600"></div>`;
             try {
                 await signInWithPopup(auth, googleProvider);
             } catch (error) {
-                console.error("Google Auth Error:", error);
-                let msg = "Sign-in failed. Check console/settings.";
-                if (error.code === 'auth/popup-closed-by-user') msg = "Popup closed before sign-in.";
-                else if (error.code === 'auth/popup-blocked') msg = "Popup blocked. Allow popups for this site.";
-                else if (error.code === 'auth/operation-not-allowed') msg = "Google Sign-in is disabled in Firebase Console.";
-                else if (error.code === 'auth/unauthorized-domain') {
-                    msg = `Domain unauthorized. Add "${window.location.hostname}" to Firebase Console -> Auth -> Settings.`;
-                }
+                let msg = "Sign-in failed.";
+                if (error.code === 'auth/unauthorized-domain') msg = `Domain unauthorized: ${window.location.hostname}`;
                 showError(msg, true);
                 elements.googleLoginBtn.disabled = false;
-                elements.googleLoginBtn.innerHTML = `
-                    <svg class="w-5 h-5" viewBox="0 0 24 24"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg>
-                    Sign in with Google
-                `; 
+                elements.googleLoginBtn.innerHTML = originalContent;
             }
         });
 
@@ -402,17 +481,13 @@
                 state.userPhoto = user.photoURL;
                 state.hasJoined = true;
                 setupDataListener();
-            } else {
-                state.hasJoined = false;
-            }
+            } else { state.hasJoined = false; }
             state.loading = false;
             render();
         });
 
         function setupDataListener() {
             if (!state.user) return;
-            
-            // 1. Listen for Expenses
             const expensesRef = collection(db, 'artifacts', appId, 'public', 'data', 'mess_expenses');
             onSnapshot(expensesRef, (snapshot) => {
                 const data = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
@@ -420,64 +495,38 @@
                 state.expenses = data;
                 hideError(false);
                 renderDashboardData();
-            }, (err) => {
-                if(state.hasJoined) showError("Sync Failed. Check DB Rules.", false);
             });
-
-            // 2. Listen for Fund Data
             const fundRef = doc(db, 'artifacts', appId, 'public', 'data', 'mess_fund', 'summary');
             onSnapshot(fundRef, (doc) => {
-                if (doc.exists()) {
-                    state.totalFund = doc.data().amount || 0;
-                } else {
-                    state.totalFund = 0;
-                }
-                renderDashboardData(); // Re-calculate balance
+                if (doc.exists()) { state.totalFund = doc.data().amount || 0; } else { state.totalFund = 0; }
+                renderDashboardData();
             });
         }
 
-        // --- Fund Management ---
-        elements.editFundBtn.addEventListener('click', () => {
-            elements.fundInput.value = state.totalFund;
-            elements.fundModal.classList.remove('hidden');
-        });
-
-        elements.cancelFundBtn.addEventListener('click', () => {
-            elements.fundModal.classList.add('hidden');
-        });
-
+        elements.editFundBtn.addEventListener('click', () => { elements.fundInput.value = state.totalFund; elements.fundModal.classList.remove('hidden'); });
+        elements.cancelFundBtn.addEventListener('click', () => { elements.fundModal.classList.add('hidden'); });
         elements.fundForm.addEventListener('submit', async (e) => {
             e.preventDefault();
             const amount = parseFloat(elements.fundInput.value);
             if (isNaN(amount) || amount < 0) return;
-
             try {
                 const fundRef = doc(db, 'artifacts', appId, 'public', 'data', 'mess_fund', 'summary');
-                await setDoc(fundRef, { 
-                    amount: amount, 
-                    updatedBy: state.username, 
-                    updatedAt: new Date().toISOString() 
-                });
+                await setDoc(fundRef, { amount: amount, updatedBy: state.username, updatedAt: new Date().toISOString() });
                 elements.fundModal.classList.add('hidden');
-                showToast(`Fund updated to ₹${amount.toFixed(2)}`);
-            } catch (err) {
-                console.error("Fund Update Error:", err);
-                showToast("Failed to update fund", "error");
-            }
+                showToast(`Fund updated`);
+            } catch (err) { showToast("Failed to update", "error"); }
         });
-
-        // --- Standard Logic ---
 
         elements.viewDailyBtn.addEventListener('click', () => { state.viewMode = 'daily'; updateViewToggleUI(); renderDashboardData(); });
         elements.viewMonthlyBtn.addEventListener('click', () => { state.viewMode = 'monthly'; updateViewToggleUI(); renderDashboardData(); });
 
         function updateViewToggleUI() {
             if (state.viewMode === 'daily') {
-                elements.viewDailyBtn.classList.add('bg-white', 'text-emerald-700', 'shadow-sm'); elements.viewDailyBtn.classList.remove('text-gray-500', 'hover:text-gray-700');
-                elements.viewMonthlyBtn.classList.remove('bg-white', 'text-emerald-700', 'shadow-sm'); elements.viewMonthlyBtn.classList.add('text-gray-500', 'hover:text-gray-700');
+                elements.viewDailyBtn.classList.add('bg-slate-800', 'text-white', 'shadow-sm'); elements.viewDailyBtn.classList.remove('text-slate-500', 'hover:bg-slate-100');
+                elements.viewMonthlyBtn.classList.remove('bg-slate-800', 'text-white', 'shadow-sm'); elements.viewMonthlyBtn.classList.add('text-slate-500', 'hover:bg-slate-100');
             } else {
-                elements.viewMonthlyBtn.classList.add('bg-white', 'text-emerald-700', 'shadow-sm'); elements.viewMonthlyBtn.classList.remove('text-gray-500', 'hover:text-gray-700');
-                elements.viewDailyBtn.classList.remove('bg-white', 'text-emerald-700', 'shadow-sm'); elements.viewDailyBtn.classList.add('text-gray-500', 'hover:text-gray-700');
+                elements.viewMonthlyBtn.classList.add('bg-slate-800', 'text-white', 'shadow-sm'); elements.viewMonthlyBtn.classList.remove('text-slate-500', 'hover:bg-slate-100');
+                elements.viewDailyBtn.classList.remove('bg-slate-800', 'text-white', 'shadow-sm'); elements.viewDailyBtn.classList.add('text-slate-500', 'hover:bg-slate-100');
             }
         }
 
@@ -487,8 +536,12 @@
             e.preventDefault();
             const name = elements.itemName.value; const cost = elements.itemCost.value;
             if (!name || !cost) return;
-            if (!state.user) { showError("Not logged in.", false); return; }
-
+            
+            // UI Loading
+            const btnText = document.getElementById('btn-text');
+            const originalText = btnText.innerText;
+            btnText.innerText = "Saving...";
+            
             try {
                 const collectionRef = collection(db, 'artifacts', appId, 'public', 'data', 'mess_expenses');
                 if (state.editId) {
@@ -496,17 +549,11 @@
                     await updateDoc(docRef, { item: name, cost: parseFloat(cost), updatedAt: new Date().toISOString() });
                     cancelEdit();
                 } else {
-                    await addDoc(collectionRef, {
-                        item: name, 
-                        cost: parseFloat(cost), 
-                        addedBy: state.username, 
-                        userPhoto: state.userPhoto,
-                        userId: state.user.uid, 
-                        date: new Date().toISOString()
-                    });
+                    await addDoc(collectionRef, { item: name, cost: parseFloat(cost), addedBy: state.username, userPhoto: state.userPhoto, userId: state.user.uid, date: new Date().toISOString() });
                     elements.itemName.value = ''; elements.itemCost.value = '';
                 }
             } catch (err) { showError("Save Failed.", false); }
+            finally { btnText.innerText = originalText; }
         });
 
         elements.cancelEditBtn.addEventListener('click', cancelEdit);
@@ -526,7 +573,7 @@
         elements.confirmDeleteBtn.addEventListener('click', async () => {
             if (!state.deleteTargetId) return;
             const originalText = elements.confirmDeleteBtn.innerHTML;
-            elements.confirmDeleteBtn.innerHTML = `<i data-lucide="loader-2" class="w-5 h-5 animate-spin"></i>`; elements.confirmDeleteBtn.disabled = true; lucide.createIcons();
+            elements.confirmDeleteBtn.innerHTML = `<i data-lucide="loader-2" class="w-5 h-5 animate-spin"></i>`;
             try {
                 const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'mess_expenses', state.deleteTargetId);
                 await deleteDoc(docRef); elements.deleteModal.classList.add('hidden');
@@ -537,32 +584,19 @@
         function render() {
             if (state.loading) { views.loading.classList.remove('hidden'); views.login.classList.add('hidden'); views.dashboard.classList.add('hidden'); }
             else if (!state.hasJoined) { views.loading.classList.add('hidden'); views.login.classList.remove('hidden'); views.dashboard.classList.add('hidden'); lucide.createIcons(); }
-            else { 
-                views.loading.classList.add('hidden'); 
-                views.login.classList.add('hidden'); 
-                views.dashboard.classList.remove('hidden'); 
-                elements.displayUsername.textContent = state.username; 
-                renderDashboardData(); 
-            }
+            else { views.loading.classList.add('hidden'); views.login.classList.add('hidden'); views.dashboard.classList.remove('hidden'); elements.displayUsername.textContent = state.username; renderDashboardData(); }
         }
 
         function renderDashboardData() {
             const totalSpent = state.expenses.reduce((acc, curr) => acc + (curr.cost || 0), 0);
             const remaining = state.totalFund - totalSpent;
-
-            // Update Fund Stats
-            elements.totalSpent.textContent = `₹${totalSpent.toFixed(2)}`;
-            elements.totalFund.textContent = `₹${state.totalFund.toFixed(2)}`;
-            elements.fundBalance.textContent = `₹${remaining.toFixed(2)}`;
             
-            // Color code balance
-            if(remaining < 0) {
-                elements.fundBalance.classList.remove('text-emerald-600');
-                elements.fundBalance.classList.add('text-red-600');
-            } else {
-                elements.fundBalance.classList.add('text-emerald-600');
-                elements.fundBalance.classList.remove('text-red-600');
-            }
+            elements.totalSpent.textContent = `₹${totalSpent.toLocaleString('en-IN', {minimumFractionDigits: 2})}`;
+            elements.totalFund.textContent = `₹${state.totalFund.toLocaleString('en-IN', {minimumFractionDigits: 2})}`;
+            elements.fundBalance.textContent = `₹${remaining.toLocaleString('en-IN', {minimumFractionDigits: 2})}`;
+            
+            if(remaining < 0) { elements.fundBalance.classList.remove('from-emerald-200', 'to-teal-100'); elements.fundBalance.classList.add('text-red-300'); } 
+            else { elements.fundBalance.classList.add('from-emerald-200', 'to-teal-100'); elements.fundBalance.classList.remove('text-red-300'); }
 
             if (state.expenses.length === 0) { elements.expensesList.innerHTML = ''; elements.emptyState.classList.remove('hidden'); return; }
             elements.emptyState.classList.add('hidden');
@@ -571,7 +605,7 @@
             state.expenses.forEach(ex => {
                 const d = new Date(ex.date);
                 let key, label;
-                if (state.viewMode === 'daily') { key = d.toDateString(); label = d.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' }); }
+                if (state.viewMode === 'daily') { key = d.toDateString(); label = d.toLocaleDateString('en-US', { weekday: 'short', day: 'numeric', month: 'short' }); }
                 else { key = `${d.getFullYear()}-${d.getMonth()}`; label = d.toLocaleDateString('en-US', { month: 'long', year: 'numeric' }); }
                 if (!grouped[key]) { grouped[key] = { label: label, total: 0, items: [], sortTime: d.getTime() }; keys.push(key); }
                 grouped[key].items.push(ex); grouped[key].total += ex.cost;
@@ -581,18 +615,39 @@
             elements.expensesList.innerHTML = keys.map(key => {
                 const group = grouped[key];
                 const itemsHtml = group.items.map(expense => `
-                    <div class="flex justify-between items-center py-3 border-b border-gray-100 last:border-0 hover:bg-gray-50 px-4 transition">
-                        <div class="flex-1"><div class="flex items-center gap-2"><span class="font-medium text-gray-700">${escapeHtml(expense.item)}</span></div>
-                        <div class="text-xs text-gray-400 flex items-center gap-2 mt-0.5">
-                            <span class="flex items-center gap-1">${expense.userPhoto ? `<img src="${expense.userPhoto}" class="w-4 h-4 rounded-full">` : `<i data-lucide="user" class="w-3 h-3"></i>`} ${escapeHtml(expense.addedBy)}</span>
-                            ${state.viewMode === 'monthly' ? `<span class="flex items-center gap-1"><i data-lucide="calendar" class="w-3 h-3"></i> ${new Date(expense.date).getDate()}th</span>` : ''}
-                        </div></div>
-                        <div class="flex flex-col items-end gap-1"><span class="text-emerald-600 font-bold">₹${expense.cost}</span>
-                        <div class="flex gap-2 opacity-50 hover:opacity-100 transition-opacity">
-                            <button class="edit-btn text-blue-400 hover:text-blue-600" data-id="${expense.id}" title="Edit"><i data-lucide="edit-2" class="w-3.5 h-3.5"></i></button>
-                            <button class="delete-btn text-red-400 hover:text-red-600" data-id="${expense.id}" title="Delete"><i data-lucide="trash-2" class="w-3.5 h-3.5"></i></button>
-                        </div></div></div>`).join('');
-                return `<div class="fade-in"><div class="bg-gray-100 rounded-t-xl px-4 py-2 flex justify-between items-center border border-gray-200 border-b-0"><span class="text-sm font-bold text-gray-600 uppercase tracking-wide flex items-center gap-2"><i data-lucide="${state.viewMode === 'daily' ? 'calendar-days' : 'calendar'}" class="w-4 h-4"></i>${group.label}</span><span class="text-emerald-700 font-bold bg-emerald-100 px-2 py-0.5 rounded text-sm">Total: ₹${group.total.toFixed(2)}</span></div><div class="bg-white rounded-b-xl border border-gray-200 shadow-sm overflow-hidden">${itemsHtml}</div></div>`;
+                    <div class="flex justify-between items-center py-4 border-b border-slate-100 last:border-0 hover:bg-slate-50/50 px-5 transition group">
+                        <div class="flex-1">
+                            <div class="flex items-center gap-3">
+                                <span class="font-bold text-slate-700 text-sm">${escapeHtml(expense.item)}</span>
+                            </div>
+                            <div class="flex items-center gap-2 mt-1">
+                                ${expense.userPhoto ? `<img src="${expense.userPhoto}" class="w-4 h-4 rounded-full shadow-sm">` : `<div class="w-4 h-4 rounded-full bg-slate-200 flex items-center justify-center"><i data-lucide="user" class="w-2.5 h-2.5 text-slate-500"></i></div>`} 
+                                <span class="text-[11px] font-medium text-slate-400">${escapeHtml(expense.addedBy)}</span>
+                                <span class="text-[10px] text-slate-300">•</span>
+                                <span class="text-[11px] text-slate-400">${new Date(expense.date).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</span>
+                            </div>
+                        </div>
+                        <div class="flex flex-col items-end gap-1">
+                            <span class="text-emerald-600 font-bold text-sm bg-emerald-50 px-2 py-0.5 rounded-md border border-emerald-100">₹${expense.cost.toLocaleString('en-IN')}</span>
+                            <div class="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                                <button class="edit-btn p-1.5 hover:bg-blue-50 rounded text-blue-500 transition" data-id="${expense.id}"><i data-lucide="edit-2" class="w-3.5 h-3.5"></i></button>
+                                <button class="delete-btn p-1.5 hover:bg-red-50 rounded text-red-500 transition" data-id="${expense.id}"><i data-lucide="trash-2" class="w-3.5 h-3.5"></i></button>
+                            </div>
+                        </div>
+                    </div>`).join('');
+                return `
+                    <div class="fade-in glass-card rounded-2xl overflow-hidden mb-4 border border-white/60">
+                        <div class="bg-slate-50/80 backdrop-blur-sm px-5 py-3 flex justify-between items-center border-b border-slate-100">
+                            <div class="flex items-center gap-2">
+                                <div class="bg-white p-1.5 rounded-lg shadow-sm">
+                                    <i data-lucide="${state.viewMode === 'daily' ? 'calendar' : 'calendar-days'}" class="w-4 h-4 text-slate-400"></i>
+                                </div>
+                                <span class="text-xs font-bold text-slate-600 uppercase tracking-wide">${group.label}</span>
+                            </div>
+                            <span class="text-slate-600 font-bold text-xs bg-white px-2 py-1 rounded-lg border border-slate-100 shadow-sm">Total: ₹${group.total.toLocaleString('en-IN')}</span>
+                        </div>
+                        <div>${itemsHtml}</div>
+                    </div>`;
             }).join('');
             lucide.createIcons();
         }
@@ -600,13 +655,14 @@
         function updateFormState() {
             const submitBtn = document.getElementById('submit-btn'); const formTitle = document.getElementById('form-title');
             if (!submitBtn || !formTitle) return;
+            const btnText = document.getElementById('btn-text');
             if (state.editId) {
-                submitBtn.classList.remove('bg-emerald-600', 'hover:bg-emerald-700'); submitBtn.classList.add('bg-blue-600', 'hover:bg-blue-700');
-                submitBtn.innerHTML = `<i data-lucide="save" class="w-5 h-5"></i> <span id="btn-text">Update Entry</span>`; formTitle.innerHTML = `<i data-lucide="edit-2" class="text-blue-500 w-5 h-5"></i> <span id="form-title-text">Edit Item</span>`;
+                submitBtn.classList.replace('from-emerald-600', 'from-blue-600'); submitBtn.classList.replace('to-teal-600', 'to-indigo-600');
+                btnText.innerText = "Update Entry"; formTitle.innerHTML = `<i data-lucide="edit-2" class="w-5 h-5 text-blue-500"></i><span class="text-blue-600">Edit Item</span>`;
                 if (elements.cancelEditBtn) elements.cancelEditBtn.classList.remove('hidden');
             } else {
-                submitBtn.classList.add('bg-emerald-600', 'hover:bg-emerald-700'); submitBtn.classList.remove('bg-blue-600', 'hover:bg-blue-700');
-                submitBtn.innerHTML = `<i data-lucide="plus" class="w-5 h-5"></i> <span id="btn-text">Add to List</span>`; formTitle.innerHTML = `<i data-lucide="plus-circle" class="text-emerald-500 w-5 h-5"></i> <span id="form-title-text">Add Expense</span>`;
+                submitBtn.classList.replace('from-blue-600', 'from-emerald-600'); submitBtn.classList.replace('to-indigo-600', 'to-teal-600');
+                btnText.innerText = "Add Item"; formTitle.innerHTML = `<i data-lucide="plus-circle" class="w-5 h-5 text-emerald-500"></i><span>Add Expense</span>`;
                 if (elements.cancelEditBtn) elements.cancelEditBtn.classList.add('hidden');
             }
             if (typeof lucide !== 'undefined') lucide.createIcons();
@@ -622,9 +678,10 @@
         function escapeHtml(text) { if (!text) return ''; return text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;"); }
         function showToast(msg, type='success') {
             const toast = document.createElement('div');
-            toast.className = `fixed bottom-4 right-4 px-4 py-2 rounded-lg shadow-lg text-white text-sm fade-in z-50 ${type === 'success' ? 'bg-gray-800' : 'bg-red-500'}`;
-            toast.textContent = msg;
+            toast.className = `fixed bottom-6 left-1/2 -translate-x-1/2 px-6 py-3 rounded-2xl shadow-xl text-white text-sm font-bold fade-in z-50 flex items-center gap-2 ${type === 'success' ? 'bg-slate-800' : 'bg-red-500'}`;
+            toast.innerHTML = type === 'success' ? `<i data-lucide="check-circle" class="w-4 h-4"></i> ${msg}` : `<i data-lucide="alert-circle" class="w-4 h-4"></i> ${msg}`;
             document.body.appendChild(toast);
+            lucide.createIcons();
             setTimeout(() => toast.remove(), 3000);
         }
 
