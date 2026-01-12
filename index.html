@@ -39,36 +39,48 @@
 
         <!-- LOGIN VIEW -->
         <div id="login-view" class="hidden min-h-screen bg-gray-100 flex flex-col items-center justify-center p-4">
-            <div class="bg-white p-8 rounded-2xl shadow-xl w-full max-w-md fade-in">
+            <div class="bg-white p-8 rounded-2xl shadow-xl w-full max-w-md fade-in relative">
                 <div class="flex justify-center mb-6">
                     <div class="bg-emerald-100 p-4 rounded-full">
-                        <i data-lucide="shopping-cart" class="w-10 h-10 text-emerald-600"></i>
+                        <i data-lucide="shield-check" class="w-10 h-10 text-emerald-600"></i>
                     </div>
                 </div>
                 <h1 class="text-2xl font-bold text-center text-gray-800 mb-2">Mess Manager</h1>
-                <p class="text-center text-gray-500 mb-8">Keep track of daily shopping & expenses together.</p>
+                <p class="text-center text-gray-500 mb-8">Secure login with Phone Number.</p>
                 
-                <div id="login-error" class="hidden bg-red-50 text-red-600 p-3 rounded-lg mb-4 text-sm border border-red-200 flex items-center gap-2">
-                    <i data-lucide="alert-circle" class="w-4 h-4"></i>
+                <div id="login-error" class="hidden bg-red-50 text-red-600 p-3 rounded-lg mb-4 text-sm border border-red-200 flex items-start gap-2">
+                    <i data-lucide="alert-circle" class="w-4 h-4 mt-0.5 flex-shrink-0"></i>
                     <span id="login-error-text"></span>
                 </div>
 
-                <form id="login-form" class="space-y-4">
+                <!-- STEP 1: Details -->
+                <form id="login-form-step1" class="space-y-4">
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">What's your name?</label>
-                        <input 
-                            type="text"
-                            id="username-input"
-                            class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:outline-none transition"
-                            placeholder="e.g. Rahul, Priya..."
-                            required
-                        />
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Your Name</label>
+                        <input type="text" id="username-input" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 outline-none" placeholder="e.g. Rahul" required />
                     </div>
-                    <button 
-                        type="submit"
-                        class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 rounded-lg transition-colors shadow-md"
-                    >
-                        Join Mess
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Phone Number</label>
+                        <input type="tel" id="phone-input" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 outline-none" placeholder="+91 99999 99999" required />
+                        <p class="text-xs text-gray-400 mt-1">Include country code (e.g. +91)</p>
+                    </div>
+                    <div id="recaptcha-container"></div>
+                    <button type="submit" id="get-otp-btn" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 rounded-lg shadow-md transition-colors flex justify-center items-center gap-2">
+                        Get OTP <i data-lucide="arrow-right" class="w-4 h-4"></i>
+                    </button>
+                </form>
+
+                <!-- STEP 2: OTP -->
+                <form id="login-form-step2" class="space-y-4 hidden">
+                    <div class="text-center mb-4">
+                        <p class="text-sm text-gray-600">Enter code sent to <span id="display-phone" class="font-bold"></span></p>
+                        <button type="button" id="change-phone-btn" class="text-xs text-emerald-600 hover:underline">Change Number</button>
+                    </div>
+                    <div>
+                        <input type="text" id="otp-input" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 outline-none text-center text-2xl tracking-widest" placeholder="123456" maxlength="6" required />
+                    </div>
+                    <button type="submit" id="verify-otp-btn" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 rounded-lg shadow-md transition-colors">
+                        Verify & Join
                     </button>
                 </form>
             </div>
@@ -104,8 +116,8 @@
                 
                 <!-- Input Form -->
                 <div class="bg-white rounded-xl shadow-lg p-5 mb-6 fade-in">
-                    <div id="dashboard-error" class="hidden bg-red-50 text-red-600 p-3 rounded-lg mb-4 text-sm border border-red-200 flex items-center gap-2">
-                        <i data-lucide="alert-circle" class="w-4 h-4"></i>
+                    <div id="dashboard-error" class="hidden bg-red-50 text-red-600 p-3 rounded-lg mb-4 text-sm border border-red-200 flex items-start gap-2">
+                        <i data-lucide="alert-circle" class="w-4 h-4 mt-0.5 flex-shrink-0"></i>
                         <span id="dashboard-error-text"></span>
                     </div>
 
@@ -205,7 +217,7 @@
             getFirestore, collection, addDoc, updateDoc, deleteDoc, doc, onSnapshot, initializeFirestore 
         } from 'https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js';
         import { 
-            getAuth, signInAnonymously, onAuthStateChanged, signInWithCustomToken 
+            getAuth, signInWithPhoneNumber, RecaptchaVerifier, onAuthStateChanged, signInWithCustomToken, signOut 
         } from 'https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js';
 
         // --- Configuration ---
@@ -254,10 +266,11 @@
             username: '',
             expenses: [],
             editId: null,
-            deleteTargetId: null, // Track item to delete
+            deleteTargetId: null,
             loading: true,
             hasJoined: false,
-            viewMode: 'daily' // 'daily' or 'monthly'
+            viewMode: 'daily',
+            confirmationResult: null // For OTP
         };
 
         // --- UI References ---
@@ -268,16 +281,22 @@
         };
 
         const elements = {
-            loginForm: document.getElementById('login-form'),
+            loginFormStep1: document.getElementById('login-form-step1'),
+            loginFormStep2: document.getElementById('login-form-step2'),
             usernameInput: document.getElementById('username-input'),
+            phoneInput: document.getElementById('phone-input'),
+            otpInput: document.getElementById('otp-input'),
+            getOtpBtn: document.getElementById('get-otp-btn'),
+            verifyOtpBtn: document.getElementById('verify-otp-btn'),
+            changePhoneBtn: document.getElementById('change-phone-btn'),
+            displayPhone: document.getElementById('display-phone'),
+            
             displayUsername: document.getElementById('display-username'),
             logoutBtn: document.getElementById('logout-btn'),
             expenseForm: document.getElementById('expense-form'),
             itemName: document.getElementById('item-name'),
             itemCost: document.getElementById('item-cost'),
             editId: document.getElementById('edit-id'),
-            // Note: cancelEditBtn is fetched here, assuming DOM is ready (type=module defers)
-            // But we add safety check in usage
             cancelEditBtn: document.getElementById('cancel-edit-btn'),
             expensesList: document.getElementById('expenses-list'),
             emptyState: document.getElementById('empty-state'),
@@ -288,47 +307,126 @@
             dashErrorText: document.getElementById('dashboard-error-text'),
             viewDailyBtn: document.getElementById('view-daily'),
             viewMonthlyBtn: document.getElementById('view-monthly'),
-            // Modal Elements
             deleteModal: document.getElementById('delete-modal'),
             cancelDeleteBtn: document.getElementById('cancel-delete-btn'),
             confirmDeleteBtn: document.getElementById('confirm-delete-btn')
         };
 
         // --- Auth Setup ---
-        async function initAuth() {
-            // 1. Check for Placeholder Keys (Common Deployment Error)
-            if (firebaseConfig.apiKey === "PASTE_API_KEY_HERE") {
-                console.error("CONFIGURATION ERROR: You haven't replaced the placeholder keys!");
-                state.loading = false;
-                render(); // Show Login View
-                setTimeout(() => showError("Configuration Error: Please update index.html with your Firebase keys.", true), 100);
-                return;
-            }
-
-            try {
-                if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
-                    await signInWithCustomToken(auth, __initial_auth_token);
-                } else {
-                    await signInAnonymously(auth);
-                }
-            } catch (err) {
-                console.error("Auth error:", err);
-                // CRITICAL FIX: Stop loading so user sees the error!
-                state.loading = false; 
-                render(); 
-                setTimeout(() => showError("Could not connect. Check your internet or config.", true), 100);
+        function setupRecaptcha() {
+            if (!window.recaptchaVerifier) {
+                window.recaptchaVerifier = new RecaptchaVerifier(auth, 'recaptcha-container', {
+                    'size': 'invisible',
+                    'callback': (response) => {
+                        // reCAPTCHA solved, allow signInWithPhoneNumber.
+                    },
+                    'expired-callback': () => {
+                        showError("Captcha expired. Refresh.", true);
+                    }
+                });
             }
         }
 
+        // Handle sending OTP
+        elements.loginFormStep1.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const name = elements.usernameInput.value.trim();
+            const phone = elements.phoneInput.value.trim();
+            
+            if (!name || !phone) return;
+            state.username = name; // temporarily save name
+
+            elements.getOtpBtn.disabled = true;
+            elements.getOtpBtn.innerHTML = `<i data-lucide="loader-2" class="w-5 h-5 animate-spin"></i> Sending...`;
+            lucide.createIcons();
+            
+            hideError(true);
+            setupRecaptcha();
+
+            const appVerifier = window.recaptchaVerifier;
+
+            try {
+                const confirmationResult = await signInWithPhoneNumber(auth, phone, appVerifier);
+                state.confirmationResult = confirmationResult;
+                
+                // Switch to Step 2
+                elements.loginFormStep1.classList.add('hidden');
+                elements.loginFormStep2.classList.remove('hidden');
+                elements.displayPhone.textContent = phone;
+                elements.otpInput.focus();
+
+            } catch (error) {
+                console.error("Error sending SMS", error);
+                let msg = "Failed to send SMS. ";
+                if (error.code === 'auth/invalid-phone-number') msg += "Invalid phone number format.";
+                else if (error.code === 'auth/quota-exceeded') msg += "SMS quota exceeded today.";
+                else if (error.code === 'auth/operation-not-allowed') msg += "Phone Auth not enabled in Firebase Console.";
+                showError(msg, true);
+                
+                // Reset Recaptcha
+                if(window.recaptchaVerifier) window.recaptchaVerifier.clear();
+                window.recaptchaVerifier = null;
+            } finally {
+                elements.getOtpBtn.disabled = false;
+                elements.getOtpBtn.innerHTML = `Get OTP <i data-lucide="arrow-right" class="w-4 h-4"></i>`;
+                lucide.createIcons();
+            }
+        });
+
+        // Handle Verify OTP
+        elements.loginFormStep2.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const otp = elements.otpInput.value.trim();
+            if (!otp) return;
+
+            elements.verifyOtpBtn.disabled = true;
+            elements.verifyOtpBtn.innerHTML = `<i data-lucide="loader-2" class="w-5 h-5 animate-spin"></i> Verifying...`;
+            lucide.createIcons();
+
+            try {
+                const result = await state.confirmationResult.confirm(otp);
+                const user = result.user;
+                state.user = user;
+                
+                // Save Name locally (simple profile)
+                localStorage.setItem(`mess_user_name_${appId}`, state.username);
+                localStorage.setItem(`mess_user_phone_${appId}`, user.phoneNumber);
+                
+                state.hasJoined = true;
+                // Render handled by onAuthStateChanged mostly, but let's force update
+                render(); 
+                
+            } catch (error) {
+                console.error("Error verify OTP", error);
+                showError("Invalid Code. Please try again.", true);
+            } finally {
+                elements.verifyOtpBtn.disabled = false;
+                elements.verifyOtpBtn.innerText = "Verify & Join";
+            }
+        });
+
+        // Change Phone Number (Back button)
+        elements.changePhoneBtn.addEventListener('click', () => {
+            elements.loginFormStep1.classList.remove('hidden');
+            elements.loginFormStep2.classList.add('hidden');
+            elements.otpInput.value = '';
+            hideError(true);
+        });
+
+
+        // Auth Listener
         onAuthStateChanged(auth, (user) => {
             state.user = user;
             if (user) {
-                const savedName = localStorage.getItem(`mess_user_${appId}`);
-                if (savedName) {
-                    state.username = savedName;
-                    state.hasJoined = true;
-                }
+                // Try to get name from storage if available
+                const savedName = localStorage.getItem(`mess_user_name_${appId}`);
+                if (savedName) state.username = savedName;
+                else state.username = user.phoneNumber; // Fallback to phone if name missing
+
+                state.hasJoined = true;
                 setupDataListener();
+            } else {
+                state.hasJoined = false;
             }
             state.loading = false;
             render();
@@ -352,14 +450,13 @@
                 renderDashboardData();
             }, (err) => {
                 console.error("Data fetch error:", err);
-                // Only show error if we are on dashboard
-                if(state.hasJoined) {
-                    showError("Connection issues detected. Trying to reconnect...", false);
-                }
+                let msg = `Sync Failed: ${err.code}. `;
+                if(err.code === 'permission-denied') msg += "Database Rules blocked access.";
+                if(state.hasJoined) showError(msg, false);
             });
         }
 
-        // --- View Toggles ---
+        // --- View Toggles & Form Logic (Unchanged) ---
         elements.viewDailyBtn.addEventListener('click', () => {
             state.viewMode = 'daily';
             updateViewToggleUI();
@@ -376,321 +473,142 @@
             if (state.viewMode === 'daily') {
                 elements.viewDailyBtn.classList.add('bg-white', 'text-emerald-700', 'shadow-sm');
                 elements.viewDailyBtn.classList.remove('text-gray-500', 'hover:text-gray-700');
-                
                 elements.viewMonthlyBtn.classList.remove('bg-white', 'text-emerald-700', 'shadow-sm');
                 elements.viewMonthlyBtn.classList.add('text-gray-500', 'hover:text-gray-700');
             } else {
                 elements.viewMonthlyBtn.classList.add('bg-white', 'text-emerald-700', 'shadow-sm');
                 elements.viewMonthlyBtn.classList.remove('text-gray-500', 'hover:text-gray-700');
-                
                 elements.viewDailyBtn.classList.remove('bg-white', 'text-emerald-700', 'shadow-sm');
                 elements.viewDailyBtn.classList.add('text-gray-500', 'hover:text-gray-700');
             }
         }
 
-        // --- Actions ---
-        
-        elements.loginForm.addEventListener('submit', (e) => {
-            e.preventDefault();
-            const name = elements.usernameInput.value.trim();
-            if (!name) return;
-            state.username = name;
-            state.hasJoined = true;
-            localStorage.setItem(`mess_user_${appId}`, name);
-            render();
-        });
-
         elements.logoutBtn.addEventListener('click', () => {
-            localStorage.removeItem(`mess_user_${appId}`);
-            state.username = '';
-            state.hasJoined = false;
-            render();
+            signOut(auth).then(() => {
+                localStorage.removeItem(`mess_user_name_${appId}`);
+                location.reload();
+            });
         });
 
         elements.expenseForm.addEventListener('submit', async (e) => {
             e.preventDefault();
             const name = elements.itemName.value;
             const cost = elements.itemCost.value;
-            
             if (!name || !cost) return;
+            if (!state.user) { showError("You are not logged in.", false); return; }
 
             try {
                 const collectionRef = collection(db, 'artifacts', appId, 'public', 'data', 'mess_expenses');
-                
                 if (state.editId) {
                     const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'mess_expenses', state.editId);
-                    await updateDoc(docRef, {
-                        item: name,
-                        cost: parseFloat(cost),
-                        updatedAt: new Date().toISOString()
-                    });
+                    await updateDoc(docRef, { item: name, cost: parseFloat(cost), updatedAt: new Date().toISOString() });
                     cancelEdit();
                 } else {
                     await addDoc(collectionRef, {
-                        item: name,
-                        cost: parseFloat(cost),
-                        addedBy: state.username,
-                        userId: state.user.uid,
-                        date: new Date().toISOString()
+                        item: name, cost: parseFloat(cost), addedBy: state.username, userId: state.user.uid, date: new Date().toISOString()
                     });
-                    elements.itemName.value = '';
-                    elements.itemCost.value = '';
+                    elements.itemName.value = ''; elements.itemCost.value = '';
                 }
             } catch (err) {
                 console.error("Save error:", err);
-                showError("Error saving data. Check your connection.", false);
+                showError("Save Failed. Check Connection.", false);
             }
         });
 
         elements.cancelEditBtn.addEventListener('click', cancelEdit);
-
         function cancelEdit() {
-            state.editId = null;
-            elements.itemName.value = '';
-            elements.itemCost.value = '';
-            updateFormState();
+            state.editId = null; elements.itemName.value = ''; elements.itemCost.value = ''; updateFormState();
         }
 
-        // --- Modal & Action Handlers ---
-
+        // --- UI Utils ---
         document.addEventListener('click', (e) => {
             const deleteBtn = e.target.closest('.delete-btn');
-            if (deleteBtn) {
-                state.deleteTargetId = deleteBtn.dataset.id;
-                elements.deleteModal.classList.remove('hidden');
-                return;
-            }
-
+            if (deleteBtn) { state.deleteTargetId = deleteBtn.dataset.id; elements.deleteModal.classList.remove('hidden'); return; }
             const editBtn = e.target.closest('.edit-btn');
             if (editBtn) {
-                const id = editBtn.dataset.id;
-                const expense = state.expenses.find(x => x.id === id);
-                if (expense) {
-                    state.editId = id;
-                    elements.itemName.value = expense.item;
-                    elements.itemCost.value = expense.cost;
-                    updateFormState();
-                    window.scrollTo({ top: 0, behavior: 'smooth' });
-                }
+                const id = editBtn.dataset.id; const expense = state.expenses.find(x => x.id === id);
+                if (expense) { state.editId = id; elements.itemName.value = expense.item; elements.itemCost.value = expense.cost; updateFormState(); window.scrollTo({ top: 0, behavior: 'smooth' }); }
             }
         });
 
-        elements.cancelDeleteBtn.addEventListener('click', () => {
-            state.deleteTargetId = null;
-            elements.deleteModal.classList.add('hidden');
-        });
-
+        elements.cancelDeleteBtn.addEventListener('click', () => { state.deleteTargetId = null; elements.deleteModal.classList.add('hidden'); });
         elements.confirmDeleteBtn.addEventListener('click', async () => {
             if (!state.deleteTargetId) return;
-
-            // Show Loading State on Button
             const originalText = elements.confirmDeleteBtn.innerHTML;
-            elements.confirmDeleteBtn.innerHTML = `<i data-lucide="loader-2" class="w-5 h-5 animate-spin"></i>`;
-            elements.confirmDeleteBtn.disabled = true;
-            lucide.createIcons();
-
+            elements.confirmDeleteBtn.innerHTML = `<i data-lucide="loader-2" class="w-5 h-5 animate-spin"></i>`; elements.confirmDeleteBtn.disabled = true; lucide.createIcons();
             try {
                 const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'mess_expenses', state.deleteTargetId);
-                await deleteDoc(docRef);
-                elements.deleteModal.classList.add('hidden');
-            } catch(err) {
-                console.error(err);
-                showError("Could not delete. Check connection.", false);
-                elements.deleteModal.classList.add('hidden');
-            } finally {
-                // Reset Button
-                elements.confirmDeleteBtn.innerHTML = originalText;
-                elements.confirmDeleteBtn.disabled = false;
-                state.deleteTargetId = null;
-            }
+                await deleteDoc(docRef); elements.deleteModal.classList.add('hidden');
+            } catch(err) { console.error(err); showError(`Delete Failed.`, false); elements.deleteModal.classList.add('hidden'); } 
+            finally { elements.confirmDeleteBtn.innerHTML = originalText; elements.confirmDeleteBtn.disabled = false; state.deleteTargetId = null; }
         });
 
-
-        // --- Rendering Logic ---
-
         function render() {
-            if (state.loading) {
-                views.loading.classList.remove('hidden');
-                views.login.classList.add('hidden');
-                views.dashboard.classList.add('hidden');
-            } else if (!state.hasJoined) {
-                views.loading.classList.add('hidden');
-                views.login.classList.remove('hidden');
-                views.dashboard.classList.add('hidden');
-                lucide.createIcons();
-            } else {
-                views.loading.classList.add('hidden');
-                views.login.classList.add('hidden');
-                views.dashboard.classList.remove('hidden');
-                
-                elements.displayUsername.textContent = state.username;
-                renderDashboardData();
-            }
+            if (state.loading) { views.loading.classList.remove('hidden'); views.login.classList.add('hidden'); views.dashboard.classList.add('hidden'); }
+            else if (!state.hasJoined) { views.loading.classList.add('hidden'); views.login.classList.remove('hidden'); views.dashboard.classList.add('hidden'); lucide.createIcons(); }
+            else { views.loading.classList.add('hidden'); views.login.classList.add('hidden'); views.dashboard.classList.remove('hidden'); elements.displayUsername.textContent = state.username; renderDashboardData(); }
         }
 
         function renderDashboardData() {
-            // 1. Overall Total
             const total = state.expenses.reduce((acc, curr) => acc + (curr.cost || 0), 0);
             elements.totalSpent.textContent = total.toFixed(2);
-
-            // 2. Grouping Logic
-            if (state.expenses.length === 0) {
-                elements.expensesList.innerHTML = '';
-                elements.emptyState.classList.remove('hidden');
-                return;
-            }
-
+            if (state.expenses.length === 0) { elements.expensesList.innerHTML = ''; elements.emptyState.classList.remove('hidden'); return; }
             elements.emptyState.classList.add('hidden');
             
-            const grouped = {};
-            const keys = [];
-
+            const grouped = {}; const keys = [];
             state.expenses.forEach(ex => {
                 const d = new Date(ex.date);
                 let key, label;
-
-                if (state.viewMode === 'daily') {
-                    // Group by Date string (e.g., "Mon Jan 12 2026")
-                    key = d.toDateString();
-                    label = d.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' });
-                } else {
-                    // Group by Month (e.g., "2026-0")
-                    key = `${d.getFullYear()}-${d.getMonth()}`;
-                    label = d.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
-                }
-
-                if (!grouped[key]) {
-                    grouped[key] = {
-                        label: label,
-                        total: 0,
-                        items: [],
-                        sortTime: d.getTime() // used to sort groups
-                    };
-                    keys.push(key);
-                }
-                
-                grouped[key].items.push(ex);
-                grouped[key].total += ex.cost;
+                if (state.viewMode === 'daily') { key = d.toDateString(); label = d.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' }); }
+                else { key = `${d.getFullYear()}-${d.getMonth()}`; label = d.toLocaleDateString('en-US', { month: 'long', year: 'numeric' }); }
+                if (!grouped[key]) { grouped[key] = { label: label, total: 0, items: [], sortTime: d.getTime() }; keys.push(key); }
+                grouped[key].items.push(ex); grouped[key].total += ex.cost;
             });
-
-            // If daily, sorting keys by Date desc is already mostly handled by data sort, 
-            // but let's be safe and sort the groups array
             keys.sort((a, b) => grouped[b].sortTime - grouped[a].sortTime);
 
-            // 3. Render Groups
             elements.expensesList.innerHTML = keys.map(key => {
                 const group = grouped[key];
-                
-                // Render Items inside group
                 const itemsHtml = group.items.map(expense => `
                     <div class="flex justify-between items-center py-3 border-b border-gray-100 last:border-0 hover:bg-gray-50 px-4 transition">
-                        <div class="flex-1">
-                            <div class="flex items-center gap-2">
-                                <span class="font-medium text-gray-700">${escapeHtml(expense.item)}</span>
-                            </div>
-                            <div class="text-xs text-gray-400 flex items-center gap-2 mt-0.5">
-                                <span class="flex items-center gap-1"><i data-lucide="user" class="w-3 h-3"></i> ${escapeHtml(expense.addedBy)}</span>
-                                ${state.viewMode === 'monthly' ? `<span class="flex items-center gap-1"><i data-lucide="calendar" class="w-3 h-3"></i> ${new Date(expense.date).getDate()}th</span>` : ''}
-                            </div>
-                        </div>
-                        <div class="flex flex-col items-end gap-1">
-                            <span class="text-emerald-600 font-bold">₹${expense.cost}</span>
-                            <div class="flex gap-2 opacity-50 hover:opacity-100 transition-opacity">
-                                <button class="edit-btn text-blue-400 hover:text-blue-600" data-id="${expense.id}" title="Edit"><i data-lucide="edit-2" class="w-3.5 h-3.5"></i></button>
-                                <button class="delete-btn text-red-400 hover:text-red-600" data-id="${expense.id}" title="Delete"><i data-lucide="trash-2" class="w-3.5 h-3.5"></i></button>
-                            </div>
-                        </div>
-                    </div>
-                `).join('');
-
-                return `
-                    <div class="fade-in">
-                        <!-- Group Header -->
-                        <div class="bg-gray-100 rounded-t-xl px-4 py-2 flex justify-between items-center border border-gray-200 border-b-0">
-                            <span class="text-sm font-bold text-gray-600 uppercase tracking-wide flex items-center gap-2">
-                                <i data-lucide="${state.viewMode === 'daily' ? 'calendar-days' : 'calendar'}" class="w-4 h-4"></i>
-                                ${group.label}
-                            </span>
-                            <span class="text-emerald-700 font-bold bg-emerald-100 px-2 py-0.5 rounded text-sm">
-                                Total: ₹${group.total.toFixed(2)}
-                            </span>
-                        </div>
-                        <!-- Group Body -->
-                        <div class="bg-white rounded-b-xl border border-gray-200 shadow-sm overflow-hidden">
-                            ${itemsHtml}
-                        </div>
-                    </div>
-                `;
+                        <div class="flex-1"><div class="flex items-center gap-2"><span class="font-medium text-gray-700">${escapeHtml(expense.item)}</span></div>
+                        <div class="text-xs text-gray-400 flex items-center gap-2 mt-0.5"><span class="flex items-center gap-1"><i data-lucide="user" class="w-3 h-3"></i> ${escapeHtml(expense.addedBy)}</span>
+                        ${state.viewMode === 'monthly' ? `<span class="flex items-center gap-1"><i data-lucide="calendar" class="w-3 h-3"></i> ${new Date(expense.date).getDate()}th</span>` : ''}</div></div>
+                        <div class="flex flex-col items-end gap-1"><span class="text-emerald-600 font-bold">₹${expense.cost}</span>
+                        <div class="flex gap-2 opacity-50 hover:opacity-100 transition-opacity">
+                            <button class="edit-btn text-blue-400 hover:text-blue-600" data-id="${expense.id}" title="Edit"><i data-lucide="edit-2" class="w-3.5 h-3.5"></i></button>
+                            <button class="delete-btn text-red-400 hover:text-red-600" data-id="${expense.id}" title="Delete"><i data-lucide="trash-2" class="w-3.5 h-3.5"></i></button>
+                        </div></div></div>`).join('');
+                return `<div class="fade-in"><div class="bg-gray-100 rounded-t-xl px-4 py-2 flex justify-between items-center border border-gray-200 border-b-0"><span class="text-sm font-bold text-gray-600 uppercase tracking-wide flex items-center gap-2"><i data-lucide="${state.viewMode === 'daily' ? 'calendar-days' : 'calendar'}" class="w-4 h-4"></i>${group.label}</span><span class="text-emerald-700 font-bold bg-emerald-100 px-2 py-0.5 rounded text-sm">Total: ₹${group.total.toFixed(2)}</span></div><div class="bg-white rounded-b-xl border border-gray-200 shadow-sm overflow-hidden">${itemsHtml}</div></div>`;
             }).join('');
-            
             lucide.createIcons();
         }
 
-        // --- FIXED FUNCTION ---
         function updateFormState() {
-            // FIX: We fetch these elements freshly every time to prevent null errors
-            const submitBtn = document.getElementById('submit-btn');
-            const formTitle = document.getElementById('form-title');
-            
-            // Safety check: if they don't exist (e.g. still loading), we simply return
+            const submitBtn = document.getElementById('submit-btn'); const formTitle = document.getElementById('form-title');
             if (!submitBtn || !formTitle) return;
-
             if (state.editId) {
-                submitBtn.classList.remove('bg-emerald-600', 'hover:bg-emerald-700');
-                submitBtn.classList.add('bg-blue-600', 'hover:bg-blue-700');
-                
-                submitBtn.innerHTML = `<i data-lucide="save" class="w-5 h-5"></i> <span id="btn-text">Update Entry</span>`;
-                formTitle.innerHTML = `<i data-lucide="edit-2" class="text-blue-500 w-5 h-5"></i> <span id="form-title-text">Edit Item</span>`;
-                
-                // Extra safety for cancel button logic
+                submitBtn.classList.remove('bg-emerald-600', 'hover:bg-emerald-700'); submitBtn.classList.add('bg-blue-600', 'hover:bg-blue-700');
+                submitBtn.innerHTML = `<i data-lucide="save" class="w-5 h-5"></i> <span id="btn-text">Update Entry</span>`; formTitle.innerHTML = `<i data-lucide="edit-2" class="text-blue-500 w-5 h-5"></i> <span id="form-title-text">Edit Item</span>`;
                 if (elements.cancelEditBtn) elements.cancelEditBtn.classList.remove('hidden');
             } else {
-                submitBtn.classList.add('bg-emerald-600', 'hover:bg-emerald-700');
-                submitBtn.classList.remove('bg-blue-600', 'hover:bg-blue-700');
-                
-                submitBtn.innerHTML = `<i data-lucide="plus" class="w-5 h-5"></i> <span id="btn-text">Add to List</span>`;
-                formTitle.innerHTML = `<i data-lucide="plus" class="text-emerald-500 w-5 h-5"></i> <span id="form-title-text">Add New Item</span>`;
-                
+                submitBtn.classList.add('bg-emerald-600', 'hover:bg-emerald-700'); submitBtn.classList.remove('bg-blue-600', 'hover:bg-blue-700');
+                submitBtn.innerHTML = `<i data-lucide="plus" class="w-5 h-5"></i> <span id="btn-text">Add to List</span>`; formTitle.innerHTML = `<i data-lucide="plus" class="text-emerald-500 w-5 h-5"></i> <span id="form-title-text">Add New Item</span>`;
                 if (elements.cancelEditBtn) elements.cancelEditBtn.classList.add('hidden');
             }
-            
-            // Re-render icons
-            if (typeof lucide !== 'undefined') {
-                lucide.createIcons();
-            }
+            if (typeof lucide !== 'undefined') lucide.createIcons();
         }
 
-        // --- Utilities ---
         function showError(msg, isLogin) {
-            if (isLogin) {
-                elements.loginError.classList.remove('hidden');
-                elements.loginErrorText.textContent = msg;
-            } else {
-                elements.dashError.classList.remove('hidden');
-                elements.dashErrorText.textContent = msg;
-            }
+            if (isLogin) { elements.loginError.classList.remove('hidden'); elements.loginErrorText.textContent = msg; }
+            else { elements.dashError.classList.remove('hidden'); elements.dashErrorText.textContent = msg; }
         }
-
         function hideError(isLogin) {
-            if (isLogin) {
-                elements.loginError.classList.add('hidden');
-            } else {
-                elements.dashError.classList.add('hidden');
-            }
+            if (isLogin) elements.loginError.classList.add('hidden'); else elements.dashError.classList.add('hidden');
         }
+        function escapeHtml(text) { if (!text) return ''; return text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;"); }
 
-        function escapeHtml(text) {
-            if (!text) return '';
-            return text
-                .replace(/&/g, "&amp;")
-                .replace(/</g, "&lt;")
-                .replace(/>/g, "&gt;")
-                .replace(/"/g, "&quot;")
-                .replace(/'/g, "&#039;");
-        }
-
-        initAuth();
-
+        // Initial Auth check (if already logged in with phone)
+        // initAuth not needed, onAuthStateChanged handles it
     </script>
 </body>
 </html>
