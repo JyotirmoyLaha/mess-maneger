@@ -223,7 +223,7 @@
             // Case 2: External Deployment (Netlify, Vercel, etc.)
             // --- PASTE YOUR FIREBASE CONFIGURATION HERE FROM STEP 4 OF THE GUIDE ---
             firebaseConfig = {
-                apiKey: "AIzaSyC7z-IuvKCSer2rTRatJW5DRtO9NDZdPeg",
+               apiKey: "AIzaSyC7z-IuvKCSer2rTRatJW5DRtO9NDZdPeg",
                 authDomain: "messjyotirmoy.firebaseapp.com",
                 projectId: "messjyotirmoy",
                 storageBucket: "messjyotirmoy.firebasestorage.app",
@@ -266,6 +266,8 @@
             login: document.getElementById('login-view'),
             dashboard: document.getElementById('dashboard-view')
         };
+        // NOTE: Form elements are now fetched dynamically in updateFormState to avoid null errors on init
+
         const elements = {
             loginForm: document.getElementById('login-form'),
             usernameInput: document.getElementById('username-input'),
@@ -275,8 +277,7 @@
             itemName: document.getElementById('item-name'),
             itemCost: document.getElementById('item-cost'),
             editId: document.getElementById('edit-id'),
-            submitBtn: document.getElementById('submit-btn'),
-            formTitle: document.getElementById('form-title'), 
+            // Removed cached submitBtn/formTitle to prevent stale/null references
             cancelEditBtn: document.getElementById('cancel-edit-btn'),
             expensesList: document.getElementById('expenses-list'),
             emptyState: document.getElementById('empty-state'),
@@ -325,8 +326,6 @@
         function setupDataListener() {
             if (!state.user) return;
 
-            // Uses 'appId' which defaults to 'default-app-id' in external mode
-            // This is perfectly fine and safe for personal use.
             const collectionRef = collection(db, 'artifacts', appId, 'public', 'data', 'mess_expenses');
 
             onSnapshot(collectionRef, (snapshot) => {
@@ -614,31 +613,35 @@
 
         // --- FIXED FUNCTION ---
         function updateFormState() {
-            // Using stable container references instead of accessing potentially deleted child nodes
-            // This fixes the "Cannot set properties of null" error
+            // FIX: We fetch these elements freshly every time to prevent null errors
+            const submitBtn = document.getElementById('submit-btn');
+            const formTitle = document.getElementById('form-title');
             
+            // Safety check: if they don't exist (e.g. still loading), we simply return
+            if (!submitBtn || !formTitle) return;
+
             if (state.editId) {
-                elements.submitBtn.classList.remove('bg-emerald-600', 'hover:bg-emerald-700');
-                elements.submitBtn.classList.add('bg-blue-600', 'hover:bg-blue-700');
+                submitBtn.classList.remove('bg-emerald-600', 'hover:bg-emerald-700');
+                submitBtn.classList.add('bg-blue-600', 'hover:bg-blue-700');
                 
-                // Set innerHTML directly on stable parents
-                elements.submitBtn.innerHTML = `<i data-lucide="save" class="w-5 h-5"></i> <span id="btn-text">Update Entry</span>`;
-                elements.formTitle.innerHTML = `<i data-lucide="edit-2" class="text-blue-500 w-5 h-5"></i> <span id="form-title-text">Edit Item</span>`;
+                submitBtn.innerHTML = `<i data-lucide="save" class="w-5 h-5"></i> <span id="btn-text">Update Entry</span>`;
+                formTitle.innerHTML = `<i data-lucide="edit-2" class="text-blue-500 w-5 h-5"></i> <span id="form-title-text">Edit Item</span>`;
                 
                 elements.cancelEditBtn.classList.remove('hidden');
             } else {
-                elements.submitBtn.classList.add('bg-emerald-600', 'hover:bg-emerald-700');
-                elements.submitBtn.classList.remove('bg-blue-600', 'hover:bg-blue-700');
+                submitBtn.classList.add('bg-emerald-600', 'hover:bg-emerald-700');
+                submitBtn.classList.remove('bg-blue-600', 'hover:bg-blue-700');
                 
-                // Set innerHTML directly on stable parents
-                elements.submitBtn.innerHTML = `<i data-lucide="plus" class="w-5 h-5"></i> <span id="btn-text">Add to List</span>`;
-                elements.formTitle.innerHTML = `<i data-lucide="plus" class="text-emerald-500 w-5 h-5"></i> <span id="form-title-text">Add New Item</span>`;
+                submitBtn.innerHTML = `<i data-lucide="plus" class="w-5 h-5"></i> <span id="btn-text">Add to List</span>`;
+                formTitle.innerHTML = `<i data-lucide="plus" class="text-emerald-500 w-5 h-5"></i> <span id="form-title-text">Add New Item</span>`;
                 
                 elements.cancelEditBtn.classList.add('hidden');
             }
             
-            // Re-render icons since we just injected new <i> tags
-            lucide.createIcons();
+            // Re-render icons
+            if (typeof lucide !== 'undefined') {
+                lucide.createIcons();
+            }
         }
 
         // --- Utilities ---
