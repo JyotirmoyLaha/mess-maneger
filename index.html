@@ -108,14 +108,6 @@
             box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.07);
         }
 
-        /* Voice Pulse Animation */
-        .voice-pulse { animation: pulse-ring 1.5s cubic-bezier(0.215, 0.61, 0.355, 1) infinite; }
-        @keyframes pulse-ring {
-            0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); }
-            70% { transform: scale(1); box-shadow: 0 0 0 10px rgba(239, 68, 68, 0); }
-            100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
-        }
-
         /* Custom Scrollbar */
         .no-scrollbar::-webkit-scrollbar { display: none; }
         .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
@@ -188,9 +180,9 @@
             <!-- Header -->
             <header class="pt-8 pb-4 px-6 flex justify-between items-center">
                 <div>
-                    <p class="text-slate-500 text-xs font-bold uppercase tracking-wider mb-0.5">Welcome Back,</p>
+                    <p class="text-slate-500 text-xs font-bold uppercase tracking-wider mb-0.5">Mess Expense</p>
                     <h1 class="text-2xl font-extrabold text-slate-800 flex items-center gap-2">
-                        <span id="display-username" class="truncate max-w-[150px]">User</span>
+                       Hi,  <span id="display-username" class="truncate max-w-[150px]">User</span>
                         <span class="text-emerald-500">👋</span>
                     </h1>
                 </div>
@@ -238,7 +230,7 @@
                     </div>
                 </div>
 
-                <!-- ADD EXPENSE with Voice Command -->
+                <!-- ADD EXPENSE -->
                 <div class="glass-card rounded-2xl p-1 relative overflow-hidden">
                     <div class="absolute bottom-0 left-0 h-[2px] w-full bg-gradient-to-r from-emerald-400 via-blue-500 to-emerald-400 opacity-50"></div>
                     
@@ -254,10 +246,6 @@
                                 Add Expense
                             </h3>
                             <div class="flex items-center gap-2">
-                                <!-- Voice Button -->
-                                <button id="voice-btn" type="button" class="p-1.5 rounded-full bg-indigo-50 text-indigo-600 hover:bg-indigo-100 transition shadow-sm border border-indigo-100" title="Voice Command">
-                                    <i data-lucide="mic" class="w-3.5 h-3.5"></i>
-                                </button>
                                 <button id="cancel-edit-btn" type="button" class="hidden text-xs text-red-500 font-bold hover:bg-red-50 px-2 py-1 rounded transition">Cancel</button>
                             </div>
                         </div>
@@ -335,24 +323,6 @@
 
         <!-- MODALS -->
         
-        <!-- Voice Modal -->
-        <div id="voice-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-6 bg-slate-900/60 backdrop-blur-sm fade-in">
-            <div class="bg-white w-full max-w-sm rounded-3xl p-6 shadow-2xl">
-                <div class="text-center mb-6">
-                    <div class="w-20 h-20 bg-red-500 rounded-full flex items-center justify-center text-white shadow-lg voice-pulse mx-auto">
-                        <i data-lucide="mic" class="w-8 h-8"></i>
-                    </div>
-                    <h3 class="text-xl font-bold text-slate-800 mt-4">Listening...</h3>
-                    <p id="voice-transcript" class="text-slate-500 text-sm mt-2 min-h-[40px]">Say "Bought 5kg Rice for 500"</p>
-                </div>
-                <div class="flex gap-3 justify-center">
-                    <button id="stop-voice-btn" class="px-6 py-3 rounded-xl font-bold text-slate-600 bg-slate-100 hover:bg-slate-200 transition">
-                        Cancel
-                    </button>
-                </div>
-            </div>
-        </div>
-
         <!-- Fund Modal -->
         <div id="fund-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-6 bg-slate-900/60 backdrop-blur-sm fade-in">
             <div class="bg-white w-full max-w-sm rounded-3xl p-6 shadow-2xl scale-100 transition-all">
@@ -420,12 +390,8 @@
         } from 'https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js';
 
         // --- Configuration ---
-        const apiKey = "AIzaSyBc6LtbagIWkGSj7uH2s9tqFpN5S_31zUw"; 
+        const apiKey = ""; 
         
-        // --- GEMINI API KEY FOR VOICE ---
-        // Replace with your valid Gemini API Key for deployment
-        const GEMINI_API_KEY = "AIzaSyBc6LtbagIWkGSj7uH2s9tqFpN5S_31zUw"; 
-
         const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
         let firebaseConfig;
 
@@ -470,119 +436,13 @@
             expensesList: document.getElementById('expenses-list'), emptyState: document.getElementById('empty-state'), loginError: document.getElementById('login-error'), loginErrorText: document.getElementById('login-error-text'),
             dashError: document.getElementById('dashboard-error'), dashErrorText: document.getElementById('dashboard-error-text'), viewDailyBtn: document.getElementById('view-daily'), viewMonthlyBtn: document.getElementById('view-monthly'),
             deleteModal: document.getElementById('delete-modal'), cancelDeleteBtn: document.getElementById('cancel-delete-btn'), confirmDeleteBtn: document.getElementById('confirm-delete-btn'),
-            fundModal: document.getElementById('fund-modal'), fundForm: document.getElementById('fund-form'), fundInput: document.getElementById('fund-input'), cancelFundBtn: document.getElementById('cancel-fund-btn'),
-            // Voice Elements
-            voiceBtn: document.getElementById('voice-btn'), voiceModal: document.getElementById('voice-modal'), stopVoiceBtn: document.getElementById('stop-voice-btn'), voiceTranscript: document.getElementById('voice-transcript')
+            fundModal: document.getElementById('fund-modal'), fundForm: document.getElementById('fund-form'), fundInput: document.getElementById('fund-input'), cancelFundBtn: document.getElementById('cancel-fund-btn')
         };
-
-        // --- GEMINI & VOICE LOGIC ---
-        
-        async function callGeminiForExtraction(text) {
-            const keyToUse = GEMINI_API_KEY || apiKey;
-            if (!keyToUse) { showToast("Missing API Key. Add GEMINI_API_KEY in code.", "error"); return null; }
-
-            const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${keyToUse}`;
-            
-            const prompt = `Extract item description and total numeric cost from: "${text}". 
-            Return strictly JSON: { "item": "string", "cost": number }. 
-            Example: [{"item": "Rice", "cost": 500}].
-            If item is unclear, use input text. If cost missing, 0. Do not use markdown formatting.`;
-
-            try {
-                const response = await fetch(url, {
-                    method: 'POST', headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] })
-                });
-                
-                const data = await response.json();
-                const resultText = data.candidates?.[0]?.content?.parts?.[0]?.text;
-                
-                if(resultText) {
-                    const cleanJson = resultText.replace(/```json|```/g, '').trim();
-                    return JSON.parse(cleanJson);
-                }
-            } catch (e) {
-                console.error("Gemini Error:", e);
-                showToast("AI Failed to understand.", "error");
-            }
-            return null;
-        }
-
-        let recognition;
-        if ('webkitSpeechRecognition' in window) {
-            recognition = new webkitSpeechRecognition();
-            recognition.continuous = false;
-            recognition.interimResults = true; // Key for advanced feel
-            recognition.lang = 'en-IN'; // Better for Indian accents if applicable
-            
-            recognition.onstart = () => {
-                if(elements.voiceTranscript) elements.voiceTranscript.innerText = "Listening...";
-            };
-
-            recognition.onresult = async (event) => {
-                let interimTranscript = '';
-                let finalTranscript = '';
-
-                for (let i = event.resultIndex; i < event.results.length; ++i) {
-                    if (event.results[i].isFinal) {
-                        finalTranscript += event.results[i][0].transcript;
-                    } else {
-                        interimTranscript += event.results[i][0].transcript;
-                    }
-                }
-
-                // Update UI
-                if(elements.voiceTranscript) {
-                    elements.voiceTranscript.innerHTML = `<span>${finalTranscript}</span><span style="color:#94a3b8">${interimTranscript}</span>`;
-                }
-
-                if (finalTranscript) {
-                    recognition.stop();
-                    if(elements.voiceTranscript) elements.voiceTranscript.innerText = "Processing...";
-                    
-                    const extracted = await callGeminiForExtraction(finalTranscript);
-                    elements.voiceModal.classList.add('hidden');
-                    
-                    if (extracted && extracted.item && extracted.cost > 0) {
-                        try {
-                            const collectionRef = collection(db, 'artifacts', appId, 'public', 'data', 'mess_expenses');
-                            await addDoc(collectionRef, {
-                                item: extracted.item, 
-                                cost: parseFloat(extracted.cost), 
-                                addedBy: state.username, 
-                                userPhoto: state.userPhoto,
-                                userId: state.user.uid, 
-                                date: new Date().toISOString()
-                            });
-                            showToast(`Added: ${extracted.item} (₹${extracted.cost})`);
-                        } catch(e) { showToast("Failed to save expense.", "error"); }
-                    } else { showToast(`Couldn't understand: "${finalTranscript}"`, "error"); }
-                }
-            };
-
-            recognition.onerror = (event) => {
-                console.error("Voice Error", event.error);
-                elements.voiceModal.classList.add('hidden');
-                showToast("Voice input failed.", "error");
-            };
-        }
-
-        elements.voiceBtn.addEventListener('click', () => {
-            if (!recognition) { showToast("Voice not supported on this browser.", "error"); return; }
-            elements.voiceModal.classList.remove('hidden');
-            recognition.start();
-        });
-
-        elements.stopVoiceBtn.addEventListener('click', () => {
-            if (recognition) recognition.stop();
-            elements.voiceModal.classList.add('hidden');
-        });
-
 
         // --- STANDARD LOGIC ---
 
         async function initAuth() {
-            if (firebaseConfig.apiKey === "AIzaSyC7z-IuvKCSer2rTRatJW5DRtO9NDZdPeg") {
+            if (firebaseConfig.apiKey === "PASTE_API_KEY_HERE") {
                 state.loading = false; render(); 
                 setTimeout(() => showError("Config Error: Update index.html with keys.", true), 100); return;
             }
@@ -716,7 +576,13 @@
         function render() {
             if (state.loading) { views.loading.classList.remove('hidden'); views.login.classList.add('hidden'); views.dashboard.classList.add('hidden'); }
             else if (!state.hasJoined) { views.loading.classList.add('hidden'); views.login.classList.remove('hidden'); views.dashboard.classList.add('hidden'); lucide.createIcons(); }
-            else { views.loading.classList.add('hidden'); views.login.classList.add('hidden'); views.dashboard.classList.remove('hidden'); elements.displayUsername.textContent = state.username; renderDashboardData(); }
+            else { 
+                views.loading.classList.add('hidden'); 
+                views.login.classList.add('hidden'); 
+                views.dashboard.classList.remove('hidden'); 
+                elements.displayUsername.textContent = state.username; 
+                renderDashboardData(); 
+            }
         }
 
         function renderDashboardData() {
