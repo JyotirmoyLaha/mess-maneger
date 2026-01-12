@@ -42,45 +42,33 @@
             <div class="bg-white p-8 rounded-2xl shadow-xl w-full max-w-md fade-in relative">
                 <div class="flex justify-center mb-6">
                     <div class="bg-emerald-100 p-4 rounded-full">
-                        <i data-lucide="shield-check" class="w-10 h-10 text-emerald-600"></i>
+                        <i data-lucide="shopping-cart" class="w-10 h-10 text-emerald-600"></i>
                     </div>
                 </div>
                 <h1 class="text-2xl font-bold text-center text-gray-800 mb-2">Mess Manager</h1>
-                <p class="text-center text-gray-500 mb-8">Secure login with Phone Number.</p>
+                <p class="text-center text-gray-500 mb-8">Keep track of daily shopping & expenses together.</p>
                 
                 <div id="login-error" class="hidden bg-red-50 text-red-600 p-3 rounded-lg mb-4 text-sm border border-red-200 flex items-start gap-2">
                     <i data-lucide="alert-circle" class="w-4 h-4 mt-0.5 flex-shrink-0"></i>
                     <span id="login-error-text"></span>
                 </div>
 
-                <!-- STEP 1: Details -->
-                <form id="login-form-step1" class="space-y-4">
+                <form id="login-form" class="space-y-4">
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Your Name</label>
-                        <input type="text" id="username-input" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 outline-none" placeholder="e.g. Rahul" required />
+                        <label class="block text-sm font-medium text-gray-700 mb-1">What's your name?</label>
+                        <input 
+                            type="text" 
+                            id="username-input" 
+                            class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 outline-none" 
+                            placeholder="e.g. Rahul, Priya..." 
+                            required 
+                        />
                     </div>
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Phone Number</label>
-                        <input type="tel" id="phone-input" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 outline-none" placeholder="+91 99999 99999" required />
-                        <p class="text-xs text-gray-400 mt-1">Include country code (e.g. +91)</p>
-                    </div>
-                    <div id="recaptcha-container"></div>
-                    <button type="submit" id="get-otp-btn" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 rounded-lg shadow-md transition-colors flex justify-center items-center gap-2">
-                        Get OTP <i data-lucide="arrow-right" class="w-4 h-4"></i>
-                    </button>
-                </form>
-
-                <!-- STEP 2: OTP -->
-                <form id="login-form-step2" class="space-y-4 hidden">
-                    <div class="text-center mb-4">
-                        <p class="text-sm text-gray-600">Enter code sent to <span id="display-phone" class="font-bold"></span></p>
-                        <button type="button" id="change-phone-btn" class="text-xs text-emerald-600 hover:underline">Change Number</button>
-                    </div>
-                    <div>
-                        <input type="text" id="otp-input" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 outline-none text-center text-2xl tracking-widest" placeholder="123456" maxlength="6" required />
-                    </div>
-                    <button type="submit" id="verify-otp-btn" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 rounded-lg shadow-md transition-colors">
-                        Verify & Join
+                    <button 
+                        type="submit" 
+                        class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 rounded-lg shadow-md transition-colors flex justify-center items-center gap-2"
+                    >
+                        Join Mess <i data-lucide="arrow-right" class="w-4 h-4"></i>
                     </button>
                 </form>
             </div>
@@ -217,7 +205,7 @@
             getFirestore, collection, addDoc, updateDoc, deleteDoc, doc, onSnapshot, initializeFirestore 
         } from 'https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js';
         import { 
-            getAuth, signInWithPhoneNumber, RecaptchaVerifier, onAuthStateChanged, signInWithCustomToken, signOut 
+            getAuth, signInAnonymously, onAuthStateChanged, signInWithCustomToken, signOut 
         } from 'https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js';
 
         // --- Configuration ---
@@ -269,8 +257,7 @@
             deleteTargetId: null,
             loading: true,
             hasJoined: false,
-            viewMode: 'daily',
-            confirmationResult: null // For OTP
+            viewMode: 'daily'
         };
 
         // --- UI References ---
@@ -281,15 +268,8 @@
         };
 
         const elements = {
-            loginFormStep1: document.getElementById('login-form-step1'),
-            loginFormStep2: document.getElementById('login-form-step2'),
+            loginForm: document.getElementById('login-form'),
             usernameInput: document.getElementById('username-input'),
-            phoneInput: document.getElementById('phone-input'),
-            otpInput: document.getElementById('otp-input'),
-            getOtpBtn: document.getElementById('get-otp-btn'),
-            verifyOtpBtn: document.getElementById('verify-otp-btn'),
-            changePhoneBtn: document.getElementById('change-phone-btn'),
-            displayPhone: document.getElementById('display-phone'),
             
             displayUsername: document.getElementById('display-username'),
             logoutBtn: document.getElementById('logout-btn'),
@@ -313,106 +293,51 @@
         };
 
         // --- Auth Setup ---
-        function setupRecaptcha() {
-            if (!window.recaptchaVerifier) {
-                window.recaptchaVerifier = new RecaptchaVerifier(auth, 'recaptcha-container', {
-                    'size': 'invisible',
-                    'callback': (response) => {
-                        // reCAPTCHA solved, allow signInWithPhoneNumber.
-                    },
-                    'expired-callback': () => {
-                        showError("Captcha expired. Refresh.", true);
-                    }
-                });
+        async function initAuth() {
+            // 1. Check for Placeholder Keys (Common Deployment Error)
+            if (firebaseConfig.apiKey === "PASTE_API_KEY_HERE") {
+                console.error("CONFIGURATION ERROR: You haven't replaced the placeholder keys!");
+                state.loading = false;
+                render(); // Show Login View
+                setTimeout(() => showError("Configuration Error: Please update index.html with your Firebase keys.", true), 100);
+                return;
+            }
+
+            try {
+                if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+                    await signInWithCustomToken(auth, __initial_auth_token);
+                } else {
+                    await signInAnonymously(auth);
+                }
+            } catch (err) {
+                console.error("Auth error:", err);
+                // CRITICAL FIX: Stop loading so user sees the error!
+                state.loading = false; 
+                render(); 
+                
+                // Detailed Error Message
+                let msg = `Auth Failed: ${err.code}. `;
+                if(err.code === 'auth/operation-not-allowed') {
+                    msg += "Enable Anonymous Auth in Firebase Console.";
+                } else if (err.code === 'auth/api-key-not-valid') {
+                    msg += "Check your API Key.";
+                } else {
+                    msg += "Check internet connection.";
+                }
+                setTimeout(() => showError(msg, true), 100);
             }
         }
 
-        // Handle sending OTP
-        elements.loginFormStep1.addEventListener('submit', async (e) => {
+        // Login Handler
+        elements.loginForm.addEventListener('submit', (e) => {
             e.preventDefault();
             const name = elements.usernameInput.value.trim();
-            const phone = elements.phoneInput.value.trim();
-            
-            if (!name || !phone) return;
-            state.username = name; // temporarily save name
-
-            elements.getOtpBtn.disabled = true;
-            elements.getOtpBtn.innerHTML = `<i data-lucide="loader-2" class="w-5 h-5 animate-spin"></i> Sending...`;
-            lucide.createIcons();
-            
-            hideError(true);
-            setupRecaptcha();
-
-            const appVerifier = window.recaptchaVerifier;
-
-            try {
-                const confirmationResult = await signInWithPhoneNumber(auth, phone, appVerifier);
-                state.confirmationResult = confirmationResult;
-                
-                // Switch to Step 2
-                elements.loginFormStep1.classList.add('hidden');
-                elements.loginFormStep2.classList.remove('hidden');
-                elements.displayPhone.textContent = phone;
-                elements.otpInput.focus();
-
-            } catch (error) {
-                console.error("Error sending SMS", error);
-                let msg = "Failed to send SMS. ";
-                if (error.code === 'auth/invalid-phone-number') msg += "Invalid phone number format.";
-                else if (error.code === 'auth/quota-exceeded') msg += "SMS quota exceeded today.";
-                else if (error.code === 'auth/operation-not-allowed') msg += "Phone Auth not enabled in Firebase Console.";
-                showError(msg, true);
-                
-                // Reset Recaptcha
-                if(window.recaptchaVerifier) window.recaptchaVerifier.clear();
-                window.recaptchaVerifier = null;
-            } finally {
-                elements.getOtpBtn.disabled = false;
-                elements.getOtpBtn.innerHTML = `Get OTP <i data-lucide="arrow-right" class="w-4 h-4"></i>`;
-                lucide.createIcons();
-            }
+            if (!name) return;
+            state.username = name;
+            state.hasJoined = true;
+            localStorage.setItem(`mess_user_name_${appId}`, name);
+            render();
         });
-
-        // Handle Verify OTP
-        elements.loginFormStep2.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const otp = elements.otpInput.value.trim();
-            if (!otp) return;
-
-            elements.verifyOtpBtn.disabled = true;
-            elements.verifyOtpBtn.innerHTML = `<i data-lucide="loader-2" class="w-5 h-5 animate-spin"></i> Verifying...`;
-            lucide.createIcons();
-
-            try {
-                const result = await state.confirmationResult.confirm(otp);
-                const user = result.user;
-                state.user = user;
-                
-                // Save Name locally (simple profile)
-                localStorage.setItem(`mess_user_name_${appId}`, state.username);
-                localStorage.setItem(`mess_user_phone_${appId}`, user.phoneNumber);
-                
-                state.hasJoined = true;
-                // Render handled by onAuthStateChanged mostly, but let's force update
-                render(); 
-                
-            } catch (error) {
-                console.error("Error verify OTP", error);
-                showError("Invalid Code. Please try again.", true);
-            } finally {
-                elements.verifyOtpBtn.disabled = false;
-                elements.verifyOtpBtn.innerText = "Verify & Join";
-            }
-        });
-
-        // Change Phone Number (Back button)
-        elements.changePhoneBtn.addEventListener('click', () => {
-            elements.loginFormStep1.classList.remove('hidden');
-            elements.loginFormStep2.classList.add('hidden');
-            elements.otpInput.value = '';
-            hideError(true);
-        });
-
 
         // Auth Listener
         onAuthStateChanged(auth, (user) => {
@@ -421,10 +346,8 @@
                 // Try to get name from storage if available
                 const savedName = localStorage.getItem(`mess_user_name_${appId}`);
                 if (savedName) state.username = savedName;
-                else state.username = user.phoneNumber; // Fallback to phone if name missing
-
-                state.hasJoined = true;
-                setupDataListener();
+                state.hasJoined = !!savedName; // Only join if name is known
+                if(state.hasJoined) setupDataListener();
             } else {
                 state.hasJoined = false;
             }
@@ -607,8 +530,8 @@
         }
         function escapeHtml(text) { if (!text) return ''; return text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;"); }
 
-        // Initial Auth check (if already logged in with phone)
-        // initAuth not needed, onAuthStateChanged handles it
+        initAuth();
+
     </script>
 </body>
 </html>
