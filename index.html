@@ -36,7 +36,6 @@
             width: 100%;
             height: 100%;
             z-index: -3;
-            /* Richer, deeper gradient for premium feel */
             background: linear-gradient(135deg, #f0f9ff 0%, #cffafe 25%, #d1fae5 50%, #e0e7ff 75%, #f3e8ff 100%);
             background-size: 300% 300%;
             animation: gradientMove 20s ease infinite;
@@ -81,10 +80,9 @@
             backdrop-filter: blur(5px);
             animation: floatUp 25s linear infinite;
             bottom: -150px;
-            border-radius: 20%; /* Squarish initially */
+            border-radius: 20%;
         }
 
-        /* Diverse particles for organic premium feel */
         .particles li:nth-child(1) { left: 25%; width: 80px; height: 80px; animation-delay: 0s; background: rgba(16, 185, 129, 0.1); }
         .particles li:nth-child(2) { left: 10%; width: 20px; height: 20px; animation-delay: 2s; animation-duration: 12s; background: rgba(59, 130, 246, 0.1); }
         .particles li:nth-child(3) { left: 70%; width: 20px; height: 20px; animation-delay: 4s; background: rgba(245, 158, 11, 0.1); }
@@ -97,16 +95,8 @@
         .particles li:nth-child(10) { left: 85%; width: 150px; height: 150px; animation-delay: 0s; animation-duration: 11s; }
 
         @keyframes floatUp {
-            0% {
-                transform: translateY(0) rotate(0deg);
-                opacity: 1;
-                border-radius: 20%;
-            }
-            100% {
-                transform: translateY(-1000px) rotate(720deg);
-                opacity: 0;
-                border-radius: 50%;
-            }
+            0% { transform: translateY(0) rotate(0deg); opacity: 1; border-radius: 20%; }
+            100% { transform: translateY(-1000px) rotate(720deg); opacity: 0; border-radius: 50%; }
         }
 
         /* Premium Glass Card Effect */
@@ -116,6 +106,14 @@
             -webkit-backdrop-filter: blur(20px);
             border: 1px solid rgba(255, 255, 255, 0.5);
             box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.07);
+        }
+
+        /* Voice Pulse Animation */
+        .voice-pulse { animation: pulse-ring 1.5s cubic-bezier(0.215, 0.61, 0.355, 1) infinite; }
+        @keyframes pulse-ring {
+            0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); }
+            70% { transform: scale(1); box-shadow: 0 0 0 10px rgba(239, 68, 68, 0); }
+            100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
         }
 
         /* Custom Scrollbar */
@@ -190,9 +188,9 @@
             <!-- Header -->
             <header class="pt-8 pb-4 px-6 flex justify-between items-center">
                 <div>
-                    <p class="text-slate-500 text-xs font-bold uppercase tracking-wider mb-0.5">Mess Expense</p>
+                    <p class="text-slate-500 text-xs font-bold uppercase tracking-wider mb-0.5">Welcome Back,</p>
                     <h1 class="text-2xl font-extrabold text-slate-800 flex items-center gap-2">
-                        Hi, <span id="display-username" class="truncate max-w-[150px]">User</span>
+                        <span id="display-username" class="truncate max-w-[150px]">User</span>
                         <span class="text-emerald-500">👋</span>
                     </h1>
                 </div>
@@ -240,9 +238,8 @@
                     </div>
                 </div>
 
-                <!-- ADD EXPENSE (Clean Input) -->
+                <!-- ADD EXPENSE with Voice Command -->
                 <div class="glass-card rounded-2xl p-1 relative overflow-hidden">
-                    <!-- Progress Bar style decoration -->
                     <div class="absolute bottom-0 left-0 h-[2px] w-full bg-gradient-to-r from-emerald-400 via-blue-500 to-emerald-400 opacity-50"></div>
                     
                     <div id="dashboard-error" class="hidden mx-4 mt-4 bg-red-50 text-red-600 p-3 rounded-lg text-xs flex items-center gap-2">
@@ -250,15 +247,19 @@
                         <span id="dashboard-error-text"></span>
                     </div>
 
-                    <!-- Header/Toggle hidden for cleaner look, integrated into form -->
-                    
                     <form id="expense-form" class="p-4 flex flex-col gap-3">
                         <div class="flex justify-between items-center mb-1">
                             <h3 class="text-sm font-bold text-slate-700 flex items-center gap-2">
                                 <i data-lucide="plus-circle" class="w-4 h-4 text-emerald-600"></i>
                                 Add Expense
                             </h3>
-                            <button id="cancel-edit-btn" type="button" class="hidden text-xs text-red-500 font-bold hover:bg-red-50 px-2 py-1 rounded transition">Cancel</button>
+                            <div class="flex items-center gap-2">
+                                <!-- Voice Button -->
+                                <button id="voice-btn" type="button" class="p-1.5 rounded-full bg-indigo-50 text-indigo-600 hover:bg-indigo-100 transition shadow-sm border border-indigo-100" title="Voice Command">
+                                    <i data-lucide="mic" class="w-3.5 h-3.5"></i>
+                                </button>
+                                <button id="cancel-edit-btn" type="button" class="hidden text-xs text-red-500 font-bold hover:bg-red-50 px-2 py-1 rounded transition">Cancel</button>
+                            </div>
                         </div>
                         <input type="hidden" id="edit-id">
                         
@@ -334,6 +335,24 @@
 
         <!-- MODALS -->
         
+        <!-- Voice Modal -->
+        <div id="voice-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-6 bg-slate-900/60 backdrop-blur-sm fade-in">
+            <div class="bg-white w-full max-w-sm rounded-3xl p-6 shadow-2xl">
+                <div class="text-center mb-6">
+                    <div class="w-20 h-20 bg-red-500 rounded-full flex items-center justify-center text-white shadow-lg voice-pulse mx-auto">
+                        <i data-lucide="mic" class="w-8 h-8"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-slate-800 mt-4">Listening...</h3>
+                    <p id="voice-transcript" class="text-slate-500 text-sm mt-2 min-h-[40px]">Say "Bought 5kg Rice for 500"</p>
+                </div>
+                <div class="flex gap-3 justify-center">
+                    <button id="stop-voice-btn" class="px-6 py-3 rounded-xl font-bold text-slate-600 bg-slate-100 hover:bg-slate-200 transition">
+                        Cancel
+                    </button>
+                </div>
+            </div>
+        </div>
+
         <!-- Fund Modal -->
         <div id="fund-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-6 bg-slate-900/60 backdrop-blur-sm fade-in">
             <div class="bg-white w-full max-w-sm rounded-3xl p-6 shadow-2xl scale-100 transition-all">
@@ -390,7 +409,7 @@
         </div>
     </div>
 
-    <!-- FIREBASE LOGIC (Unchanged functionality) -->
+    <!-- FIREBASE LOGIC -->
     <script type="module">
         import { initializeApp } from 'https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js';
         import { 
@@ -401,13 +420,19 @@
         } from 'https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js';
 
         // --- Configuration ---
-        const apiKey = ""; 
+        const apiKey = "AIzaSyBc6LtbagIWkGSj7uH2s9tqFpN5S_31zUw"; 
+        
+        // --- GEMINI API KEY FOR VOICE ---
+        // Replace with your valid Gemini API Key for deployment
+        const GEMINI_API_KEY = "AIzaSyBc6LtbagIWkGSj7uH2s9tqFpN5S_31zUw"; 
+
         const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
         let firebaseConfig;
 
         if (typeof __firebase_config !== 'undefined') {
             firebaseConfig = JSON.parse(__firebase_config);
         } else {
+            // Case 2: External Deployment
             firebaseConfig = {
                 apiKey: "AIzaSyC7z-IuvKCSer2rTRatJW5DRtO9NDZdPeg",
                 authDomain: "messjyotirmoy.firebaseapp.com",
@@ -445,11 +470,119 @@
             expensesList: document.getElementById('expenses-list'), emptyState: document.getElementById('empty-state'), loginError: document.getElementById('login-error'), loginErrorText: document.getElementById('login-error-text'),
             dashError: document.getElementById('dashboard-error'), dashErrorText: document.getElementById('dashboard-error-text'), viewDailyBtn: document.getElementById('view-daily'), viewMonthlyBtn: document.getElementById('view-monthly'),
             deleteModal: document.getElementById('delete-modal'), cancelDeleteBtn: document.getElementById('cancel-delete-btn'), confirmDeleteBtn: document.getElementById('confirm-delete-btn'),
-            fundModal: document.getElementById('fund-modal'), fundForm: document.getElementById('fund-form'), fundInput: document.getElementById('fund-input'), cancelFundBtn: document.getElementById('cancel-fund-btn')
+            fundModal: document.getElementById('fund-modal'), fundForm: document.getElementById('fund-form'), fundInput: document.getElementById('fund-input'), cancelFundBtn: document.getElementById('cancel-fund-btn'),
+            // Voice Elements
+            voiceBtn: document.getElementById('voice-btn'), voiceModal: document.getElementById('voice-modal'), stopVoiceBtn: document.getElementById('stop-voice-btn'), voiceTranscript: document.getElementById('voice-transcript')
         };
 
+        // --- GEMINI & VOICE LOGIC ---
+        
+        async function callGeminiForExtraction(text) {
+            const keyToUse = GEMINI_API_KEY || apiKey;
+            if (!keyToUse) { showToast("Missing API Key. Add GEMINI_API_KEY in code.", "error"); return null; }
+
+            const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${keyToUse}`;
+            
+            const prompt = `Extract item description and total numeric cost from: "${text}". 
+            Return strictly JSON: { "item": "string", "cost": number }. 
+            Example: [{"item": "Rice", "cost": 500}].
+            If item is unclear, use input text. If cost missing, 0. Do not use markdown formatting.`;
+
+            try {
+                const response = await fetch(url, {
+                    method: 'POST', headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] })
+                });
+                
+                const data = await response.json();
+                const resultText = data.candidates?.[0]?.content?.parts?.[0]?.text;
+                
+                if(resultText) {
+                    const cleanJson = resultText.replace(/```json|```/g, '').trim();
+                    return JSON.parse(cleanJson);
+                }
+            } catch (e) {
+                console.error("Gemini Error:", e);
+                showToast("AI Failed to understand.", "error");
+            }
+            return null;
+        }
+
+        let recognition;
+        if ('webkitSpeechRecognition' in window) {
+            recognition = new webkitSpeechRecognition();
+            recognition.continuous = false;
+            recognition.interimResults = true; // Key for advanced feel
+            recognition.lang = 'en-IN'; // Better for Indian accents if applicable
+            
+            recognition.onstart = () => {
+                if(elements.voiceTranscript) elements.voiceTranscript.innerText = "Listening...";
+            };
+
+            recognition.onresult = async (event) => {
+                let interimTranscript = '';
+                let finalTranscript = '';
+
+                for (let i = event.resultIndex; i < event.results.length; ++i) {
+                    if (event.results[i].isFinal) {
+                        finalTranscript += event.results[i][0].transcript;
+                    } else {
+                        interimTranscript += event.results[i][0].transcript;
+                    }
+                }
+
+                // Update UI
+                if(elements.voiceTranscript) {
+                    elements.voiceTranscript.innerHTML = `<span>${finalTranscript}</span><span style="color:#94a3b8">${interimTranscript}</span>`;
+                }
+
+                if (finalTranscript) {
+                    recognition.stop();
+                    if(elements.voiceTranscript) elements.voiceTranscript.innerText = "Processing...";
+                    
+                    const extracted = await callGeminiForExtraction(finalTranscript);
+                    elements.voiceModal.classList.add('hidden');
+                    
+                    if (extracted && extracted.item && extracted.cost > 0) {
+                        try {
+                            const collectionRef = collection(db, 'artifacts', appId, 'public', 'data', 'mess_expenses');
+                            await addDoc(collectionRef, {
+                                item: extracted.item, 
+                                cost: parseFloat(extracted.cost), 
+                                addedBy: state.username, 
+                                userPhoto: state.userPhoto,
+                                userId: state.user.uid, 
+                                date: new Date().toISOString()
+                            });
+                            showToast(`Added: ${extracted.item} (₹${extracted.cost})`);
+                        } catch(e) { showToast("Failed to save expense.", "error"); }
+                    } else { showToast(`Couldn't understand: "${finalTranscript}"`, "error"); }
+                }
+            };
+
+            recognition.onerror = (event) => {
+                console.error("Voice Error", event.error);
+                elements.voiceModal.classList.add('hidden');
+                showToast("Voice input failed.", "error");
+            };
+        }
+
+        elements.voiceBtn.addEventListener('click', () => {
+            if (!recognition) { showToast("Voice not supported on this browser.", "error"); return; }
+            elements.voiceModal.classList.remove('hidden');
+            recognition.start();
+        });
+
+        elements.stopVoiceBtn.addEventListener('click', () => {
+            if (recognition) recognition.stop();
+            elements.voiceModal.classList.add('hidden');
+        });
+
+
+        // --- STANDARD LOGIC ---
+
         async function initAuth() {
-            if (firebaseConfig.apiKey === "PASTE_API_KEY_HERE") {
+            if (firebaseConfig.apiKey === "AIzaSyC7z-IuvKCSer2rTRatJW5DRtO9NDZdPeg") {
                 state.loading = false; render(); 
                 setTimeout(() => showError("Config Error: Update index.html with keys.", true), 100); return;
             }
@@ -537,7 +670,6 @@
             const name = elements.itemName.value; const cost = elements.itemCost.value;
             if (!name || !cost) return;
             
-            // UI Loading
             const btnText = document.getElementById('btn-text');
             const originalText = btnText.innerText;
             btnText.innerText = "Saving...";
