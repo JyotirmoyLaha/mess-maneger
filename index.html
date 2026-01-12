@@ -39,38 +39,34 @@
 
         <!-- LOGIN VIEW -->
         <div id="login-view" class="hidden min-h-screen bg-gray-100 flex flex-col items-center justify-center p-4">
-            <div class="bg-white p-8 rounded-2xl shadow-xl w-full max-w-md fade-in">
+            <div class="bg-white p-8 rounded-2xl shadow-xl w-full max-w-md fade-in relative text-center">
                 <div class="flex justify-center mb-6">
                     <div class="bg-emerald-100 p-4 rounded-full">
-                        <i data-lucide="shopping-cart" class="w-10 h-10 text-emerald-600"></i>
+                        <i data-lucide="chef-hat" class="w-10 h-10 text-emerald-600"></i>
                     </div>
                 </div>
-                <h1 class="text-2xl font-bold text-center text-gray-800 mb-2">Mess Manager</h1>
-                <p class="text-center text-gray-500 mb-8">Keep track of daily shopping & expenses together.</p>
+                <h1 class="text-2xl font-bold text-gray-800 mb-2">Mess Manager</h1>
+                <p class="text-gray-500 mb-8">Track daily shopping expenses easily.</p>
                 
-                <div id="login-error" class="hidden bg-red-50 text-red-600 p-3 rounded-lg mb-4 text-sm border border-red-200 flex items-center gap-2">
-                    <i data-lucide="alert-circle" class="w-4 h-4"></i>
+                <div id="login-error" class="hidden bg-red-50 text-red-600 p-3 rounded-lg mb-6 text-sm border border-red-200 flex items-start gap-2 text-left">
+                    <i data-lucide="alert-circle" class="w-4 h-4 mt-0.5 flex-shrink-0"></i>
                     <span id="login-error-text"></span>
                 </div>
 
-                <form id="login-form" class="space-y-4">
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">What's your name?</label>
-                        <input 
-                            type="text"
-                            id="username-input"
-                            class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:outline-none transition"
-                            placeholder="e.g. Jyotirmoy.."
-                            required
-                        />
-                    </div>
-                    <button 
-                        type="submit"
-                        class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 rounded-lg transition-colors shadow-md"
-                    >
-                        Join Mess
-                    </button>
-                </form>
+                <!-- GOOGLE LOGIN BUTTON -->
+                <button 
+                    id="google-login-btn"
+                    class="w-full bg-white border border-gray-300 hover:bg-gray-50 text-gray-700 font-bold py-3 px-4 rounded-lg shadow-sm transition-all flex items-center justify-center gap-3"
+                >
+                    <!-- Google SVG Icon -->
+                    <svg class="w-5 h-5" viewBox="0 0 24 24">
+                        <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
+                        <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
+                        <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/>
+                        <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
+                    </svg>
+                    Sign in with Google
+                </button>
             </div>
         </div>
 
@@ -81,9 +77,11 @@
                 <div class="flex justify-between items-center mb-6">
                     <div>
                         <h1 class="text-2xl font-bold">Mess Expense</h1>
-                        <p class="text-emerald-100 text-sm">Welcome, <span id="display-username">User</span></p>
+                        <p class="text-emerald-100 text-sm flex items-center gap-1">
+                            Hi, <span id="display-username" class="font-semibold">User</span>
+                        </p>
                     </div>
-                    <button id="logout-btn" class="p-2 bg-emerald-700 rounded-full hover:bg-emerald-800 transition">
+                    <button id="logout-btn" class="p-2 bg-emerald-700 rounded-full hover:bg-emerald-800 transition" title="Logout">
                         <i data-lucide="log-out" class="w-5 h-5"></i>
                     </button>
                 </div>
@@ -95,7 +93,7 @@
                         <p class="text-3xl font-bold">₹<span id="total-spent">0.00</span></p>
                     </div>
                     <div class="bg-white/20 p-3 rounded-full">
-                        <i data-lucide="dollar-sign" class="w-6 h-6 text-white"></i>
+                        <i data-lucide="indian-rupee" class="w-6 h-6 text-white"></i>
                     </div>
                 </div>
             </div>
@@ -104,8 +102,8 @@
                 
                 <!-- Input Form -->
                 <div class="bg-white rounded-xl shadow-lg p-5 mb-6 fade-in">
-                    <div id="dashboard-error" class="hidden bg-red-50 text-red-600 p-3 rounded-lg mb-4 text-sm border border-red-200 flex items-center gap-2">
-                        <i data-lucide="alert-circle" class="w-4 h-4"></i>
+                    <div id="dashboard-error" class="hidden bg-red-50 text-red-600 p-3 rounded-lg mb-4 text-sm border border-red-200 flex items-start gap-2">
+                        <i data-lucide="alert-circle" class="w-4 h-4 mt-0.5 flex-shrink-0"></i>
                         <span id="dashboard-error-text"></span>
                     </div>
 
@@ -205,7 +203,7 @@
             getFirestore, collection, addDoc, updateDoc, deleteDoc, doc, onSnapshot, initializeFirestore 
         } from 'https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js';
         import { 
-            getAuth, signInAnonymously, onAuthStateChanged, signInWithCustomToken 
+            getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged, signInWithCustomToken, signOut 
         } from 'https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js';
 
         // --- Configuration ---
@@ -221,7 +219,6 @@
             firebaseConfig = JSON.parse(__firebase_config);
         } else {
             // Case 2: External Deployment (Netlify, Vercel, etc.)
-            // --- UPDATED CONFIGURATION ---
             firebaseConfig = {
                 apiKey: "AIzaSyC7z-IuvKCSer2rTRatJW5DRtO9NDZdPeg",
                 authDomain: "messjyotirmoy.firebaseapp.com",
@@ -235,6 +232,7 @@
         // --- Initialization ---
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
+        const googleProvider = new GoogleAuthProvider();
         
         // Connectivity settings
         let db;
@@ -252,12 +250,13 @@
         let state = {
             user: null,
             username: '',
+            userPhoto: '',
             expenses: [],
             editId: null,
-            deleteTargetId: null, // Track item to delete
+            deleteTargetId: null,
             loading: true,
             hasJoined: false,
-            viewMode: 'daily' // 'daily' or 'monthly'
+            viewMode: 'daily'
         };
 
         // --- UI References ---
@@ -268,16 +267,14 @@
         };
 
         const elements = {
-            loginForm: document.getElementById('login-form'),
-            usernameInput: document.getElementById('username-input'),
+            googleLoginBtn: document.getElementById('google-login-btn'),
+            
             displayUsername: document.getElementById('display-username'),
             logoutBtn: document.getElementById('logout-btn'),
             expenseForm: document.getElementById('expense-form'),
             itemName: document.getElementById('item-name'),
             itemCost: document.getElementById('item-cost'),
             editId: document.getElementById('edit-id'),
-            // Note: cancelEditBtn is fetched here, assuming DOM is ready (type=module defers)
-            // But we add safety check in usage
             cancelEditBtn: document.getElementById('cancel-edit-btn'),
             expensesList: document.getElementById('expenses-list'),
             emptyState: document.getElementById('empty-state'),
@@ -288,7 +285,6 @@
             dashErrorText: document.getElementById('dashboard-error-text'),
             viewDailyBtn: document.getElementById('view-daily'),
             viewMonthlyBtn: document.getElementById('view-monthly'),
-            // Modal Elements
             deleteModal: document.getElementById('delete-modal'),
             cancelDeleteBtn: document.getElementById('cancel-delete-btn'),
             confirmDeleteBtn: document.getElementById('confirm-delete-btn')
@@ -296,39 +292,62 @@
 
         // --- Auth Setup ---
         async function initAuth() {
-            // 1. Check for Placeholder Keys (Common Deployment Error)
+            // 1. Check for Placeholder Keys
             if (firebaseConfig.apiKey === "PASTE_API_KEY_HERE") {
-                console.error("CONFIGURATION ERROR: You haven't replaced the placeholder keys!");
+                console.error("CONFIGURATION ERROR");
                 state.loading = false;
-                render(); // Show Login View
-                setTimeout(() => showError("Configuration Error: Please update index.html with your Firebase keys.", true), 100);
+                render(); 
+                setTimeout(() => showError("Config Error: Update index.html with keys.", true), 100);
                 return;
             }
 
-            try {
-                if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+            // Canvas environment auto-login check
+            if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+                try {
                     await signInWithCustomToken(auth, __initial_auth_token);
-                } else {
-                    await signInAnonymously(auth);
-                }
-            } catch (err) {
-                console.error("Auth error:", err);
-                // CRITICAL FIX: Stop loading so user sees the error!
-                state.loading = false; 
-                render(); 
-                setTimeout(() => showError("Could not connect. Check your internet or config.", true), 100);
+                } catch(e) { console.error("Canvas Auth Failed", e); }
             }
         }
 
+        // --- Google Login Handler ---
+        elements.googleLoginBtn.addEventListener('click', async () => {
+            hideError(true);
+            elements.googleLoginBtn.disabled = true;
+            elements.googleLoginBtn.innerHTML = `<div class="animate-spin rounded-full h-5 w-5 border-b-2 border-gray-600"></div> Signing in...`;
+            
+            try {
+                await signInWithPopup(auth, googleProvider);
+                // Auth state listener will handle the rest
+            } catch (error) {
+                console.error("Google Auth Error:", error);
+                let msg = "Sign-in failed. ";
+                if (error.code === 'auth/popup-closed-by-user') msg = "Popup closed before sign-in.";
+                else if (error.code === 'auth/popup-blocked') msg = "Popup blocked. Allow popups for this site.";
+                else if (error.code === 'auth/operation-not-allowed') msg = "Google Sign-in is disabled in Firebase Console.";
+                else if (error.code === 'auth/unauthorized-domain') msg = "Domain not authorized in Firebase Console.";
+                
+                showError(msg, true);
+                
+                // Reset button
+                elements.googleLoginBtn.disabled = false;
+                elements.googleLoginBtn.innerHTML = `
+                    <svg class="w-5 h-5" viewBox="0 0 24 24"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg>
+                    Sign in with Google
+                `;
+            }
+        });
+
+        // Auth Listener
         onAuthStateChanged(auth, (user) => {
             state.user = user;
             if (user) {
-                const savedName = localStorage.getItem(`mess_user_${appId}`);
-                if (savedName) {
-                    state.username = savedName;
-                    state.hasJoined = true;
-                }
+                // Use Google Profile Name or Email or Guest
+                state.username = user.displayName || (user.email ? user.email.split('@')[0] : 'Guest');
+                state.userPhoto = user.photoURL;
+                state.hasJoined = true;
                 setupDataListener();
+            } else {
+                state.hasJoined = false;
             }
             state.loading = false;
             render();
@@ -345,21 +364,19 @@
                     id: doc.id,
                     ...doc.data()
                 }));
-                // Sort Newest First
                 data.sort((a, b) => new Date(b.date) - new Date(a.date));
                 state.expenses = data;
                 hideError(false);
                 renderDashboardData();
             }, (err) => {
                 console.error("Data fetch error:", err);
-                // Only show error if we are on dashboard
-                if(state.hasJoined) {
-                    showError("Connection issues detected. Trying to reconnect...", false);
-                }
+                let msg = `Sync Failed: ${err.code}. `;
+                if(err.code === 'permission-denied') msg += "Database Rules blocked access.";
+                if(state.hasJoined) showError(msg, false);
             });
         }
 
-        // --- View Toggles ---
+        // --- View Toggles & Form Logic (Unchanged) ---
         elements.viewDailyBtn.addEventListener('click', () => {
             state.viewMode = 'daily';
             updateViewToggleUI();
@@ -376,318 +393,155 @@
             if (state.viewMode === 'daily') {
                 elements.viewDailyBtn.classList.add('bg-white', 'text-emerald-700', 'shadow-sm');
                 elements.viewDailyBtn.classList.remove('text-gray-500', 'hover:text-gray-700');
-                
                 elements.viewMonthlyBtn.classList.remove('bg-white', 'text-emerald-700', 'shadow-sm');
                 elements.viewMonthlyBtn.classList.add('text-gray-500', 'hover:text-gray-700');
             } else {
                 elements.viewMonthlyBtn.classList.add('bg-white', 'text-emerald-700', 'shadow-sm');
                 elements.viewMonthlyBtn.classList.remove('text-gray-500', 'hover:text-gray-700');
-                
                 elements.viewDailyBtn.classList.remove('bg-white', 'text-emerald-700', 'shadow-sm');
                 elements.viewDailyBtn.classList.add('text-gray-500', 'hover:text-gray-700');
             }
         }
 
-        // --- Actions ---
-        
-        elements.loginForm.addEventListener('submit', (e) => {
-            e.preventDefault();
-            const name = elements.usernameInput.value.trim();
-            if (!name) return;
-            state.username = name;
-            state.hasJoined = true;
-            localStorage.setItem(`mess_user_${appId}`, name);
-            render();
-        });
-
         elements.logoutBtn.addEventListener('click', () => {
-            localStorage.removeItem(`mess_user_${appId}`);
-            state.username = '';
-            state.hasJoined = false;
-            render();
+            signOut(auth).then(() => {
+                location.reload();
+            });
         });
 
         elements.expenseForm.addEventListener('submit', async (e) => {
             e.preventDefault();
             const name = elements.itemName.value;
             const cost = elements.itemCost.value;
-            
             if (!name || !cost) return;
+            if (!state.user) { showError("You are not logged in.", false); return; }
 
             try {
                 const collectionRef = collection(db, 'artifacts', appId, 'public', 'data', 'mess_expenses');
-                
                 if (state.editId) {
                     const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'mess_expenses', state.editId);
-                    await updateDoc(docRef, {
-                        item: name,
-                        cost: parseFloat(cost),
-                        updatedAt: new Date().toISOString()
-                    });
+                    await updateDoc(docRef, { item: name, cost: parseFloat(cost), updatedAt: new Date().toISOString() });
                     cancelEdit();
                 } else {
                     await addDoc(collectionRef, {
-                        item: name,
-                        cost: parseFloat(cost),
-                        addedBy: state.username,
-                        userId: state.user.uid,
+                        item: name, 
+                        cost: parseFloat(cost), 
+                        addedBy: state.username, // Uses Google Name
+                        userPhoto: state.userPhoto, // Uses Google Photo
+                        userId: state.user.uid, 
                         date: new Date().toISOString()
                     });
-                    elements.itemName.value = '';
-                    elements.itemCost.value = '';
+                    elements.itemName.value = ''; elements.itemCost.value = '';
                 }
             } catch (err) {
                 console.error("Save error:", err);
-                showError("Error saving data. Check your connection.", false);
+                showError("Save Failed. Check Connection.", false);
             }
         });
 
         elements.cancelEditBtn.addEventListener('click', cancelEdit);
-
         function cancelEdit() {
-            state.editId = null;
-            elements.itemName.value = '';
-            elements.itemCost.value = '';
-            updateFormState();
+            state.editId = null; elements.itemName.value = ''; elements.itemCost.value = ''; updateFormState();
         }
 
-        // --- Modal & Action Handlers ---
-
+        // --- UI Utils ---
         document.addEventListener('click', (e) => {
             const deleteBtn = e.target.closest('.delete-btn');
-            if (deleteBtn) {
-                state.deleteTargetId = deleteBtn.dataset.id;
-                elements.deleteModal.classList.remove('hidden');
-                return;
-            }
-
+            if (deleteBtn) { state.deleteTargetId = deleteBtn.dataset.id; elements.deleteModal.classList.remove('hidden'); return; }
             const editBtn = e.target.closest('.edit-btn');
             if (editBtn) {
-                const id = editBtn.dataset.id;
-                const expense = state.expenses.find(x => x.id === id);
-                if (expense) {
-                    state.editId = id;
-                    elements.itemName.value = expense.item;
-                    elements.itemCost.value = expense.cost;
-                    updateFormState();
-                    window.scrollTo({ top: 0, behavior: 'smooth' });
-                }
+                const id = editBtn.dataset.id; const expense = state.expenses.find(x => x.id === id);
+                if (expense) { state.editId = id; elements.itemName.value = expense.item; elements.itemCost.value = expense.cost; updateFormState(); window.scrollTo({ top: 0, behavior: 'smooth' }); }
             }
         });
 
-        elements.cancelDeleteBtn.addEventListener('click', () => {
-            state.deleteTargetId = null;
-            elements.deleteModal.classList.add('hidden');
-        });
-
+        elements.cancelDeleteBtn.addEventListener('click', () => { state.deleteTargetId = null; elements.deleteModal.classList.add('hidden'); });
         elements.confirmDeleteBtn.addEventListener('click', async () => {
             if (!state.deleteTargetId) return;
-
-            // Show Loading State on Button
             const originalText = elements.confirmDeleteBtn.innerHTML;
-            elements.confirmDeleteBtn.innerHTML = `<i data-lucide="loader-2" class="w-5 h-5 animate-spin"></i>`;
-            elements.confirmDeleteBtn.disabled = true;
-            lucide.createIcons();
-
+            elements.confirmDeleteBtn.innerHTML = `<i data-lucide="loader-2" class="w-5 h-5 animate-spin"></i>`; elements.confirmDeleteBtn.disabled = true; lucide.createIcons();
             try {
                 const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'mess_expenses', state.deleteTargetId);
-                await deleteDoc(docRef);
-                elements.deleteModal.classList.add('hidden');
-            } catch(err) {
-                console.error(err);
-                showError("Could not delete. Check connection.", false);
-                elements.deleteModal.classList.add('hidden');
-            } finally {
-                // Reset Button
-                elements.confirmDeleteBtn.innerHTML = originalText;
-                elements.confirmDeleteBtn.disabled = false;
-                state.deleteTargetId = null;
-            }
+                await deleteDoc(docRef); elements.deleteModal.classList.add('hidden');
+            } catch(err) { console.error(err); showError(`Delete Failed.`, false); elements.deleteModal.classList.add('hidden'); } 
+            finally { elements.confirmDeleteBtn.innerHTML = originalText; elements.confirmDeleteBtn.disabled = false; state.deleteTargetId = null; }
         });
 
-
-        // --- Rendering Logic ---
-
         function render() {
-            if (state.loading) {
-                views.loading.classList.remove('hidden');
-                views.login.classList.add('hidden');
-                views.dashboard.classList.add('hidden');
-            } else if (!state.hasJoined) {
-                views.loading.classList.add('hidden');
-                views.login.classList.remove('hidden');
-                views.dashboard.classList.add('hidden');
-                lucide.createIcons();
-            } else {
-                views.loading.classList.add('hidden');
-                views.login.classList.add('hidden');
-                views.dashboard.classList.remove('hidden');
-                
-                elements.displayUsername.textContent = state.username;
-                renderDashboardData();
+            if (state.loading) { views.loading.classList.remove('hidden'); views.login.classList.add('hidden'); views.dashboard.classList.add('hidden'); }
+            else if (!state.hasJoined) { views.loading.classList.add('hidden'); views.login.classList.remove('hidden'); views.dashboard.classList.add('hidden'); lucide.createIcons(); }
+            else { 
+                views.loading.classList.add('hidden'); 
+                views.login.classList.add('hidden'); 
+                views.dashboard.classList.remove('hidden'); 
+                // Show Google Name
+                elements.displayUsername.textContent = state.username; 
+                renderDashboardData(); 
             }
         }
 
         function renderDashboardData() {
-            // 1. Overall Total
             const total = state.expenses.reduce((acc, curr) => acc + (curr.cost || 0), 0);
             elements.totalSpent.textContent = total.toFixed(2);
-
-            // 2. Grouping Logic
-            if (state.expenses.length === 0) {
-                elements.expensesList.innerHTML = '';
-                elements.emptyState.classList.remove('hidden');
-                return;
-            }
-
+            if (state.expenses.length === 0) { elements.expensesList.innerHTML = ''; elements.emptyState.classList.remove('hidden'); return; }
             elements.emptyState.classList.add('hidden');
             
-            const grouped = {};
-            const keys = [];
-
+            const grouped = {}; const keys = [];
             state.expenses.forEach(ex => {
                 const d = new Date(ex.date);
                 let key, label;
-
-                if (state.viewMode === 'daily') {
-                    // Group by Date string (e.g., "Mon Jan 12 2026")
-                    key = d.toDateString();
-                    label = d.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' });
-                } else {
-                    // Group by Month (e.g., "2026-0")
-                    key = `${d.getFullYear()}-${d.getMonth()}`;
-                    label = d.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
-                }
-
-                if (!grouped[key]) {
-                    grouped[key] = {
-                        label: label,
-                        total: 0,
-                        items: [],
-                        sortTime: d.getTime() // used to sort groups
-                    };
-                    keys.push(key);
-                }
-                
-                grouped[key].items.push(ex);
-                grouped[key].total += ex.cost;
+                if (state.viewMode === 'daily') { key = d.toDateString(); label = d.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' }); }
+                else { key = `${d.getFullYear()}-${d.getMonth()}`; label = d.toLocaleDateString('en-US', { month: 'long', year: 'numeric' }); }
+                if (!grouped[key]) { grouped[key] = { label: label, total: 0, items: [], sortTime: d.getTime() }; keys.push(key); }
+                grouped[key].items.push(ex); grouped[key].total += ex.cost;
             });
-
-            // If daily, sorting keys by Date desc is already mostly handled by data sort, 
-            // but let's be safe and sort the groups array
             keys.sort((a, b) => grouped[b].sortTime - grouped[a].sortTime);
 
-            // 3. Render Groups
             elements.expensesList.innerHTML = keys.map(key => {
                 const group = grouped[key];
-                
-                // Render Items inside group
                 const itemsHtml = group.items.map(expense => `
                     <div class="flex justify-between items-center py-3 border-b border-gray-100 last:border-0 hover:bg-gray-50 px-4 transition">
-                        <div class="flex-1">
-                            <div class="flex items-center gap-2">
-                                <span class="font-medium text-gray-700">${escapeHtml(expense.item)}</span>
-                            </div>
-                            <div class="text-xs text-gray-400 flex items-center gap-2 mt-0.5">
-                                <span class="flex items-center gap-1"><i data-lucide="user" class="w-3 h-3"></i> ${escapeHtml(expense.addedBy)}</span>
-                                ${state.viewMode === 'monthly' ? `<span class="flex items-center gap-1"><i data-lucide="calendar" class="w-3 h-3"></i> ${new Date(expense.date).getDate()}th</span>` : ''}
-                            </div>
-                        </div>
-                        <div class="flex flex-col items-end gap-1">
-                            <span class="text-emerald-600 font-bold">₹${expense.cost}</span>
-                            <div class="flex gap-2 opacity-50 hover:opacity-100 transition-opacity">
-                                <button class="edit-btn text-blue-400 hover:text-blue-600" data-id="${expense.id}" title="Edit"><i data-lucide="edit-2" class="w-3.5 h-3.5"></i></button>
-                                <button class="delete-btn text-red-400 hover:text-red-600" data-id="${expense.id}" title="Delete"><i data-lucide="trash-2" class="w-3.5 h-3.5"></i></button>
-                            </div>
-                        </div>
-                    </div>
-                `).join('');
-
-                return `
-                    <div class="fade-in">
-                        <!-- Group Header -->
-                        <div class="bg-gray-100 rounded-t-xl px-4 py-2 flex justify-between items-center border border-gray-200 border-b-0">
-                            <span class="text-sm font-bold text-gray-600 uppercase tracking-wide flex items-center gap-2">
-                                <i data-lucide="${state.viewMode === 'daily' ? 'calendar-days' : 'calendar'}" class="w-4 h-4"></i>
-                                ${group.label}
+                        <div class="flex-1"><div class="flex items-center gap-2"><span class="font-medium text-gray-700">${escapeHtml(expense.item)}</span></div>
+                        <div class="text-xs text-gray-400 flex items-center gap-2 mt-0.5">
+                            <span class="flex items-center gap-1">
+                                ${expense.userPhoto ? `<img src="${expense.userPhoto}" class="w-4 h-4 rounded-full">` : `<i data-lucide="user" class="w-3 h-3"></i>`}
+                                ${escapeHtml(expense.addedBy)}
                             </span>
-                            <span class="text-emerald-700 font-bold bg-emerald-100 px-2 py-0.5 rounded text-sm">
-                                Total: ₹${group.total.toFixed(2)}
-                            </span>
-                        </div>
-                        <!-- Group Body -->
-                        <div class="bg-white rounded-b-xl border border-gray-200 shadow-sm overflow-hidden">
-                            ${itemsHtml}
-                        </div>
-                    </div>
-                `;
+                            ${state.viewMode === 'monthly' ? `<span class="flex items-center gap-1"><i data-lucide="calendar" class="w-3 h-3"></i> ${new Date(expense.date).getDate()}th</span>` : ''}
+                        </div></div>
+                        <div class="flex flex-col items-end gap-1"><span class="text-emerald-600 font-bold">₹${expense.cost}</span>
+                        <div class="flex gap-2 opacity-50 hover:opacity-100 transition-opacity">
+                            <button class="edit-btn text-blue-400 hover:text-blue-600" data-id="${expense.id}" title="Edit"><i data-lucide="edit-2" class="w-3.5 h-3.5"></i></button>
+                            <button class="delete-btn text-red-400 hover:text-red-600" data-id="${expense.id}" title="Delete"><i data-lucide="trash-2" class="w-3.5 h-3.5"></i></button>
+                        </div></div></div>`).join('');
+                return `<div class="fade-in"><div class="bg-gray-100 rounded-t-xl px-4 py-2 flex justify-between items-center border border-gray-200 border-b-0"><span class="text-sm font-bold text-gray-600 uppercase tracking-wide flex items-center gap-2"><i data-lucide="${state.viewMode === 'daily' ? 'calendar-days' : 'calendar'}" class="w-4 h-4"></i>${group.label}</span><span class="text-emerald-700 font-bold bg-emerald-100 px-2 py-0.5 rounded text-sm">Total: ₹${group.total.toFixed(2)}</span></div><div class="bg-white rounded-b-xl border border-gray-200 shadow-sm overflow-hidden">${itemsHtml}</div></div>`;
             }).join('');
-            
             lucide.createIcons();
         }
 
-        // --- FIXED FUNCTION ---
         function updateFormState() {
-            // FIX: We fetch these elements freshly every time to prevent null errors
-            const submitBtn = document.getElementById('submit-btn');
-            const formTitle = document.getElementById('form-title');
-            
-            // Safety check: if they don't exist (e.g. still loading), we simply return
+            const submitBtn = document.getElementById('submit-btn'); const formTitle = document.getElementById('form-title');
             if (!submitBtn || !formTitle) return;
-
             if (state.editId) {
-                submitBtn.classList.remove('bg-emerald-600', 'hover:bg-emerald-700');
-                submitBtn.classList.add('bg-blue-600', 'hover:bg-blue-700');
-                
-                submitBtn.innerHTML = `<i data-lucide="save" class="w-5 h-5"></i> <span id="btn-text">Update Entry</span>`;
-                formTitle.innerHTML = `<i data-lucide="edit-2" class="text-blue-500 w-5 h-5"></i> <span id="form-title-text">Edit Item</span>`;
-                
-                // Extra safety for cancel button logic
+                submitBtn.classList.remove('bg-emerald-600', 'hover:bg-emerald-700'); submitBtn.classList.add('bg-blue-600', 'hover:bg-blue-700');
+                submitBtn.innerHTML = `<i data-lucide="save" class="w-5 h-5"></i> <span id="btn-text">Update Entry</span>`; formTitle.innerHTML = `<i data-lucide="edit-2" class="text-blue-500 w-5 h-5"></i> <span id="form-title-text">Edit Item</span>`;
                 if (elements.cancelEditBtn) elements.cancelEditBtn.classList.remove('hidden');
             } else {
-                submitBtn.classList.add('bg-emerald-600', 'hover:bg-emerald-700');
-                submitBtn.classList.remove('bg-blue-600', 'hover:bg-blue-700');
-                
-                submitBtn.innerHTML = `<i data-lucide="plus" class="w-5 h-5"></i> <span id="btn-text">Add to List</span>`;
-                formTitle.innerHTML = `<i data-lucide="plus" class="text-emerald-500 w-5 h-5"></i> <span id="form-title-text">Add New Item</span>`;
-                
+                submitBtn.classList.add('bg-emerald-600', 'hover:bg-emerald-700'); submitBtn.classList.remove('bg-blue-600', 'hover:bg-blue-700');
+                submitBtn.innerHTML = `<i data-lucide="plus" class="w-5 h-5"></i> <span id="btn-text">Add to List</span>`; formTitle.innerHTML = `<i data-lucide="plus" class="text-emerald-500 w-5 h-5"></i> <span id="form-title-text">Add New Item</span>`;
                 if (elements.cancelEditBtn) elements.cancelEditBtn.classList.add('hidden');
             }
-            
-            // Re-render icons
-            if (typeof lucide !== 'undefined') {
-                lucide.createIcons();
-            }
+            if (typeof lucide !== 'undefined') lucide.createIcons();
         }
 
-        // --- Utilities ---
         function showError(msg, isLogin) {
-            if (isLogin) {
-                elements.loginError.classList.remove('hidden');
-                elements.loginErrorText.textContent = msg;
-            } else {
-                elements.dashError.classList.remove('hidden');
-                elements.dashErrorText.textContent = msg;
-            }
+            if (isLogin) { elements.loginError.classList.remove('hidden'); elements.loginErrorText.textContent = msg; }
+            else { elements.dashError.classList.remove('hidden'); elements.dashErrorText.textContent = msg; }
         }
-
         function hideError(isLogin) {
-            if (isLogin) {
-                elements.loginError.classList.add('hidden');
-            } else {
-                elements.dashError.classList.add('hidden');
-            }
+            if (isLogin) elements.loginError.classList.add('hidden'); else elements.dashError.classList.add('hidden');
         }
-
-        function escapeHtml(text) {
-            if (!text) return '';
-            return text
-                .replace(/&/g, "&amp;")
-                .replace(/</g, "&lt;")
-                .replace(/>/g, "&gt;")
-                .replace(/"/g, "&quot;")
-                .replace(/'/g, "&#039;");
-        }
+        function escapeHtml(text) { if (!text) return ''; return text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;"); }
 
         initAuth();
 
