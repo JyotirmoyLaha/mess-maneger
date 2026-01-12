@@ -223,7 +223,7 @@
             // Case 2: External Deployment (Netlify, Vercel, etc.)
             // --- PASTE YOUR FIREBASE CONFIGURATION HERE FROM STEP 4 OF THE GUIDE ---
             firebaseConfig = {
-               apiKey: "AIzaSyC7z-IuvKCSer2rTRatJW5DRtO9NDZdPeg",
+                apiKey: "AIzaSyC7z-IuvKCSer2rTRatJW5DRtO9NDZdPeg",
                 authDomain: "messjyotirmoy.firebaseapp.com",
                 projectId: "messjyotirmoy",
                 storageBucket: "messjyotirmoy.firebasestorage.app",
@@ -266,7 +266,6 @@
             login: document.getElementById('login-view'),
             dashboard: document.getElementById('dashboard-view')
         };
-        // NOTE: Form elements are now fetched dynamically in updateFormState to avoid null errors on init
 
         const elements = {
             loginForm: document.getElementById('login-form'),
@@ -277,7 +276,8 @@
             itemName: document.getElementById('item-name'),
             itemCost: document.getElementById('item-cost'),
             editId: document.getElementById('edit-id'),
-            // Removed cached submitBtn/formTitle to prevent stale/null references
+            // Note: cancelEditBtn is fetched here, assuming DOM is ready (type=module defers)
+            // But we add safety check in usage
             cancelEditBtn: document.getElementById('cancel-edit-btn'),
             expensesList: document.getElementById('expenses-list'),
             emptyState: document.getElementById('empty-state'),
@@ -296,6 +296,15 @@
 
         // --- Auth Setup ---
         async function initAuth() {
+            // 1. Check for Placeholder Keys (Common Deployment Error)
+            if (firebaseConfig.apiKey === "PASTE_API_KEY_HERE") {
+                console.error("CONFIGURATION ERROR: You haven't replaced the placeholder keys!");
+                state.loading = false;
+                render(); // Show Login View
+                setTimeout(() => showError("Configuration Error: Please update index.html with your Firebase keys.", true), 100);
+                return;
+            }
+
             try {
                 if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
                     await signInWithCustomToken(auth, __initial_auth_token);
@@ -304,7 +313,10 @@
                 }
             } catch (err) {
                 console.error("Auth error:", err);
-                showError("Could not connect to authentication service. Try refreshing.", true);
+                // CRITICAL FIX: Stop loading so user sees the error!
+                state.loading = false; 
+                render(); 
+                setTimeout(() => showError("Could not connect. Check your internet or config.", true), 100);
             }
         }
 
@@ -340,7 +352,10 @@
                 renderDashboardData();
             }, (err) => {
                 console.error("Data fetch error:", err);
-                showError("Connection issues detected. Trying to reconnect...", false);
+                // Only show error if we are on dashboard
+                if(state.hasJoined) {
+                    showError("Connection issues detected. Trying to reconnect...", false);
+                }
             });
         }
 
@@ -627,7 +642,8 @@
                 submitBtn.innerHTML = `<i data-lucide="save" class="w-5 h-5"></i> <span id="btn-text">Update Entry</span>`;
                 formTitle.innerHTML = `<i data-lucide="edit-2" class="text-blue-500 w-5 h-5"></i> <span id="form-title-text">Edit Item</span>`;
                 
-                elements.cancelEditBtn.classList.remove('hidden');
+                // Extra safety for cancel button logic
+                if (elements.cancelEditBtn) elements.cancelEditBtn.classList.remove('hidden');
             } else {
                 submitBtn.classList.add('bg-emerald-600', 'hover:bg-emerald-700');
                 submitBtn.classList.remove('bg-blue-600', 'hover:bg-blue-700');
@@ -635,7 +651,7 @@
                 submitBtn.innerHTML = `<i data-lucide="plus" class="w-5 h-5"></i> <span id="btn-text">Add to List</span>`;
                 formTitle.innerHTML = `<i data-lucide="plus" class="text-emerald-500 w-5 h-5"></i> <span id="form-title-text">Add New Item</span>`;
                 
-                elements.cancelEditBtn.classList.add('hidden');
+                if (elements.cancelEditBtn) elements.cancelEditBtn.classList.add('hidden');
             }
             
             // Re-render icons
