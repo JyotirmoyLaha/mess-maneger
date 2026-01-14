@@ -36,15 +36,18 @@
             width: 100%;
             height: 100%;
             z-index: -3;
-            background: linear-gradient(135deg, #f0f9ff 0%, #cffafe 25%, #d1fae5 50%, #e0e7ff 75%, #f3e8ff 100%);
-            background-size: 300% 300%;
-            animation: gradientMove 20s ease infinite;
+            background: linear-gradient(-45deg, #ff6b9d 0%, #c06c84 15%, #6c5ce7 30%, #00b4db 45%, #0083b0 60%, #00d4ff 75%, #ffd89b 90%, #ff6b9d 100%);
+            background-size: 400% 400%;
+            animation: gradientMove 18s ease-in-out infinite;
+            filter: blur(0px);
         }
 
         @keyframes gradientMove {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
+            0% { background-position: 0% 50%; filter: blur(0px) saturate(1.1); }
+            25% { background-position: 100% 50%; filter: blur(1px) saturate(1.15); }
+            50% { background-position: 100% 0%; filter: blur(0.5px) saturate(1.2); }
+            75% { background-position: 0% 100%; filter: blur(1px) saturate(1.15); }
+            100% { background-position: 0% 50%; filter: blur(0px) saturate(1.1); }
         }
 
         /* --- FLOATING PARTICLES --- */
@@ -75,28 +78,29 @@
             list-style: none;
             width: 20px;
             height: 20px;
-            background: rgba(255, 255, 255, 0.4);
-            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.05);
-            backdrop-filter: blur(5px);
+            background: rgba(255, 255, 255, 0.5);
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.1);
+            backdrop-filter: blur(8px);
             animation: floatUp 25s linear infinite;
             bottom: -150px;
             border-radius: 20%;
         }
 
-        .particles li:nth-child(1) { left: 25%; width: 80px; height: 80px; animation-delay: 0s; background: rgba(16, 185, 129, 0.1); }
-        .particles li:nth-child(2) { left: 10%; width: 20px; height: 20px; animation-delay: 2s; animation-duration: 12s; background: rgba(59, 130, 246, 0.1); }
-        .particles li:nth-child(3) { left: 70%; width: 20px; height: 20px; animation-delay: 4s; background: rgba(245, 158, 11, 0.1); }
-        .particles li:nth-child(4) { left: 40%; width: 60px; height: 60px; animation-delay: 0s; animation-duration: 18s; background: rgba(139, 92, 246, 0.1); }
-        .particles li:nth-child(5) { left: 65%; width: 20px; height: 20px; animation-delay: 0s; background: rgba(236, 72, 153, 0.1); }
-        .particles li:nth-child(6) { left: 75%; width: 110px; height: 110px; animation-delay: 3s; background: rgba(16, 185, 129, 0.15); }
-        .particles li:nth-child(7) { left: 35%; width: 150px; height: 150px; animation-delay: 7s; background: rgba(59, 130, 246, 0.1); }
-        .particles li:nth-child(8) { left: 50%; width: 25px; height: 25px; animation-delay: 15s; animation-duration: 45s; }
-        .particles li:nth-child(9) { left: 20%; width: 15px; height: 15px; animation-delay: 2s; animation-duration: 35s; }
-        .particles li:nth-child(10) { left: 85%; width: 150px; height: 150px; animation-delay: 0s; animation-duration: 11s; }
+        .particles li:nth-child(1) { left: 25%; width: 80px; height: 80px; animation-delay: 0s; background: rgba(16, 185, 129, 0.15); box-shadow: 0 0 30px rgba(16, 185, 129, 0.4), inset 0 0 20px rgba(255, 255, 255, 0.3); }
+        .particles li:nth-child(2) { left: 10%; width: 20px; height: 20px; animation-delay: 2s; animation-duration: 12s; background: rgba(59, 130, 246, 0.2); box-shadow: 0 0 20px rgba(59, 130, 246, 0.5), inset 0 0 15px rgba(255, 255, 255, 0.3); }
+        .particles li:nth-child(3) { left: 70%; width: 20px; height: 20px; animation-delay: 4s; background: rgba(245, 158, 11, 0.15); box-shadow: 0 0 25px rgba(245, 158, 11, 0.5), inset 0 0 15px rgba(255, 255, 255, 0.3); }
+        .particles li:nth-child(4) { left: 40%; width: 60px; height: 60px; animation-delay: 0s; animation-duration: 18s; background: rgba(139, 92, 246, 0.15); box-shadow: 0 0 35px rgba(139, 92, 246, 0.4), inset 0 0 20px rgba(255, 255, 255, 0.3); }
+        .particles li:nth-child(5) { left: 65%; width: 20px; height: 20px; animation-delay: 0s; background: rgba(236, 72, 153, 0.15); box-shadow: 0 0 25px rgba(236, 72, 153, 0.5), inset 0 0 15px rgba(255, 255, 255, 0.3); }
+        .particles li:nth-child(6) { left: 75%; width: 110px; height: 110px; animation-delay: 3s; background: rgba(16, 185, 129, 0.2); box-shadow: 0 0 40px rgba(16, 185, 129, 0.4), inset 0 0 25px rgba(255, 255, 255, 0.3); }
+        .particles li:nth-child(7) { left: 35%; width: 150px; height: 150px; animation-delay: 7s; background: rgba(59, 130, 246, 0.15); box-shadow: 0 0 45px rgba(59, 130, 246, 0.3), inset 0 0 30px rgba(255, 255, 255, 0.2); }
+        .particles li:nth-child(8) { left: 50%; width: 25px; height: 25px; animation-delay: 15s; animation-duration: 45s; background: rgba(255, 107, 107, 0.15); box-shadow: 0 0 20px rgba(255, 107, 107, 0.4), inset 0 0 15px rgba(255, 255, 255, 0.3); }
+        .particles li:nth-child(9) { left: 20%; width: 15px; height: 15px; animation-delay: 2s; animation-duration: 35s; background: rgba(0, 212, 255, 0.15); box-shadow: 0 0 18px rgba(0, 212, 255, 0.5), inset 0 0 12px rgba(255, 255, 255, 0.3); }
+        .particles li:nth-child(10) { left: 85%; width: 150px; height: 150px; animation-delay: 0s; animation-duration: 11s; background: rgba(255, 182, 193, 0.1); box-shadow: 0 0 50px rgba(255, 107, 157, 0.3), inset 0 0 30px rgba(255, 255, 255, 0.2); }
 
         @keyframes floatUp {
-            0% { transform: translateY(0) rotate(0deg); opacity: 1; border-radius: 20%; }
-            100% { transform: translateY(-1000px) rotate(720deg); opacity: 0; border-radius: 50%; }
+            0% { transform: translateY(0) rotate(0deg) scale(1); opacity: 1; border-radius: 20%; filter: blur(0px); }
+            50% { transform: translateX(100px) translateY(-500px) rotate(360deg) scale(1.1); opacity: 0.8; filter: blur(1px); }
+            100% { transform: translateY(-1000px) rotate(720deg) scale(0.8); opacity: 0; border-radius: 50%; filter: blur(2px); }
         }
 
         /* Premium Glass Card Effect */
