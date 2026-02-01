@@ -5,6 +5,15 @@
 [![GitHub](https://img.shields.io/badge/GitHub-JyotirmoyLaha/mess--maneger-blue?logo=github)](https://github.com/JyotirmoyLaha/mess-maneger)
 [![PWA](https://img.shields.io/badge/PWA-Ready-purple)]()
 [![Firebase](https://img.shields.io/badge/Backend-Firebase-orange)]()
+[![Live Demo](https://img.shields.io/badge/Live-Demo-success?logo=render)](https://mess-maneger.onrender.com/)
+
+---
+
+## 🌐 Live Demo
+
+**Experience it now:** [https://mess-maneger.onrender.com/](https://mess-maneger.onrender.com/)
+
+✨ No installation required - try all features with Google sign-in!
 
 ---
 
