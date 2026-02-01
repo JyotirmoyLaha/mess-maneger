@@ -356,10 +356,3 @@ MIT License - Feel free to use this project as a reference or template.
 
 ---
 
-<div align="center">
-
-**⭐ If this impressed you, star it on GitHub!**
-
-[Made with ❤️ for shared expense management](https://github.com/JyotirmoyLaha/mess-maneger)
-
-</div>
