@@ -231,6 +231,14 @@
                                 <p class="text-sm font-semibold text-red-300 bg-red-500/10 px-2 py-1 rounded-md" id="total-spent">₹0.00</p>
                             </div>
                         </div>
+                        
+                        <!-- Previous Month Info -->
+                        <div id="prev-month-info" class="mt-4 pt-4 border-t border-white/10 hidden">
+                            <div class="flex justify-between items-center">
+                                <p class="text-slate-400 text-[10px] uppercase font-bold">Last Month Spent</p>
+                                <p class="text-xs font-semibold text-amber-300 bg-amber-500/10 px-2 py-1 rounded-md" id="prev-month-spent">₹0.00</p>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
@@ -428,7 +436,7 @@
         }
 
         let state = {
-            user: null, username: '', userPhoto: '', expenses: [], totalFund: 0, editId: null, deleteTargetId: null, loading: true, hasJoined: false, viewMode: 'daily'
+            user: null, username: '', userPhoto: '', expenses: [], totalFund: 0, editId: null, deleteTargetId: null, loading: true, hasJoined: false, viewMode: 'daily', currentMonth: '', previousMonthSpent: 0
         };
 
         const views = { loading: document.getElementById('loading-view'), login: document.getElementById('login-view'), dashboard: document.getElementById('dashboard-view') };
@@ -440,7 +448,8 @@
             expensesList: document.getElementById('expenses-list'), emptyState: document.getElementById('empty-state'), loginError: document.getElementById('login-error'), loginErrorText: document.getElementById('login-error-text'),
             dashError: document.getElementById('dashboard-error'), dashErrorText: document.getElementById('dashboard-error-text'), viewDailyBtn: document.getElementById('view-daily'), viewMonthlyBtn: document.getElementById('view-monthly'),
             deleteModal: document.getElementById('delete-modal'), cancelDeleteBtn: document.getElementById('cancel-delete-btn'), confirmDeleteBtn: document.getElementById('confirm-delete-btn'),
-            fundModal: document.getElementById('fund-modal'), fundForm: document.getElementById('fund-form'), fundInput: document.getElementById('fund-input'), cancelFundBtn: document.getElementById('cancel-fund-btn')
+            fundModal: document.getElementById('fund-modal'), fundForm: document.getElementById('fund-form'), fundInput: document.getElementById('fund-input'), cancelFundBtn: document.getElementById('cancel-fund-btn'),
+            prevMonthInfo: document.getElementById('prev-month-info'), prevMonthSpent: document.getElementById('prev-month-spent')
         };
 
         // --- STANDARD LOGIC ---
@@ -495,9 +504,62 @@
             });
             const fundRef = doc(db, 'artifacts', appId, 'public', 'data', 'mess_fund', 'summary');
             onSnapshot(fundRef, (doc) => {
-                if (doc.exists()) { state.totalFund = doc.data().amount || 0; } else { state.totalFund = 0; }
+                if (doc.exists()) { 
+                    state.totalFund = doc.data().amount || 0;
+                    state.currentMonth = doc.data().currentMonth || getCurrentMonthKey();
+                    state.previousMonthSpent = doc.data().previousMonthSpent || 0;
+                } else { 
+                    state.totalFund = 0;
+                    state.currentMonth = getCurrentMonthKey();
+                    state.previousMonthSpent = 0;
+                }
+                checkAndUpdateMonthChange();
                 renderDashboardData();
             });
+        }
+
+        // Get current month as a key (YYYY-MM format)
+        function getCurrentMonthKey() {
+            const now = new Date();
+            return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
+        }
+
+        // Check if month has changed and update accordingly
+        async function checkAndUpdateMonthChange() {
+            const currentMonth = getCurrentMonthKey();
+            
+            // If month has changed
+            if (state.currentMonth && state.currentMonth !== currentMonth) {
+                // Calculate total spent for all expenses
+                const totalSpent = state.expenses.reduce((acc, curr) => acc + (curr.cost || 0), 0);
+                
+                // Update fund document with new month data
+                try {
+                    const fundRef = doc(db, 'artifacts', appId, 'public', 'data', 'mess_fund', 'summary');
+                    await setDoc(fundRef, { 
+                        amount: state.totalFund,
+                        currentMonth: currentMonth,
+                        previousMonthSpent: totalSpent,
+                        monthChangedAt: new Date().toISOString(),
+                        updatedBy: state.username
+                    }, { merge: true });
+                    
+                    showToast(`Month changed! Previous month spent: ₹${totalSpent.toLocaleString('en-IN')}`);
+                } catch (err) {
+                    console.error("Error updating month change:", err);
+                }
+            } else if (!state.currentMonth) {
+                // First time setup - initialize current month
+                try {
+                    const fundRef = doc(db, 'artifacts', appId, 'public', 'data', 'mess_fund', 'summary');
+                    await setDoc(fundRef, { 
+                        currentMonth: currentMonth,
+                        previousMonthSpent: 0
+                    }, { merge: true });
+                } catch (err) {
+                    console.error("Error initializing month:", err);
+                }
+            }
         }
 
         elements.editFundBtn.addEventListener('click', () => { elements.fundInput.value = state.totalFund; elements.fundModal.classList.remove('hidden'); });
@@ -508,7 +570,13 @@
             if (isNaN(amount) || amount < 0) return;
             try {
                 const fundRef = doc(db, 'artifacts', appId, 'public', 'data', 'mess_fund', 'summary');
-                await setDoc(fundRef, { amount: amount, updatedBy: state.username, updatedAt: new Date().toISOString() });
+                await setDoc(fundRef, { 
+                    amount: amount, 
+                    currentMonth: state.currentMonth || getCurrentMonthKey(),
+                    previousMonthSpent: state.previousMonthSpent,
+                    updatedBy: state.username, 
+                    updatedAt: new Date().toISOString() 
+                }, { merge: true });
                 elements.fundModal.classList.add('hidden');
                 showToast(`Fund updated`);
             } catch (err) { showToast("Failed to update", "error"); }
@@ -590,12 +658,29 @@
         }
 
         function renderDashboardData() {
-            const totalSpent = state.expenses.reduce((acc, curr) => acc + (curr.cost || 0), 0);
+            // Filter expenses for current month only
+            const currentMonthKey = getCurrentMonthKey();
+            const currentMonthExpenses = state.expenses.filter(exp => {
+                const expDate = new Date(exp.date);
+                const expMonthKey = `${expDate.getFullYear()}-${String(expDate.getMonth() + 1).padStart(2, '0')}`;
+                return expMonthKey === currentMonthKey;
+            });
+            
+            // Calculate total spent for current month only
+            const totalSpent = currentMonthExpenses.reduce((acc, curr) => acc + (curr.cost || 0), 0);
             const remaining = state.totalFund - totalSpent;
             
             elements.totalSpent.textContent = `₹${totalSpent.toLocaleString('en-IN', {minimumFractionDigits: 2})}`;
             elements.totalFund.textContent = `₹${state.totalFund.toLocaleString('en-IN', {minimumFractionDigits: 2})}`;
             elements.fundBalance.textContent = `₹${remaining.toLocaleString('en-IN', {minimumFractionDigits: 2})}`;
+            
+            // Display previous month spent if available
+            if (state.previousMonthSpent && state.previousMonthSpent > 0) {
+                elements.prevMonthInfo.classList.remove('hidden');
+                elements.prevMonthSpent.textContent = `₹${state.previousMonthSpent.toLocaleString('en-IN', {minimumFractionDigits: 2})}`;
+            } else {
+                elements.prevMonthInfo.classList.add('hidden');
+            }
             
             if(remaining < 0) { elements.fundBalance.classList.remove('from-emerald-200', 'to-teal-100'); elements.fundBalance.classList.add('text-red-300'); } 
             else { elements.fundBalance.classList.add('from-emerald-200', 'to-teal-100'); elements.fundBalance.classList.remove('text-red-300'); }
