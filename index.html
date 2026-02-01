@@ -1,0 +1,870 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Mess Manager</title>
+    
+    <!-- PWA Settings -->
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#0f172a">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Mess Manager">
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: #0f172a; /* Fallback */
+            color: #1e293b;
+            overscroll-behavior-y: none;
+        }
+
+        /* --- PREMIUM ANIMATED BACKGROUND --- */
+        .animated-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -3;
+            background: linear-gradient(-45deg, 
+                #1a472a 0%,
+                #2d5f4f 8%,
+                #1e3a3a 16%,
+                #0f172a 24%,
+                #1a2744 32%,
+                #2d3e50 40%,
+                #1e4d2b 48%,
+                #0f3a2f 56%,
+                #1a2f4a 64%,
+                #2d4a3f 72%,
+                #1e3d3a 80%,
+                #0f472a 88%,
+                #1a472a 96%,
+                #1a472a 100%
+            );
+            background-size: 400% 400%;
+            animation: gradientMove 25s ease-in-out infinite;
+            filter: blur(0px);
+            position: relative;
+        }
+
+        .animated-bg::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: 
+                radial-gradient(ellipse at 20% 50%, rgba(52, 211, 153, 0.15) 0%, transparent 50%),
+                radial-gradient(ellipse at 80% 20%, rgba(34, 197, 94, 0.1) 0%, transparent 50%),
+                radial-gradient(ellipse at 40% 80%, rgba(16, 185, 129, 0.12) 0%, transparent 50%);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        @keyframes gradientMove {
+            0% { 
+                background-position: 0% 50%; 
+                filter: blur(0px) saturate(1.1) brightness(1.05);
+            }
+            25% { 
+                background-position: 100% 50%; 
+                filter: blur(0.8px) saturate(1.2) brightness(1.08);
+            }
+            50% { 
+                background-position: 100% 0%; 
+                filter: blur(0.4px) saturate(1.25) brightness(1.1);
+            }
+            75% { 
+                background-position: 0% 100%; 
+                filter: blur(0.8px) saturate(1.2) brightness(1.08);
+            }
+            100% { 
+                background-position: 0% 50%; 
+                filter: blur(0px) saturate(1.1) brightness(1.05);
+            }
+        }
+
+        /* --- FLOATING PARTICLES --- */
+        .particles-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -2;
+            overflow: hidden;
+            pointer-events: none;
+        }
+
+        .particles {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            margin: 0;
+            padding: 0;
+        }
+
+        .particles li {
+            position: absolute;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            list-style: none;
+            width: 50px;
+            height: 50px;
+            font-size: 30px;
+            animation: floatUp 25s linear infinite;
+            bottom: -150px;
+            filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.1));
+        }
+
+        /* Food Items with Emojis */
+        .particles li:nth-child(1)::before { content: "🥕"; left: 25%; width: 60px; height: 60px; animation-delay: 0s; }
+        .particles li:nth-child(2)::before { content: "🥬"; left: 10%; width: 50px; height: 50px; animation-delay: 2s; animation-duration: 12s; }
+        .particles li:nth-child(3)::before { content: "🍅"; left: 70%; width: 45px; height: 45px; animation-delay: 4s; }
+        .particles li:nth-child(4)::before { content: "🥔"; left: 40%; width: 55px; height: 55px; animation-delay: 0s; animation-duration: 18s; }
+        .particles li:nth-child(5)::before { content: "🌽"; left: 65%; width: 50px; height: 50px; animation-delay: 0s; }
+        .particles li:nth-child(6)::before { content: "🥦"; left: 75%; width: 65px; height: 65px; animation-delay: 3s; }
+        .particles li:nth-child(7)::before { content: "🍆"; left: 35%; width: 55px; height: 55px; animation-delay: 7s; }
+        .particles li:nth-child(8)::before { content: "🫑"; left: 50%; width: 45px; height: 45px; animation-delay: 15s; animation-duration: 45s; }
+        .particles li:nth-child(9)::before { content: "🥒"; left: 20%; width: 50px; height: 50px; animation-delay: 2s; animation-duration: 35s; }
+        .particles li:nth-child(10)::before { content: "🧅"; left: 85%; width: 48px; height: 48px; animation-delay: 0s; animation-duration: 11s; }
+        .particles li:nth-child(11)::before { content: "🌶️"; left: 15%; width: 42px; height: 42px; animation-delay: 5s; animation-duration: 22s; }
+        .particles li:nth-child(12)::before { content: "🥗"; left: 55%; width: 58px; height: 58px; animation-delay: 8s; animation-duration: 28s; }
+        .particles li:nth-child(13)::before { content: "🍞"; left: 30%; width: 52px; height: 52px; animation-delay: 12s; animation-duration: 30s; }
+        .particles li:nth-child(14)::before { content: "🥐"; left: 80%; width: 46px; height: 46px; animation-delay: 6s; animation-duration: 24s; }
+        .particles li:nth-child(15)::before { content: "🍇"; left: 45%; width: 50px; height: 50px; animation-delay: 10s; animation-duration: 26s; }
+        .particles li:nth-child(16)::before { content: "🍪"; left: 22%; width: 54px; height: 54px; animation-delay: 3s; animation-duration: 20s; }
+        .particles li:nth-child(17)::before { content: "🍊"; left: 62%; width: 48px; height: 48px; animation-delay: 9s; animation-duration: 32s; }
+        .particles li:nth-child(18)::before { content: "🍌"; left: 38%; width: 52px; height: 52px; animation-delay: 14s; animation-duration: 27s; }
+        .particles li:nth-child(19)::before { content: "🍎"; left: 78%; width: 46px; height: 46px; animation-delay: 1s; animation-duration: 23s; }
+        .particles li:nth-child(20)::before { content: "🍉"; left: 8%; width: 60px; height: 60px; animation-delay: 11s; animation-duration: 34s; }
+        .particles li:nth-child(21)::before { content: "🥚"; left: 68%; width: 44px; height: 44px; animation-delay: 7s; animation-duration: 19s; }
+        .particles li:nth-child(22)::before { content: "🧀"; left: 42%; width: 50px; height: 50px; animation-delay: 13s; animation-duration: 29s; }
+        .particles li:nth-child(23)::before { content: "🍚"; left: 88%; width: 48px; height: 48px; animation-delay: 4s; animation-duration: 25s; }
+        .particles li:nth-child(24)::before { content: "🛢️"; left: 5%; width: 52px; height: 52px; animation-delay: 16s; animation-duration: 40s; }
+        .particles li:nth-child(25)::before { content: "🥖"; left: 52%; width: 54px; height: 54px; animation-delay: 9s; animation-duration: 21s; }
+
+        .particles li:nth-child(1) { left: 25%; width: 60px; height: 60px; animation-delay: 0s; }
+        .particles li:nth-child(2) { left: 10%; width: 50px; height: 50px; animation-delay: 2s; animation-duration: 12s; }
+        .particles li:nth-child(3) { left: 70%; width: 45px; height: 45px; animation-delay: 4s; }
+        .particles li:nth-child(4) { left: 40%; width: 55px; height: 55px; animation-delay: 0s; animation-duration: 18s; }
+        .particles li:nth-child(5) { left: 65%; width: 50px; height: 50px; animation-delay: 0s; }
+        .particles li:nth-child(6) { left: 75%; width: 65px; height: 65px; animation-delay: 3s; }
+        .particles li:nth-child(7) { left: 35%; width: 55px; height: 55px; animation-delay: 7s; }
+        .particles li:nth-child(8) { left: 50%; width: 45px; height: 45px; animation-delay: 15s; animation-duration: 45s; }
+        .particles li:nth-child(9) { left: 20%; width: 50px; height: 50px; animation-delay: 2s; animation-duration: 35s; }
+        .particles li:nth-child(10) { left: 85%; width: 48px; height: 48px; animation-delay: 0s; animation-duration: 11s; }
+        .particles li:nth-child(11) { left: 15%; width: 42px; height: 42px; animation-delay: 5s; animation-duration: 22s; }
+        .particles li:nth-child(12) { left: 55%; width: 58px; height: 58px; animation-delay: 8s; animation-duration: 28s; }
+        .particles li:nth-child(13) { left: 30%; width: 52px; height: 52px; animation-delay: 12s; animation-duration: 30s; }
+        .particles li:nth-child(14) { left: 80%; width: 46px; height: 46px; animation-delay: 6s; animation-duration: 24s; }
+        .particles li:nth-child(15) { left: 45%; width: 50px; height: 50px; animation-delay: 10s; animation-duration: 26s; }
+        .particles li:nth-child(16) { left: 22%; width: 54px; height: 54px; animation-delay: 3s; animation-duration: 20s; }
+        .particles li:nth-child(17) { left: 62%; width: 48px; height: 48px; animation-delay: 9s; animation-duration: 32s; }
+        .particles li:nth-child(18) { left: 38%; width: 52px; height: 52px; animation-delay: 14s; animation-duration: 27s; }
+        .particles li:nth-child(19) { left: 78%; width: 46px; height: 46px; animation-delay: 1s; animation-duration: 23s; }
+        .particles li:nth-child(20) { left: 8%; width: 60px; height: 60px; animation-delay: 11s; animation-duration: 34s; }
+        .particles li:nth-child(21) { left: 68%; width: 44px; height: 44px; animation-delay: 7s; animation-duration: 19s; }
+        .particles li:nth-child(22) { left: 42%; width: 50px; height: 50px; animation-delay: 13s; animation-duration: 29s; }
+        .particles li:nth-child(23) { left: 88%; width: 48px; height: 48px; animation-delay: 4s; animation-duration: 25s; }
+        .particles li:nth-child(24) { left: 5%; width: 52px; height: 52px; animation-delay: 16s; animation-duration: 40s; }
+        .particles li:nth-child(25) { left: 52%; width: 54px; height: 54px; animation-delay: 9s; animation-duration: 21s; }
+
+        @keyframes floatUp {
+            0% { transform: translateY(0) rotate(-5deg) scale(1); opacity: 0.9; filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.1)); }
+            50% { transform: translateX(80px) translateY(-500px) rotate(180deg) scale(1.15); opacity: 0.85; filter: drop-shadow(0 6px 12px rgba(0, 0, 0, 0.15)); }
+            100% { transform: translateY(-1000px) rotate(360deg) scale(0.9); opacity: 0; filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1)); }
+        }
+
+        /* Premium Glass Card Effect */
+        .glass-card {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.07);
+        }
+
+        /* Custom Scrollbar */
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+        /* Smooth Fade In */
+        .fade-in { animation: fadeIn 0.4s cubic-bezier(0.4, 0, 0.2, 1) forwards; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+    </style>
+</head>
+<body class="min-h-screen relative overflow-x-hidden selection:bg-emerald-200 selection:text-emerald-900">
+
+    <!-- Background Elements -->
+    <div class="animated-bg"></div>
+    <div class="particles-container">
+        <ul class="particles">
+            <li></li><li></li><li></li><li></li><li></li>
+            <li></li><li></li><li></li><li></li><li></li>
+            <li></li><li></li><li></li><li></li><li></li>
+            <li></li><li></li><li></li><li></li><li></li>
+            <li></li><li></li><li></li><li></li><li></li>
+        </ul>
+    </div>
+
+    <!-- APP CONTAINER -->
+    <div id="app" class="w-full relative max-w-md mx-auto min-h-screen flex flex-col">
+        
+        <!-- LOADING VIEW -->
+        <div id="loading-view" class="flex flex-col items-center justify-center h-screen fixed inset-0 z-50 bg-white/30 backdrop-blur-xl">
+            <div class="relative">
+                <div class="w-16 h-16 border-4 border-emerald-200 border-t-emerald-600 rounded-full animate-spin"></div>
+                <div class="absolute inset-0 flex items-center justify-center">
+                    <i data-lucide="chef-hat" class="w-6 h-6 text-emerald-600"></i>
+                </div>
+            </div>
+            <p id="loading-text" class="mt-4 font-semibold text-slate-600 text-sm tracking-wide animate-pulse">Initializing...</p>
+        </div>
+
+        <!-- LOGIN VIEW -->
+        <div id="login-view" class="hidden h-screen flex flex-col items-center justify-center p-6">
+            <div class="glass-card w-full p-8 rounded-3xl text-center relative overflow-hidden group">
+                <!-- Decorative sheen -->
+                <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-emerald-400 to-transparent opacity-50"></div>
+                
+                <div class="flex justify-center mb-6">
+                    <div class="bg-gradient-to-br from-emerald-500 to-teal-700 p-5 rounded-2xl shadow-lg shadow-emerald-200 transform group-hover:scale-105 transition duration-500">
+                        <i data-lucide="chef-hat" class="w-10 h-10 text-white"></i>
+                    </div>
+                </div>
+                
+                <h1 class="text-3xl font-extrabold text-slate-800 mb-2 tracking-tight">Mess Manager</h1>
+                <p class="text-slate-500 mb-10 text-sm font-medium">Smart expense tracking for your group.</p>
+                
+                <div id="login-error" class="hidden bg-red-50/80 backdrop-blur-sm text-red-600 p-4 rounded-xl mb-6 text-xs border border-red-200 flex items-start gap-3 text-left shadow-sm">
+                    <i data-lucide="alert-circle" class="w-4 h-4 mt-0.5 flex-shrink-0"></i>
+                    <span id="login-error-text"></span>
+                </div>
+
+                <button 
+                    id="google-login-btn"
+                    class="w-full bg-white hover:bg-gray-50 text-slate-700 font-bold py-4 px-6 rounded-xl border border-gray-200 shadow-sm hover:shadow-md transition-all duration-200 flex items-center justify-center gap-3 group/btn"
+                >
+                    <img src="https://www.svgrepo.com/show/475656/google-color.svg" class="w-6 h-6 group-hover/btn:scale-110 transition-transform" alt="Google">
+                    <span>Continue with Google</span>
+                </button>
+                
+                <p class="mt-8 text-[10px] text-slate-400 uppercase tracking-widest font-bold">Secure • Fast • Simple</p>
+            </div>
+        </div>
+
+        <!-- DASHBOARD VIEW -->
+        <div id="dashboard-view" class="hidden flex-1 pb-24">
+            
+            <!-- Header -->
+            <header class="pt-8 pb-4 px-6 flex justify-between items-center">
+                <div>
+                    <p class="text-slate-500 text-xs font-bold uppercase tracking-wider mb-0.5">Mess Expense</p>
+                    <h1 class="text-2xl font-extrabold text-slate-800 flex items-center gap-2">
+                       Hi,  <span id="display-username" class="truncate max-w-[150px]">User</span>
+                        <span class="text-emerald-500">👋</span>
+                    </h1>
+                </div>
+                <button id="logout-btn" class="bg-white/50 hover:bg-white p-3 rounded-full shadow-sm hover:shadow-md transition-all border border-white backdrop-blur-sm text-slate-600">
+                    <i data-lucide="log-out" class="w-5 h-5"></i>
+                </button>
+            </header>
+
+            <div class="px-4 space-y-6">
+                
+                <!-- FUND STATUS CARD (Premium Credit Card Look) -->
+                <div class="relative w-full overflow-hidden rounded-3xl shadow-xl shadow-emerald-900/20 transform transition-transform hover:scale-[1.01] duration-300">
+                    <!-- Gradient Background -->
+                    <div class="absolute inset-0 bg-gradient-to-br from-slate-800 via-slate-900 to-black z-0"></div>
+                    <!-- Decorative Circles -->
+                    <div class="absolute top-[-50px] right-[-50px] w-40 h-40 bg-emerald-500 rounded-full opacity-20 blur-2xl"></div>
+                    <div class="absolute bottom-[-30px] left-[-30px] w-32 h-32 bg-blue-500 rounded-full opacity-20 blur-2xl"></div>
+                    
+                    <div class="relative z-10 p-6 text-white">
+                        <div class="flex justify-between items-start mb-8">
+                            <div>
+                                <p class="text-slate-400 text-xs font-semibold uppercase tracking-widest mb-1">Total Fund</p>
+                                <div class="flex items-center gap-2">
+                                    <h2 class="text-2xl font-bold tracking-tight" id="total-fund">₹0.00</h2>
+                                    <button id="edit-fund-btn" class="bg-white/10 hover:bg-white/20 p-1.5 rounded-lg transition backdrop-blur-md">
+                                        <i data-lucide="edit-2" class="w-3.5 h-3.5 text-emerald-300"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="bg-white/10 p-2.5 rounded-xl backdrop-blur-md border border-white/10">
+                                <i data-lucide="wallet" class="w-6 h-6 text-emerald-300"></i>
+                            </div>
+                        </div>
+
+                        <div class="flex justify-between items-end">
+                            <div>
+                                <p class="text-slate-400 text-xs font-medium mb-1">Current Balance</p>
+                                <p class="text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-emerald-200 to-teal-100" id="fund-balance">₹0.00</p>
+                            </div>
+                            <div class="text-right">
+                                <p class="text-slate-400 text-[10px] uppercase font-bold mb-1">Spent</p>
+                                <p class="text-sm font-semibold text-red-300 bg-red-500/10 px-2 py-1 rounded-md" id="total-spent">₹0.00</p>
+                            </div>
+                        </div>
+                        
+                        <!-- Previous Month Info -->
+                        <div id="prev-month-info" class="mt-4 pt-4 border-t border-white/10 hidden">
+                            <div class="flex justify-between items-center">
+                                <p class="text-slate-400 text-[10px] uppercase font-bold">Last Month Spent</p>
+                                <p class="text-xs font-semibold text-amber-300 bg-amber-500/10 px-2 py-1 rounded-md" id="prev-month-spent">₹0.00</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ADD EXPENSE -->
+                <div class="glass-card rounded-2xl p-1 relative overflow-hidden">
+                    <div class="absolute bottom-0 left-0 h-[2px] w-full bg-gradient-to-r from-emerald-400 via-blue-500 to-emerald-400 opacity-50"></div>
+                    
+                    <div id="dashboard-error" class="hidden mx-4 mt-4 bg-red-50 text-red-600 p-3 rounded-lg text-xs flex items-center gap-2">
+                        <i data-lucide="alert-circle" class="w-4 h-4"></i>
+                        <span id="dashboard-error-text"></span>
+                    </div>
+
+                    <form id="expense-form" class="p-4 flex flex-col gap-3">
+                        <div class="flex justify-between items-center mb-1">
+                            <h3 class="text-sm font-bold text-slate-700 flex items-center gap-2">
+                                <i data-lucide="plus-circle" class="w-4 h-4 text-emerald-600"></i>
+                                Add Expense
+                            </h3>
+                            <div class="flex items-center gap-2">
+                                <button id="cancel-edit-btn" type="button" class="hidden text-xs text-red-500 font-bold hover:bg-red-50 px-2 py-1 rounded transition">Cancel</button>
+                            </div>
+                        </div>
+                        <input type="hidden" id="edit-id">
+                        
+                        <div class="flex gap-3">
+                            <div class="flex-1 relative group">
+                                <div class="absolute inset-y-0 left-3 flex items-center pointer-events-none">
+                                    <i data-lucide="shopping-bag" class="w-4 h-4 text-slate-400 group-focus-within:text-emerald-500 transition-colors"></i>
+                                </div>
+                                <input 
+                                    type="text" 
+                                    id="item-name"
+                                    placeholder="What did you buy?" 
+                                    class="w-full pl-10 pr-4 py-3 bg-slate-50 border-none rounded-xl text-slate-700 text-sm font-medium focus:ring-2 focus:ring-emerald-500/20 focus:bg-white transition-all placeholder:text-slate-400"
+                                    required
+                                />
+                            </div>
+                            <div class="w-28 relative group">
+                                <div class="absolute inset-y-0 left-3 flex items-center pointer-events-none">
+                                    <span class="text-slate-400 font-bold group-focus-within:text-emerald-500 transition-colors">₹</span>
+                                </div>
+                                <input 
+                                    type="number" 
+                                    id="item-cost"
+                                    placeholder="0" 
+                                    class="w-full pl-8 pr-4 py-3 bg-slate-50 border-none rounded-xl text-slate-700 text-sm font-bold focus:ring-2 focus:ring-emerald-500/20 focus:bg-white transition-all placeholder:text-slate-400"
+                                    required
+                                    step="0.01"
+                                />
+                            </div>
+                        </div>
+                        <button 
+                            type="submit" 
+                            id="submit-btn"
+                            class="w-full py-3.5 rounded-xl font-bold text-white shadow-lg shadow-emerald-500/30 flex items-center justify-center gap-2 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 active:scale-[0.98] transition-all"
+                        >
+                            <span id="btn-text">Add Item</span>
+                            <i data-lucide="arrow-right" class="w-4 h-4"></i>
+                        </button>
+                    </form>
+                </div>
+
+                <!-- LIST SECTION -->
+                <div>
+                    <div class="flex justify-between items-center mb-4 px-1">
+                        <h3 class="text-slate-800 text-sm font-bold flex items-center gap-2">
+                            <i data-lucide="history" class="w-4 h-4 text-slate-400"></i>
+                            Recent
+                        </h3>
+                        
+                        <div class="flex bg-white/60 p-1 rounded-xl backdrop-blur-md shadow-sm border border-white/40">
+                            <button id="view-daily" class="px-3 py-1.5 text-[10px] font-bold uppercase rounded-lg shadow-sm bg-slate-800 text-white transition-all">
+                                Daily
+                            </button>
+                            <button id="view-monthly" class="px-3 py-1.5 text-[10px] font-bold uppercase rounded-lg text-slate-500 hover:bg-slate-100 transition-all">
+                                Monthly
+                            </button>
+                        </div>
+                    </div>
+
+                    <div id="expenses-list" class="space-y-4">
+                        <!-- Items injected here -->
+                    </div>
+                    
+                    <div id="empty-state" class="hidden flex flex-col items-center justify-center py-12 glass-card rounded-2xl border-dashed border-2 border-slate-300">
+                        <div class="bg-slate-100 p-4 rounded-full mb-3">
+                            <i data-lucide="clipboard-list" class="w-8 h-8 text-slate-300"></i>
+                        </div>
+                        <p class="text-slate-400 font-medium text-sm">No expenses yet</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- MODALS -->
+        
+        <!-- Fund Modal -->
+        <div id="fund-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-6 bg-slate-900/60 backdrop-blur-sm fade-in">
+            <div class="bg-white w-full max-w-sm rounded-3xl p-6 shadow-2xl scale-100 transition-all">
+                <div class="text-center mb-6">
+                    <div class="w-14 h-14 bg-blue-50 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                        <i data-lucide="piggy-bank" class="w-7 h-7 text-blue-600"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-slate-800">Update Fund</h3>
+                    <p class="text-slate-500 text-sm mt-1">Total collected amount</p>
+                </div>
+                <form id="fund-form">
+                    <div class="relative mb-6">
+                        <span class="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 font-bold text-lg">₹</span>
+                        <input 
+                            type="number" 
+                            id="fund-input" 
+                            class="w-full pl-10 pr-4 py-4 bg-slate-50 border-2 border-transparent focus:border-blue-500/20 focus:bg-white rounded-xl text-slate-800 text-2xl font-bold outline-none transition-all placeholder:text-slate-300" 
+                            placeholder="0.00" 
+                            step="0.01" 
+                            required 
+                        />
+                    </div>
+                    <div class="flex gap-3">
+                        <button type="button" id="cancel-fund-btn" class="flex-1 py-3.5 rounded-xl font-bold text-slate-600 bg-slate-100 hover:bg-slate-200 transition">
+                            Cancel
+                        </button>
+                        <button type="submit" class="flex-1 py-3.5 rounded-xl font-bold text-white bg-blue-600 hover:bg-blue-700 shadow-lg shadow-blue-500/30 transition">
+                            Save
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Delete Modal -->
+        <div id="delete-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-6 bg-slate-900/60 backdrop-blur-sm fade-in">
+            <div class="bg-white w-full max-w-sm rounded-3xl p-6 shadow-2xl">
+                <div class="text-center mb-6">
+                    <div class="w-14 h-14 bg-red-50 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                        <i data-lucide="trash-2" class="w-7 h-7 text-red-500"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-slate-800">Delete Item?</h3>
+                    <p class="text-slate-500 text-sm mt-1">This action cannot be undone.</p>
+                </div>
+                <div class="flex gap-3">
+                    <button id="cancel-delete-btn" class="flex-1 py-3.5 rounded-xl font-bold text-slate-600 bg-slate-100 hover:bg-slate-200 transition">
+                        Keep
+                    </button>
+                    <button id="confirm-delete-btn" class="flex-1 py-3.5 rounded-xl font-bold text-white bg-red-500 hover:bg-red-600 shadow-lg shadow-red-500/30 transition flex items-center justify-center">
+                        Delete
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- FIREBASE LOGIC -->
+    <script type="module">
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js';
+        import { 
+            getFirestore, collection, addDoc, updateDoc, deleteDoc, doc, onSnapshot, initializeFirestore, setDoc, getDoc 
+        } from 'https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js';
+        import { 
+            getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged, signInWithCustomToken, signOut 
+        } from 'https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js';
+
+        // --- Configuration ---
+        const apiKey = ""; 
+        
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+        let firebaseConfig;
+
+        if (typeof __firebase_config !== 'undefined') {
+            firebaseConfig = JSON.parse(__firebase_config);
+        } else {
+            // Case 2: External Deployment
+            firebaseConfig = {
+                apiKey: "AIzaSyC7z-IuvKCSer2rTRatJW5DRtO9NDZdPeg",
+                authDomain: "messjyotirmoy.firebaseapp.com",
+                projectId: "messjyotirmoy",
+                storageBucket: "messjyotirmoy.firebasestorage.app",
+                messagingSenderId: "13122110126",
+                appId: "1:13122110126:web:bb6d03aa476dbf5929a33f"
+            };
+        }
+        
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const googleProvider = new GoogleAuthProvider();
+        
+        let db;
+        try {
+            db = initializeFirestore(app, { 
+                experimentalForceLongPolling: true,
+                useFetchStreams: false 
+            });
+        } catch (e) {
+            db = getFirestore(app);
+        }
+
+        let state = {
+            user: null, username: '', userPhoto: '', expenses: [], totalFund: 0, editId: null, deleteTargetId: null, loading: true, hasJoined: false, viewMode: 'daily', currentMonth: '', previousMonthSpent: 0
+        };
+
+        const views = { loading: document.getElementById('loading-view'), login: document.getElementById('login-view'), dashboard: document.getElementById('dashboard-view') };
+        
+        const elements = {
+            googleLoginBtn: document.getElementById('google-login-btn'), displayUsername: document.getElementById('display-username'), logoutBtn: document.getElementById('logout-btn'),
+            fundBalance: document.getElementById('fund-balance'), totalFund: document.getElementById('total-fund'), totalSpent: document.getElementById('total-spent'), editFundBtn: document.getElementById('edit-fund-btn'),
+            expenseForm: document.getElementById('expense-form'), itemName: document.getElementById('item-name'), itemCost: document.getElementById('item-cost'), editId: document.getElementById('edit-id'), cancelEditBtn: document.getElementById('cancel-edit-btn'),
+            expensesList: document.getElementById('expenses-list'), emptyState: document.getElementById('empty-state'), loginError: document.getElementById('login-error'), loginErrorText: document.getElementById('login-error-text'),
+            dashError: document.getElementById('dashboard-error'), dashErrorText: document.getElementById('dashboard-error-text'), viewDailyBtn: document.getElementById('view-daily'), viewMonthlyBtn: document.getElementById('view-monthly'),
+            deleteModal: document.getElementById('delete-modal'), cancelDeleteBtn: document.getElementById('cancel-delete-btn'), confirmDeleteBtn: document.getElementById('confirm-delete-btn'),
+            fundModal: document.getElementById('fund-modal'), fundForm: document.getElementById('fund-form'), fundInput: document.getElementById('fund-input'), cancelFundBtn: document.getElementById('cancel-fund-btn'),
+            prevMonthInfo: document.getElementById('prev-month-info'), prevMonthSpent: document.getElementById('prev-month-spent')
+        };
+
+        // --- STANDARD LOGIC ---
+
+        async function initAuth() {
+            if (firebaseConfig.apiKey === "PASTE_API_KEY_HERE") {
+                state.loading = false; render(); 
+                setTimeout(() => showError("Config Error: Update index.html with keys.", true), 100); return;
+            }
+            if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+                try { await signInWithCustomToken(auth, __initial_auth_token); } catch(e) { }
+            }
+        }
+
+        elements.googleLoginBtn.addEventListener('click', async () => {
+            hideError(true);
+            const originalContent = elements.googleLoginBtn.innerHTML;
+            elements.googleLoginBtn.disabled = true;
+            elements.googleLoginBtn.innerHTML = `<div class="animate-spin rounded-full h-5 w-5 border-b-2 border-slate-600"></div>`;
+            try {
+                await signInWithPopup(auth, googleProvider);
+            } catch (error) {
+                let msg = "Sign-in failed.";
+                if (error.code === 'auth/unauthorized-domain') msg = `Domain unauthorized: ${window.location.hostname}`;
+                showError(msg, true);
+                elements.googleLoginBtn.disabled = false;
+                elements.googleLoginBtn.innerHTML = originalContent;
+            }
+        });
+
+        onAuthStateChanged(auth, (user) => {
+            state.user = user;
+            if (user) {
+                state.username = user.displayName || (user.email ? user.email.split('@')[0] : 'Guest');
+                state.userPhoto = user.photoURL;
+                state.hasJoined = true;
+                setupDataListener();
+            } else { state.hasJoined = false; }
+            state.loading = false;
+            render();
+        });
+
+        function setupDataListener() {
+            if (!state.user) return;
+            const expensesRef = collection(db, 'artifacts', appId, 'public', 'data', 'mess_expenses');
+            onSnapshot(expensesRef, (snapshot) => {
+                const data = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                data.sort((a, b) => new Date(b.date) - new Date(a.date));
+                state.expenses = data;
+                hideError(false);
+                renderDashboardData();
+            });
+            const fundRef = doc(db, 'artifacts', appId, 'public', 'data', 'mess_fund', 'summary');
+            onSnapshot(fundRef, (doc) => {
+                if (doc.exists()) { 
+                    state.totalFund = doc.data().amount || 0;
+                    state.currentMonth = doc.data().currentMonth || getCurrentMonthKey();
+                    state.previousMonthSpent = doc.data().previousMonthSpent || 0;
+                } else { 
+                    state.totalFund = 0;
+                    state.currentMonth = getCurrentMonthKey();
+                    state.previousMonthSpent = 0;
+                }
+                checkAndUpdateMonthChange();
+                renderDashboardData();
+            });
+        }
+
+        // Get current month as a key (YYYY-MM format)
+        function getCurrentMonthKey() {
+            const now = new Date();
+            return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
+        }
+
+        // Check if month has changed and update accordingly
+        async function checkAndUpdateMonthChange() {
+            const currentMonth = getCurrentMonthKey();
+            
+            // If month has changed
+            if (state.currentMonth && state.currentMonth !== currentMonth) {
+                // Calculate total spent for all expenses
+                const totalSpent = state.expenses.reduce((acc, curr) => acc + (curr.cost || 0), 0);
+                
+                // Update fund document with new month data
+                try {
+                    const fundRef = doc(db, 'artifacts', appId, 'public', 'data', 'mess_fund', 'summary');
+                    await setDoc(fundRef, { 
+                        amount: state.totalFund,
+                        currentMonth: currentMonth,
+                        previousMonthSpent: totalSpent,
+                        monthChangedAt: new Date().toISOString(),
+                        updatedBy: state.username
+                    }, { merge: true });
+                    
+                    showToast(`Month changed! Previous month spent: ₹${totalSpent.toLocaleString('en-IN')}`);
+                } catch (err) {
+                    console.error("Error updating month change:", err);
+                }
+            } else if (!state.currentMonth) {
+                // First time setup - initialize current month
+                try {
+                    const fundRef = doc(db, 'artifacts', appId, 'public', 'data', 'mess_fund', 'summary');
+                    await setDoc(fundRef, { 
+                        currentMonth: currentMonth,
+                        previousMonthSpent: 0
+                    }, { merge: true });
+                } catch (err) {
+                    console.error("Error initializing month:", err);
+                }
+            }
+        }
+
+        elements.editFundBtn.addEventListener('click', () => { elements.fundInput.value = state.totalFund; elements.fundModal.classList.remove('hidden'); });
+        elements.cancelFundBtn.addEventListener('click', () => { elements.fundModal.classList.add('hidden'); });
+        elements.fundForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const amount = parseFloat(elements.fundInput.value);
+            if (isNaN(amount) || amount < 0) return;
+            try {
+                const fundRef = doc(db, 'artifacts', appId, 'public', 'data', 'mess_fund', 'summary');
+                await setDoc(fundRef, { 
+                    amount: amount, 
+                    currentMonth: state.currentMonth || getCurrentMonthKey(),
+                    previousMonthSpent: state.previousMonthSpent,
+                    updatedBy: state.username, 
+                    updatedAt: new Date().toISOString() 
+                }, { merge: true });
+                elements.fundModal.classList.add('hidden');
+                showToast(`Fund updated`);
+            } catch (err) { showToast("Failed to update", "error"); }
+        });
+
+        elements.viewDailyBtn.addEventListener('click', () => { state.viewMode = 'daily'; updateViewToggleUI(); renderDashboardData(); });
+        elements.viewMonthlyBtn.addEventListener('click', () => { state.viewMode = 'monthly'; updateViewToggleUI(); renderDashboardData(); });
+
+        function updateViewToggleUI() {
+            if (state.viewMode === 'daily') {
+                elements.viewDailyBtn.classList.add('bg-slate-800', 'text-white', 'shadow-sm'); elements.viewDailyBtn.classList.remove('text-slate-500', 'hover:bg-slate-100');
+                elements.viewMonthlyBtn.classList.remove('bg-slate-800', 'text-white', 'shadow-sm'); elements.viewMonthlyBtn.classList.add('text-slate-500', 'hover:bg-slate-100');
+            } else {
+                elements.viewMonthlyBtn.classList.add('bg-slate-800', 'text-white', 'shadow-sm'); elements.viewMonthlyBtn.classList.remove('text-slate-500', 'hover:bg-slate-100');
+                elements.viewDailyBtn.classList.remove('bg-slate-800', 'text-white', 'shadow-sm'); elements.viewDailyBtn.classList.add('text-slate-500', 'hover:bg-slate-100');
+            }
+        }
+
+        elements.logoutBtn.addEventListener('click', () => { signOut(auth).then(() => { location.reload(); }); });
+
+        elements.expenseForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const name = elements.itemName.value; const cost = elements.itemCost.value;
+            if (!name || !cost) return;
+            
+            const btnText = document.getElementById('btn-text');
+            const originalText = btnText.innerText;
+            btnText.innerText = "Saving...";
+            
+            try {
+                const collectionRef = collection(db, 'artifacts', appId, 'public', 'data', 'mess_expenses');
+                if (state.editId) {
+                    const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'mess_expenses', state.editId);
+                    await updateDoc(docRef, { item: name, cost: parseFloat(cost), updatedAt: new Date().toISOString() });
+                    cancelEdit();
+                } else {
+                    await addDoc(collectionRef, { item: name, cost: parseFloat(cost), addedBy: state.username, userPhoto: state.userPhoto, userId: state.user.uid, date: new Date().toISOString() });
+                    elements.itemName.value = ''; elements.itemCost.value = '';
+                }
+            } catch (err) { showError("Save Failed.", false); }
+            finally { btnText.innerText = originalText; }
+        });
+
+        elements.cancelEditBtn.addEventListener('click', cancelEdit);
+        function cancelEdit() { state.editId = null; elements.itemName.value = ''; elements.itemCost.value = ''; updateFormState(); }
+
+        document.addEventListener('click', (e) => {
+            const deleteBtn = e.target.closest('.delete-btn');
+            if (deleteBtn) { state.deleteTargetId = deleteBtn.dataset.id; elements.deleteModal.classList.remove('hidden'); return; }
+            const editBtn = e.target.closest('.edit-btn');
+            if (editBtn) {
+                const id = editBtn.dataset.id; const expense = state.expenses.find(x => x.id === id);
+                if (expense) { state.editId = id; elements.itemName.value = expense.item; elements.itemCost.value = expense.cost; updateFormState(); window.scrollTo({ top: 0, behavior: 'smooth' }); }
+            }
+        });
+
+        elements.cancelDeleteBtn.addEventListener('click', () => { state.deleteTargetId = null; elements.deleteModal.classList.add('hidden'); });
+        elements.confirmDeleteBtn.addEventListener('click', async () => {
+            if (!state.deleteTargetId) return;
+            const originalText = elements.confirmDeleteBtn.innerHTML;
+            elements.confirmDeleteBtn.innerHTML = `<i data-lucide="loader-2" class="w-5 h-5 animate-spin"></i>`;
+            try {
+                const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'mess_expenses', state.deleteTargetId);
+                await deleteDoc(docRef); elements.deleteModal.classList.add('hidden');
+            } catch(err) { showError(`Delete Failed.`, false); elements.deleteModal.classList.add('hidden'); } 
+            finally { elements.confirmDeleteBtn.innerHTML = originalText; elements.confirmDeleteBtn.disabled = false; state.deleteTargetId = null; }
+        });
+
+        function render() {
+            if (state.loading) { views.loading.classList.remove('hidden'); views.login.classList.add('hidden'); views.dashboard.classList.add('hidden'); }
+            else if (!state.hasJoined) { views.loading.classList.add('hidden'); views.login.classList.remove('hidden'); views.dashboard.classList.add('hidden'); lucide.createIcons(); }
+            else { 
+                views.loading.classList.add('hidden'); 
+                views.login.classList.add('hidden'); 
+                views.dashboard.classList.remove('hidden'); 
+                elements.displayUsername.textContent = state.username; 
+                renderDashboardData(); 
+            }
+        }
+
+        function renderDashboardData() {
+            // Filter expenses for current month only
+            const currentMonthKey = getCurrentMonthKey();
+            const currentMonthExpenses = state.expenses.filter(exp => {
+                const expDate = new Date(exp.date);
+                const expMonthKey = `${expDate.getFullYear()}-${String(expDate.getMonth() + 1).padStart(2, '0')}`;
+                return expMonthKey === currentMonthKey;
+            });
+            
+            // Calculate total spent for current month only
+            const totalSpent = currentMonthExpenses.reduce((acc, curr) => acc + (curr.cost || 0), 0);
+            const remaining = state.totalFund - totalSpent;
+            
+            elements.totalSpent.textContent = `₹${totalSpent.toLocaleString('en-IN', {minimumFractionDigits: 2})}`;
+            elements.totalFund.textContent = `₹${state.totalFund.toLocaleString('en-IN', {minimumFractionDigits: 2})}`;
+            elements.fundBalance.textContent = `₹${remaining.toLocaleString('en-IN', {minimumFractionDigits: 2})}`;
+            
+            // Display previous month spent if available
+            if (state.previousMonthSpent && state.previousMonthSpent > 0) {
+                elements.prevMonthInfo.classList.remove('hidden');
+                elements.prevMonthSpent.textContent = `₹${state.previousMonthSpent.toLocaleString('en-IN', {minimumFractionDigits: 2})}`;
+            } else {
+                elements.prevMonthInfo.classList.add('hidden');
+            }
+            
+            if(remaining < 0) { elements.fundBalance.classList.remove('from-emerald-200', 'to-teal-100'); elements.fundBalance.classList.add('text-red-300'); } 
+            else { elements.fundBalance.classList.add('from-emerald-200', 'to-teal-100'); elements.fundBalance.classList.remove('text-red-300'); }
+
+            if (state.expenses.length === 0) { elements.expensesList.innerHTML = ''; elements.emptyState.classList.remove('hidden'); return; }
+            elements.emptyState.classList.add('hidden');
+            
+            const grouped = {}; const keys = [];
+            state.expenses.forEach(ex => {
+                const d = new Date(ex.date);
+                let key, label;
+                if (state.viewMode === 'daily') { key = d.toDateString(); label = d.toLocaleDateString('en-US', { weekday: 'short', day: 'numeric', month: 'short' }); }
+                else { key = `${d.getFullYear()}-${d.getMonth()}`; label = d.toLocaleDateString('en-US', { month: 'long', year: 'numeric' }); }
+                if (!grouped[key]) { grouped[key] = { label: label, total: 0, items: [], sortTime: d.getTime() }; keys.push(key); }
+                grouped[key].items.push(ex); grouped[key].total += ex.cost;
+            });
+            keys.sort((a, b) => grouped[b].sortTime - grouped[a].sortTime);
+
+            elements.expensesList.innerHTML = keys.map(key => {
+                const group = grouped[key];
+                const itemsHtml = group.items.map(expense => `
+                    <div class="flex justify-between items-center py-4 border-b border-slate-100 last:border-0 hover:bg-slate-50/50 px-5 transition group">
+                        <div class="flex-1">
+                            <div class="flex items-center gap-3">
+                                <span class="font-bold text-slate-700 text-sm">${escapeHtml(expense.item)}</span>
+                            </div>
+                            <div class="flex items-center gap-2 mt-1">
+                                ${expense.userPhoto ? `<img src="${expense.userPhoto}" class="w-4 h-4 rounded-full shadow-sm">` : `<div class="w-4 h-4 rounded-full bg-slate-200 flex items-center justify-center"><i data-lucide="user" class="w-2.5 h-2.5 text-slate-500"></i></div>`} 
+                                <span class="text-[11px] font-medium text-slate-400">${escapeHtml(expense.addedBy)}</span>
+                                <span class="text-[10px] text-slate-300">•</span>
+                                <span class="text-[11px] text-slate-400">${new Date(expense.date).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</span>
+                            </div>
+                        </div>
+                        <div class="flex flex-col items-end gap-1">
+                            <span class="text-emerald-600 font-bold text-sm bg-emerald-50 px-2 py-0.5 rounded-md border border-emerald-100">₹${expense.cost.toLocaleString('en-IN')}</span>
+                            <div class="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                                <button class="edit-btn p-1.5 hover:bg-blue-50 rounded text-blue-500 transition" data-id="${expense.id}"><i data-lucide="edit-2" class="w-3.5 h-3.5"></i></button>
+                                <button class="delete-btn p-1.5 hover:bg-red-50 rounded text-red-500 transition" data-id="${expense.id}"><i data-lucide="trash-2" class="w-3.5 h-3.5"></i></button>
+                            </div>
+                        </div>
+                    </div>`).join('');
+                return `
+                    <div class="fade-in glass-card rounded-2xl overflow-hidden mb-4 border border-white/60">
+                        <div class="bg-slate-50/80 backdrop-blur-sm px-5 py-3 flex justify-between items-center border-b border-slate-100">
+                            <div class="flex items-center gap-2">
+                                <div class="bg-white p-1.5 rounded-lg shadow-sm">
+                                    <i data-lucide="${state.viewMode === 'daily' ? 'calendar' : 'calendar-days'}" class="w-4 h-4 text-slate-400"></i>
+                                </div>
+                                <span class="text-xs font-bold text-slate-600 uppercase tracking-wide">${group.label}</span>
+                            </div>
+                            <span class="text-slate-600 font-bold text-xs bg-white px-2 py-1 rounded-lg border border-slate-100 shadow-sm">Total: ₹${group.total.toLocaleString('en-IN')}</span>
+                        </div>
+                        <div>${itemsHtml}</div>
+                    </div>`;
+            }).join('');
+            lucide.createIcons();
+        }
+
+        function updateFormState() {
+            const submitBtn = document.getElementById('submit-btn'); const formTitle = document.getElementById('form-title');
+            if (!submitBtn || !formTitle) return;
+            const btnText = document.getElementById('btn-text');
+            if (state.editId) {
+                submitBtn.classList.replace('from-emerald-600', 'from-blue-600'); submitBtn.classList.replace('to-teal-600', 'to-indigo-600');
+                btnText.innerText = "Update Entry"; formTitle.innerHTML = `<i data-lucide="edit-2" class="w-5 h-5 text-blue-500"></i><span class="text-blue-600">Edit Item</span>`;
+                if (elements.cancelEditBtn) elements.cancelEditBtn.classList.remove('hidden');
+            } else {
+                submitBtn.classList.replace('from-blue-600', 'from-emerald-600'); submitBtn.classList.replace('to-indigo-600', 'to-teal-600');
+                btnText.innerText = "Add Item"; formTitle.innerHTML = `<i data-lucide="plus-circle" class="w-5 h-5 text-emerald-500"></i><span>Add Expense</span>`;
+                if (elements.cancelEditBtn) elements.cancelEditBtn.classList.add('hidden');
+            }
+            if (typeof lucide !== 'undefined') lucide.createIcons();
+        }
+
+        function showError(msg, isLogin) {
+            if (isLogin) { elements.loginError.classList.remove('hidden'); elements.loginErrorText.textContent = msg; }
+            else { elements.dashError.classList.remove('hidden'); elements.dashErrorText.textContent = msg; }
+        }
+        function hideError(isLogin) {
+            if (isLogin) elements.loginError.classList.add('hidden'); else elements.dashError.classList.add('hidden');
+        }
+        function escapeHtml(text) { if (!text) return ''; return text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;"); }
+        function showToast(msg, type='success') {
+            const toast = document.createElement('div');
+            toast.className = `fixed bottom-6 left-1/2 -translate-x-1/2 px-6 py-3 rounded-2xl shadow-xl text-white text-sm font-bold fade-in z-50 flex items-center gap-2 ${type === 'success' ? 'bg-slate-800' : 'bg-red-500'}`;
+            toast.innerHTML = type === 'success' ? `<i data-lucide="check-circle" class="w-4 h-4"></i> ${msg}` : `<i data-lucide="alert-circle" class="w-4 h-4"></i> ${msg}`;
+            document.body.appendChild(toast);
+            lucide.createIcons();
+            setTimeout(() => toast.remove(), 3000);
+        }
+
+        initAuth();
+
+    </script>
+</body>
+</html>
