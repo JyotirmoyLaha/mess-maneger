@@ -32,6 +32,7 @@ This project demonstrates **full-stack web development expertise** including:
 - **User Attribution** - Shows who added each expense with Google profile photo
 - **Daily/Monthly Views** - Toggle between granular and aggregated expense views
 - **Real-time Balance** - Instant calculation of remaining funds
+- **PDF Export** - Extract daily and monthly expenses to professional PDF reports
 
 ### Premium UI Components
 - **Animated Gradient Background** - Dynamic color-shifting 14-color gradient with blur effects
@@ -304,7 +305,7 @@ let state = {
 - [ ] Multi-currency support
 - [ ] Email notifications
 - [ ] Expense splitting algorithm
-- [ ] Export to CSV/PDF
+- [x] Export to PDF (Daily & Monthly)
 - [ ] Dark mode
 - [ ] Push notifications
 - [ ] Native mobile apps
