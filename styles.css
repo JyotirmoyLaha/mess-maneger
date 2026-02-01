@@ -1,0 +1,186 @@
+body {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    background-color: #0f172a; /* Fallback */
+    color: #1e293b;
+    overscroll-behavior-y: none;
+}
+
+/* --- PREMIUM ANIMATED BACKGROUND --- */
+.animated-bg {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -3;
+    background: linear-gradient(-45deg, 
+        #1a472a 0%,
+        #2d5f4f 8%,
+        #1e3a3a 16%,
+        #0f172a 24%,
+        #1a2744 32%,
+        #2d3e50 40%,
+        #1e4d2b 48%,
+        #0f3a2f 56%,
+        #1a2f4a 64%,
+        #2d4a3f 72%,
+        #1e3d3a 80%,
+        #0f472a 88%,
+        #1a472a 96%,
+        #1a472a 100%
+    );
+    background-size: 400% 400%;
+    animation: gradientMove 25s ease-in-out infinite;
+    filter: blur(0px);
+    position: relative;
+}
+
+.animated-bg::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: 
+        radial-gradient(ellipse at 20% 50%, rgba(52, 211, 153, 0.15) 0%, transparent 50%),
+        radial-gradient(ellipse at 80% 20%, rgba(34, 197, 94, 0.1) 0%, transparent 50%),
+        radial-gradient(ellipse at 40% 80%, rgba(16, 185, 129, 0.12) 0%, transparent 50%);
+    pointer-events: none;
+    z-index: 0;
+}
+
+@keyframes gradientMove {
+    0% { 
+        background-position: 0% 50%; 
+        filter: blur(0px) saturate(1.1) brightness(1.05);
+    }
+    25% { 
+        background-position: 100% 50%; 
+        filter: blur(0.8px) saturate(1.2) brightness(1.08);
+    }
+    50% { 
+        background-position: 100% 0%; 
+        filter: blur(0.4px) saturate(1.25) brightness(1.1);
+    }
+    75% { 
+        background-position: 0% 100%; 
+        filter: blur(0.8px) saturate(1.2) brightness(1.08);
+    }
+    100% { 
+        background-position: 0% 50%; 
+        filter: blur(0px) saturate(1.1) brightness(1.05);
+    }
+}
+
+/* --- FLOATING PARTICLES --- */
+.particles-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -2;
+    overflow: hidden;
+    pointer-events: none;
+}
+
+.particles {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    padding: 0;
+}
+
+.particles li {
+    position: absolute;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    list-style: none;
+    width: 50px;
+    height: 50px;
+    font-size: 30px;
+    animation: floatUp 25s linear infinite;
+    bottom: -150px;
+    filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.1));
+}
+
+/* Food Items with Emojis */
+.particles li:nth-child(1)::before { content: "🥕"; left: 25%; width: 60px; height: 60px; animation-delay: 0s; }
+.particles li:nth-child(2)::before { content: "🥬"; left: 10%; width: 50px; height: 50px; animation-delay: 2s; animation-duration: 12s; }
+.particles li:nth-child(3)::before { content: "🍅"; left: 70%; width: 45px; height: 45px; animation-delay: 4s; }
+.particles li:nth-child(4)::before { content: "🥔"; left: 40%; width: 55px; height: 55px; animation-delay: 0s; animation-duration: 18s; }
+.particles li:nth-child(5)::before { content: "🌽"; left: 65%; width: 50px; height: 50px; animation-delay: 0s; }
+.particles li:nth-child(6)::before { content: "🥦"; left: 75%; width: 65px; height: 65px; animation-delay: 3s; }
+.particles li:nth-child(7)::before { content: "🍆"; left: 35%; width: 55px; height: 55px; animation-delay: 7s; }
+.particles li:nth-child(8)::before { content: "🫑"; left: 50%; width: 45px; height: 45px; animation-delay: 15s; animation-duration: 45s; }
+.particles li:nth-child(9)::before { content: "🥒"; left: 20%; width: 50px; height: 50px; animation-delay: 2s; animation-duration: 35s; }
+.particles li:nth-child(10)::before { content: "🧅"; left: 85%; width: 48px; height: 48px; animation-delay: 0s; animation-duration: 11s; }
+.particles li:nth-child(11)::before { content: "🌶️"; left: 15%; width: 42px; height: 42px; animation-delay: 5s; animation-duration: 22s; }
+.particles li:nth-child(12)::before { content: "🥗"; left: 55%; width: 58px; height: 58px; animation-delay: 8s; animation-duration: 28s; }
+.particles li:nth-child(13)::before { content: "🍞"; left: 30%; width: 52px; height: 52px; animation-delay: 12s; animation-duration: 30s; }
+.particles li:nth-child(14)::before { content: "🥐"; left: 80%; width: 46px; height: 46px; animation-delay: 6s; animation-duration: 24s; }
+.particles li:nth-child(15)::before { content: "🍇"; left: 45%; width: 50px; height: 50px; animation-delay: 10s; animation-duration: 26s; }
+.particles li:nth-child(16)::before { content: "🍪"; left: 22%; width: 54px; height: 54px; animation-delay: 3s; animation-duration: 20s; }
+.particles li:nth-child(17)::before { content: "🍊"; left: 62%; width: 48px; height: 48px; animation-delay: 9s; animation-duration: 32s; }
+.particles li:nth-child(18)::before { content: "🍌"; left: 38%; width: 52px; height: 52px; animation-delay: 14s; animation-duration: 27s; }
+.particles li:nth-child(19)::before { content: "🍎"; left: 78%; width: 46px; height: 46px; animation-delay: 1s; animation-duration: 23s; }
+.particles li:nth-child(20)::before { content: "🍉"; left: 8%; width: 60px; height: 60px; animation-delay: 11s; animation-duration: 34s; }
+.particles li:nth-child(21)::before { content: "🥚"; left: 68%; width: 44px; height: 44px; animation-delay: 7s; animation-duration: 19s; }
+.particles li:nth-child(22)::before { content: "🧀"; left: 42%; width: 50px; height: 50px; animation-delay: 13s; animation-duration: 29s; }
+.particles li:nth-child(23)::before { content: "🍚"; left: 88%; width: 48px; height: 48px; animation-delay: 4s; animation-duration: 25s; }
+.particles li:nth-child(24)::before { content: "🛢️"; left: 5%; width: 52px; height: 52px; animation-delay: 16s; animation-duration: 40s; }
+.particles li:nth-child(25)::before { content: "🥖"; left: 52%; width: 54px; height: 54px; animation-delay: 9s; animation-duration: 21s; }
+
+.particles li:nth-child(1) { left: 25%; width: 60px; height: 60px; animation-delay: 0s; }
+.particles li:nth-child(2) { left: 10%; width: 50px; height: 50px; animation-delay: 2s; animation-duration: 12s; }
+.particles li:nth-child(3) { left: 70%; width: 45px; height: 45px; animation-delay: 4s; }
+.particles li:nth-child(4) { left: 40%; width: 55px; height: 55px; animation-delay: 0s; animation-duration: 18s; }
+.particles li:nth-child(5) { left: 65%; width: 50px; height: 50px; animation-delay: 0s; }
+.particles li:nth-child(6) { left: 75%; width: 65px; height: 65px; animation-delay: 3s; }
+.particles li:nth-child(7) { left: 35%; width: 55px; height: 55px; animation-delay: 7s; }
+.particles li:nth-child(8) { left: 50%; width: 45px; height: 45px; animation-delay: 15s; animation-duration: 45s; }
+.particles li:nth-child(9) { left: 20%; width: 50px; height: 50px; animation-delay: 2s; animation-duration: 35s; }
+.particles li:nth-child(10) { left: 85%; width: 48px; height: 48px; animation-delay: 0s; animation-duration: 11s; }
+.particles li:nth-child(11) { left: 15%; width: 42px; height: 42px; animation-delay: 5s; animation-duration: 22s; }
+.particles li:nth-child(12) { left: 55%; width: 58px; height: 58px; animation-delay: 8s; animation-duration: 28s; }
+.particles li:nth-child(13) { left: 30%; width: 52px; height: 52px; animation-delay: 12s; animation-duration: 30s; }
+.particles li:nth-child(14) { left: 80%; width: 46px; height: 46px; animation-delay: 6s; animation-duration: 24s; }
+.particles li:nth-child(15) { left: 45%; width: 50px; height: 50px; animation-delay: 10s; animation-duration: 26s; }
+.particles li:nth-child(16) { left: 22%; width: 54px; height: 54px; animation-delay: 3s; animation-duration: 20s; }
+.particles li:nth-child(17) { left: 62%; width: 48px; height: 48px; animation-delay: 9s; animation-duration: 32s; }
+.particles li:nth-child(18) { left: 38%; width: 52px; height: 52px; animation-delay: 14s; animation-duration: 27s; }
+.particles li:nth-child(19) { left: 78%; width: 46px; height: 46px; animation-delay: 1s; animation-duration: 23s; }
+.particles li:nth-child(20) { left: 8%; width: 60px; height: 60px; animation-delay: 11s; animation-duration: 34s; }
+.particles li:nth-child(21) { left: 68%; width: 44px; height: 44px; animation-delay: 7s; animation-duration: 19s; }
+.particles li:nth-child(22) { left: 42%; width: 50px; height: 50px; animation-delay: 13s; animation-duration: 29s; }
+.particles li:nth-child(23) { left: 88%; width: 48px; height: 48px; animation-delay: 4s; animation-duration: 25s; }
+.particles li:nth-child(24) { left: 5%; width: 52px; height: 52px; animation-delay: 16s; animation-duration: 40s; }
+.particles li:nth-child(25) { left: 52%; width: 54px; height: 54px; animation-delay: 9s; animation-duration: 21s; }
+
+@keyframes floatUp {
+    0% { transform: translateY(0) rotate(-5deg) scale(1); opacity: 0.9; filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.1)); }
+    50% { transform: translateX(80px) translateY(-500px) rotate(180deg) scale(1.15); opacity: 0.85; filter: drop-shadow(0 6px 12px rgba(0, 0, 0, 0.15)); }
+    100% { transform: translateY(-1000px) rotate(360deg) scale(0.9); opacity: 0; filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1)); }
+}
+
+/* Premium Glass Card Effect */
+.glass-card {
+    background: rgba(255, 255, 255, 0.7);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.07);
+}
+
+/* Custom Scrollbar */
+.no-scrollbar::-webkit-scrollbar { display: none; }
+.no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+/* Smooth Fade In */
+.fade-in { animation: fadeIn 0.4s cubic-bezier(0.4, 0, 0.2, 1) forwards; }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
