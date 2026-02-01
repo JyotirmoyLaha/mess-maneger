@@ -6,17 +6,17 @@ import {
     getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged, signInWithCustomToken, signOut 
 } from 'https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js';
 
-// --- Configuration from Environment Variables ---
+// --- Configuration from Environment Variables or Hardcoded ---
 const firebaseConfig = {
-    apiKey: import.meta.env.VITE_FIREBASE_API_KEY || "AIzaSyC7z-IuvKCSer2rTRatJW5DRtO9NDZdPeg",
-    authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN || "messjyotirmoy.firebaseapp.com",
-    projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID || "messjyotirmoy",
-    storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET || "messjyotirmoy.firebasestorage.app",
-    messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID || "13122110126",
-    appId: import.meta.env.VITE_FIREBASE_APP_ID || "1:13122110126:web:bb6d03aa476dbf5929a33f"
+    apiKey: "AIzaSyC7z-IuvKCSer2rTRatJW5DRtO9NDZdPeg",
+    authDomain: "messjyotirmoy.firebaseapp.com",
+    projectId: "messjyotirmoy",
+    storageBucket: "messjyotirmoy.firebasestorage.app",
+    messagingSenderId: "13122110126",
+    appId: "1:13122110126:web:bb6d03aa476dbf5929a33f"
 };
 
-const appId = import.meta.env.VITE_APP_ID || 'default-app-id';
+const appId = 'default-app-id';
 
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
