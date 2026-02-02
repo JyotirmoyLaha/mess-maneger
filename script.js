@@ -291,8 +291,13 @@ function renderDashboardData() {
         elements.prevMonthInfo.classList.add('hidden');
     }
     
-    if(remaining < 0) { elements.fundBalance.classList.remove('from-emerald-200', 'to-teal-100'); elements.fundBalance.classList.add('text-red-300'); } 
-    else { elements.fundBalance.classList.add('from-emerald-200', 'to-teal-100'); elements.fundBalance.classList.remove('text-red-300'); }
+    if(remaining < 0) {
+        elements.fundBalance.classList.remove('from-emerald-200', 'to-teal-100', 'text-transparent', 'bg-clip-text');
+        elements.fundBalance.classList.add('text-red-300');
+    } else {
+        elements.fundBalance.classList.add('from-emerald-200', 'to-teal-100', 'text-transparent', 'bg-clip-text');
+        elements.fundBalance.classList.remove('text-red-300');
+    }
 
     if (state.expenses.length === 0) { elements.expensesList.innerHTML = ''; elements.emptyState.classList.remove('hidden'); return; }
     elements.emptyState.classList.add('hidden');
