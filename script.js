@@ -279,9 +279,9 @@ function renderDashboardData() {
     const totalSpent = currentMonthExpenses.reduce((acc, curr) => acc + (curr.cost || 0), 0);
     const remaining = state.totalFund - totalSpent;
     
-    elements.totalSpent.textContent = `₹${totalSpent.toLocaleString('en-IN', {minimumFractionDigits: 2})}`;
-    elements.totalFund.textContent = `₹${state.totalFund.toLocaleString('en-IN', {minimumFractionDigits: 2})}`;
-    elements.fundBalance.textContent = `₹${remaining.toLocaleString('en-IN', {minimumFractionDigits: 2})}`;
+    elements.totalSpent.textContent = formatCurrency(totalSpent);
+    elements.totalFund.textContent = formatCurrency(state.totalFund);
+    elements.fundBalance.textContent = formatBalance(remaining);
     
     // Display previous month spent if available
     if (state.previousMonthSpent && state.previousMonthSpent > 0) {
@@ -385,6 +385,16 @@ function showError(msg, isLogin) {
 function hideError(isLogin) {
     if (isLogin) elements.loginError.classList.add('hidden'); else elements.dashError.classList.add('hidden');
 }
+function formatCurrency(amount) {
+    const value = Math.abs(Number(amount) || 0);
+    return `₹${value.toLocaleString('en-IN', { minimumFractionDigits: 2 })}`;
+}
+
+function formatBalance(amount) {
+    const value = Number(amount) || 0;
+    return value < 0 ? `-${formatCurrency(value)}` : formatCurrency(value);
+}
+
 function escapeHtml(text) { if (!text) return ''; return text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;"); }
 function showToast(msg, type='success') {
     const toast = document.createElement('div');
