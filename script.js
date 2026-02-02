@@ -392,7 +392,7 @@ function formatCurrency(amount) {
 
 function formatBalance(amount) {
     const value = Number(amount) || 0;
-    return value < 0 ? `-${formatCurrency(value)}` : formatCurrency(value);
+    return `₹${value.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
 }
 
 function escapeHtml(text) { if (!text) return ''; return text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;"); }
