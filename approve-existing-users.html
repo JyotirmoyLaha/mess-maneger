@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Approve Existing Users - Mess Manager</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 min-h-screen p-8">
+    <div class="max-w-2xl mx-auto bg-white rounded-lg shadow-md p-6">
+        <h1 class="text-2xl font-bold mb-4">Approve All Existing Users</h1>
+        <p class="mb-4 text-gray-600">This will add all users who have already added expenses to the approved users list.</p>
+        
+        <div id="status" class="mb-4 p-4 rounded hidden"></div>
+        
+        <button 
+            id="approve-btn"
+            class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 px-6 rounded-lg"
+        >
+            Approve All Existing Users
+        </button>
+        
+        <div id="results" class="mt-6 hidden">
+            <h2 class="text-xl font-semibold mb-2">Results:</h2>
+            <ul id="results-list" class="list-disc pl-5 space-y-1 text-sm"></ul>
+        </div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js';
+        import { 
+            getFirestore, collection, getDocs, doc, setDoc, initializeFirestore
+        } from 'https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js';
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyC7z-IuvKCSer2rTRatJW5DRtO9NDZdPeg",
+            authDomain: "messjyotirmoy.firebaseapp.com",
+            projectId: "messjyotirmoy",
+            storageBucket: "messjyotirmoy.firebasestorage.app",
+            messagingSenderId: "13122110126",
+            appId: "1:13122110126:web:bb6d03aa476dbf5929a33f"
+        };
+
+        const appId = 'default-app-id';
+
+        const app = initializeApp(firebaseConfig);
+        let db;
+        try {
+            db = initializeFirestore(app, { 
+                experimentalForceLongPolling: true,
+                useFetchStreams: false 
+            });
+        } catch (e) {
+            db = getFirestore(app);
+        }
+
+        const statusDiv = document.getElementById('status');
+        const resultsDiv = document.getElementById('results');
+        const resultsList = document.getElementById('results-list');
+        const approveBtn = document.getElementById('approve-btn');
+
+        function showStatus(message, type = 'info') {
+            statusDiv.classList.remove('hidden', 'bg-blue-100', 'text-blue-700', 'bg-green-100', 'text-green-700', 'bg-red-100', 'text-red-700');
+            
+            if (type === 'success') {
+                statusDiv.classList.add('bg-green-100', 'text-green-700');
+            } else if (type === 'error') {
+                statusDiv.classList.add('bg-red-100', 'text-red-700');
+            } else {
+                statusDiv.classList.add('bg-blue-100', 'text-blue-700');
+            }
+            
+            statusDiv.textContent = message;
+        }
+
+        approveBtn.addEventListener('click', async () => {
+            approveBtn.disabled = true;
+            approveBtn.textContent = 'Processing...';
+            resultsList.innerHTML = '';
+            resultsDiv.classList.add('hidden');
+            
+            showStatus('Fetching existing users from expenses...', 'info');
+
+            try {
+                // Get all expenses
+                const expensesRef = collection(db, 'artifacts', appId, 'public', 'data', 'mess_expenses');
+                const snapshot = await getDocs(expensesRef);
+                
+                // Extract unique users
+                const users = new Map();
+                snapshot.forEach(doc => {
+                    const data = doc.data();
+                    if (data.userId && data.addedBy) {
+                        users.set(data.userId, {
+                            userId: data.userId,
+                            displayName: data.addedBy,
+                            photoURL: data.userPhoto || '',
+                            approvedAt: new Date().toISOString(),
+                            approvedBy: 'System (Existing User)',
+                            note: 'Auto-approved as existing user'
+                        });
+                    }
+                });
+
+                if (users.size === 0) {
+                    showStatus('No users found in expenses.', 'error');
+                    approveBtn.disabled = false;
+                    approveBtn.textContent = 'Approve All Existing Users';
+                    return;
+                }
+
+                showStatus(`Found ${users.size} unique users. Adding to approved list...`, 'info');
+
+                // Add each user to approved_users collection
+                let approved = 0;
+                for (const [userId, userData] of users) {
+                    try {
+                        const userRef = doc(db, 'artifacts', appId, 'public', 'data', 'approved_users', userId);
+                        await setDoc(userRef, userData);
+                        
+                        const li = document.createElement('li');
+                        li.textContent = `✓ Approved: ${userData.displayName}`;
+                        li.className = 'text-green-600';
+                        resultsList.appendChild(li);
+                        approved++;
+                    } catch (err) {
+                        const li = document.createElement('li');
+                        li.textContent = `✗ Failed: ${userData.displayName} - ${err.message}`;
+                        li.className = 'text-red-600';
+                        resultsList.appendChild(li);
+                    }
+                }
+
+                resultsDiv.classList.remove('hidden');
+                showStatus(`Successfully approved ${approved} out of ${users.size} users!`, 'success');
+                
+            } catch (error) {
+                showStatus(`Error: ${error.message}`, 'error');
+                console.error('Error approving users:', error);
+            } finally {
+                approveBtn.disabled = false;
+                approveBtn.textContent = 'Approve All Existing Users';
+            }
+        });
+    </script>
+</body>
+</html>
