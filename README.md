@@ -42,8 +42,6 @@ This project demonstrates **full-stack web development expertise** including:
 - **Daily/Monthly Views** - Toggle between granular and aggregated expense views
 - **Real-time Balance** - Instant calculation of remaining funds
 - **PDF Export** - Extract daily and monthly expenses to professional PDF reports
-- **Admin Approval System** - New users require admin approval before accessing the app
-- **Email Notifications** - Automatic email alerts to admin for new login requests
 
 ### Premium UI Components
 - **Animated Gradient Background** - Dynamic color-shifting 14-color gradient with blur effects
@@ -106,17 +104,15 @@ Firestore Structure:
 ### File Organization (Modular Design)
 ```
 mess-maneger/
-├── index.html                    # 304 lines - Clean HTML structure only
-├── styles.css                    # 220+ lines - All CSS/animations/effects
-├── script.js                     # 549 lines - Firebase logic & handlers
-├── admin-panel.html             # Admin interface for user approvals
-├── approve-existing-users.html  # One-time setup tool
-├── .env                         # Firebase credentials (Git-ignored)
-├── .env.example                 # Safe template for developers
-├── .gitignore                   # Prevents credential exposure
-├── manifest.json                # PWA configuration
-├── SETUP.md                     # Environment setup guide
-└── README.md                    # This file
+├── index.html              # 304 lines - Clean HTML structure only
+├── styles.css              # 220+ lines - All CSS/animations/effects
+├── script.js               # 373 lines - Firebase logic & handlers
+├── .env                    # Firebase credentials (Git-ignored)
+├── .env.example            # Safe template for developers
+├── .gitignore              # Prevents credential exposure
+├── manifest.json           # PWA configuration
+├── SETUP.md               # Environment setup guide
+└── README.md              # This file
 ```
 
 ### Design Patterns Implemented
@@ -316,75 +312,13 @@ let state = {
 
 - [ ] Advanced analytics & charts
 - [ ] Multi-currency support
-- [x] Email notifications for new user requests
+- [ ] Email notifications
 - [ ] Expense splitting algorithm
 - [x] Export to PDF (Daily & Monthly)
 - [ ] Dark mode
 - [ ] Push notifications
 - [ ] Native mobile apps
 - [ ] Budget alerts
-- [x] Admin approval system for new users
-
----
-
-## 🛡️ Admin Panel
-
-The app includes a comprehensive admin panel for managing user access.
-
-### First-Time Setup
-
-1. **Approve Existing Users** (One-time step)
-   - Open `approve-existing-users.html` in your browser
-   - Click "Approve All Existing Users"
-   - This will automatically approve all users who have already added expenses
-
-2. **Access Admin Panel**
-   - Open `admin-panel.html` in your browser
-   - No authentication required (secure your deployment!)
-
-### Admin Panel Features
-
-**Pending Requests Tab**
-- View all users requesting access
-- See user email, name, and request timestamp
-- Approve or reject with one click
-- Real-time updates when new requests arrive
-
-**Approved Users Tab**
-- View all users with access
-- Revoke access if needed
-- See approval date and status
-
-**Tools Tab**
-- Auto-approve existing users
-- System information
-- Quick access to admin email
-
-### How It Works
-
-1. **New User Flow:**
-   - User signs in with Google
-   - System checks if user is in approved list
-   - If not approved, sends email to admin (jyotirmoy713128@gmail.com)
-   - User sees pending message and is signed out
-   - User waits for admin approval
-
-2. **Admin Approval:**
-   - Admin receives email notification
-   - Admin opens admin panel
-   - Admin approves or rejects request
-   - Approved users can immediately log in
-
-3. **Email Notifications:**
-   - Automatic emails sent via FormSubmit.co
-   - Contains user details and request time
-   - Sent to: jyotirmoy713128@gmail.com
-
-### Security Notes
-- Admin panel should be password-protected in production
-- Consider hosting admin panel on a separate subdomain
-- Use Firebase Security Rules to restrict database access
-- Only approved users can access the main app
 
 ---
 

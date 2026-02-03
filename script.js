@@ -77,95 +77,9 @@ elements.googleLoginBtn.addEventListener('click', async () => {
     }
 });
 
-// Check if user is approved
-async function checkUserApproval(user) {
-    try {
-        const approvedUsersRef = doc(db, 'artifacts', appId, 'public', 'data', 'approved_users', user.uid);
-        const approvedUserDoc = await getDoc(approvedUsersRef);
-        return approvedUserDoc.exists();
-    } catch (error) {
-        console.error('Error checking approval:', error);
-        return false;
-    }
-}
-
-// Send approval request email
-async function sendApprovalRequest(user) {
-    try {
-        const pendingRef = doc(db, 'artifacts', appId, 'public', 'data', 'pending_approvals', user.uid);
-        const pendingDoc = await getDoc(pendingRef);
-        
-        // Check if request already sent
-        if (pendingDoc.exists()) {
-            return { alreadySent: true };
-        }
-        
-        // Store pending request in Firestore
-        await setDoc(pendingRef, {
-            email: user.email,
-            displayName: user.displayName || 'Unknown',
-            photoURL: user.photoURL || '',
-            requestedAt: new Date().toISOString(),
-            status: 'pending'
-        });
-        
-        // Send email using FormSubmit.co service
-        const formData = new FormData();
-        formData.append('email', 'jyotirmoy713128@gmail.com');
-        formData.append('subject', '🔔 New Login Request - Mess Manager');
-        formData.append('message', `
-New User Login Request:
-
-Name: ${user.displayName || 'Not provided'}
-Email: ${user.email}
-Requested At: ${new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' })}
-
-To approve this user, please add their email to the approved users list in your Firestore database.
-
-Path: artifacts/${appId}/public/data/approved_users/${user.uid}
-
-User Details:
-- UID: ${user.uid}
-- Email: ${user.email}
-`);
-        
-        await fetch('https://formsubmit.co/ajax/jyotirmoy713128@gmail.com', {
-            method: 'POST',
-            body: formData
-        });
-        
-        return { success: true };
-    } catch (error) {
-        console.error('Error sending approval request:', error);
-        return { error: true };
-    }
-}
-
-onAuthStateChanged(auth, async (user) => {
+onAuthStateChanged(auth, (user) => {
     state.user = user;
     if (user) {
-        // Check if user is approved
-        const isApproved = await checkUserApproval(user);
-        
-        if (!isApproved) {
-            // User is not approved, send approval request
-            const result = await sendApprovalRequest(user);
-            
-            if (result.alreadySent) {
-                showError('Your login request is pending approval. Please wait for the administrator to approve your access.', true);
-            } else if (result.success) {
-                showError('Your login request has been sent to the administrator. You will receive access once approved.', true);
-            } else {
-                showError('Unable to send approval request. Please contact the administrator at jyotirmoy713128@gmail.com', true);
-            }
-            
-            // Sign out the user since they're not approved
-            await signOut(auth);
-            state.loading = false;
-            render();
-            return;
-        }
-        
         state.username = user.displayName || (user.email ? user.email.split('@')[0] : 'Guest');
         state.userPhoto = user.photoURL;
         state.hasJoined = true;
