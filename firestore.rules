@@ -1,0 +1,55 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // ============================================
+    // AUTHORIZED MEMBERS EMAIL WHITELIST
+    // Update this list to match script.js
+    // ============================================
+    function isAuthorizedUser() {
+      return request.auth != null && (
+        request.auth.token.email.lower() == 'jyotirmoy713128@gmail.com'
+        // Add more authorized emails here:
+        // || request.auth.token.email.lower() == 'soumikmondal6201@gmail.com'
+        // || request.auth.token.email.lower() == 'subhajit.kar16082006@gmail.com'
+      );
+    }
+    
+    // Helper function to check if user is authenticated
+    function isSignedIn() {
+      return request.auth != null;
+    }
+    
+    // ============================================
+    // MESS MANAGER DATA SECURITY RULES
+    // ============================================
+    
+    match /artifacts/{appId}/public/data/{document=**} {
+      // Only authorized users can read mess data
+      allow read: if isAuthorizedUser();
+      
+      // Only authorized users can create expenses
+      allow create: if isAuthorizedUser() 
+                    && request.resource.data.userId == request.auth.uid
+                    && request.resource.data.addedBy is string
+                    && request.resource.data.item is string
+                    && request.resource.data.cost is number
+                    && request.resource.data.cost > 0;
+      
+      // Users can only update their own expenses, or authorized users can update fund
+      allow update: if isAuthorizedUser() && (
+                      resource.data.userId == request.auth.uid ||
+                      request.resource.data.keys().hasAll(['amount', 'currentMonth'])
+                    );
+      
+      // Users can only delete their own expenses
+      allow delete: if isAuthorizedUser() && resource.data.userId == request.auth.uid;
+    }
+    
+    // Deny all other access by default
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

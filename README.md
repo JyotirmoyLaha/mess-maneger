@@ -59,6 +59,13 @@ This project demonstrates **full-stack web development expertise** including:
 - **Error Handling** - Graceful failures with user-friendly error messages
 - **Performance** - Efficient DOM updates, event delegation, CSS animations
 
+### Security Features
+- **Email Whitelist Authorization** - Only authorized mess members can access
+- **Multi-layer Protection** - Frontend checks + Backend Firestore security rules
+- **User Data Isolation** - Members can only delete their own expenses
+- **Auto-logout Unauthorized** - Rejected users are signed out immediately
+- **Data Validation** - Backend rules enforce required fields and types
+
 ---
 
 ## 🛠️ Tech Stack
@@ -99,19 +106,61 @@ Firestore Structure:
 
 ---
 
-## 📁 Project Architecture
+## � Security Features
+
+### Multi-Layer Security Architecture
+
+**Mess Manager implements defense-in-depth security** to ensure only authorized mess members can access and modify data.
+
+#### 1. **Frontend Email Whitelist** 
+- Email-based authorization after Google OAuth
+- Unauthorized users are immediately signed out
+- Clear error messages for rejected access attempts
+- Configured in `script.js` (AUTHORIZED_EMAILS array)
+
+#### 2. **Backend Firestore Security Rules**
+- Database-level access control (even if frontend is bypassed)
+- Only whitelisted emails can read/write data
+- Users can only delete their own expenses
+- Field-level validation for data integrity
+- Deployed via `firestore.rules`
+
+#### 3. **Data Integrity Protection**
+- Cost validation (must be positive number)
+- Required fields enforced (item, cost, userId, addedBy)
+- User identity verification (userId must match authenticated user)
+- Fund updates restricted to authorized members
+
+### Security Rule Example
+```javascript
+// Only authorized mess members can access
+function isAuthorizedUser() {
+  return request.auth != null && (
+    request.auth.token.email.lower() == 'member1@gmail.com'
+    || request.auth.token.email.lower() == 'member2@gmail.com'
+  );
+}
+```
+
+📖 **Full Security Setup Guide:** See [SECURITY_SETUP.md](SECURITY_SETUP.md)
+
+---
+
+## �📁 Project Architecture
 
 ### File Organization (Modular Design)
 ```
 mess-maneger/
 ├── index.html              # 304 lines - Clean HTML structure only
 ├── styles.css              # 220+ lines - All CSS/animations/effects
-├── script.js               # 373 lines - Firebase logic & handlers
+├── script.js               # 549 lines - Firebase logic & handlers
+├── firestore.rules         # Firestore security rules (backend protection)
 ├── .env                    # Firebase credentials (Git-ignored)
 ├── .env.example            # Safe template for developers
 ├── .gitignore              # Prevents credential exposure
 ├── manifest.json           # PWA configuration
 ├── SETUP.md               # Environment setup guide
+├── SECURITY_SETUP.md      # Security configuration guide
 └── README.md              # This file
 ```
 
@@ -153,7 +202,20 @@ mess-maneger/
    VITE_FIREBASE_APP_ID=your_app_id
    ```
 
-3. **Run Locally**
+3. **Add Authorized Mess Members**
+   
+   Edit `script.js` (around line 20-25):
+   ```javascript
+   const AUTHORIZED_EMAILS = [
+       'member1@gmail.com',
+       'member2@gmail.com',
+       // Add all your mess members here
+   ];
+   ```
+   
+   📖 See [SECURITY_SETUP.md](SECURITY_SETUP.md) for complete security configuration
+
+4. **Run Locally**
    ```bash
    # Python 3
    python -m http.server 8000
@@ -167,6 +229,7 @@ mess-maneger/
 3. Enable Google Authentication
 4. Add authorized domains
 5. Copy credentials to `.env`
+6. **Deploy security rules** from `firestore.rules` (see [SECURITY_SETUP.md](SECURITY_SETUP.md))
 
 ---
 

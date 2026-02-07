@@ -18,6 +18,16 @@ const firebaseConfig = {
 
 const appId = 'default-app-id';
 
+// ============================================
+// AUTHORIZED MEMBERS EMAIL WHITELIST
+// Add mess member emails here to grant access
+// ============================================
+const AUTHORIZED_EMAILS = [
+    'jyotirmoy713128@gmail.com',  // Add your mess members' emails here
+    'soumikmondal6201@gmail.com',
+    'subhajit.kar16082006@gmail.com',
+];
+
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const googleProvider = new GoogleAuthProvider();
@@ -80,6 +90,22 @@ elements.googleLoginBtn.addEventListener('click', async () => {
 onAuthStateChanged(auth, (user) => {
     state.user = user;
     if (user) {
+        // Check if user email is authorized
+        const userEmail = user.email ? user.email.toLowerCase() : '';
+        const isAuthorized = AUTHORIZED_EMAILS.some(email => email.toLowerCase() === userEmail);
+        
+        if (!isAuthorized) {
+            // Unauthorized user - sign them out immediately
+            signOut(auth).then(() => {
+                state.hasJoined = false;
+                state.loading = false;
+                showError(`Access Denied: ${userEmail} is not authorized. Please contact your mess admin to get access.`, true);
+                render();
+            });
+            return;
+        }
+        
+        // Authorized user - proceed normally
         state.username = user.displayName || (user.email ? user.email.split('@')[0] : 'Guest');
         state.userPhoto = user.photoURL;
         state.hasJoined = true;

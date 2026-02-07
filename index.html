@@ -15,7 +15,7 @@
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Lucide Icons -->
@@ -70,8 +70,11 @@
                 <p class="text-slate-500 mb-10 text-sm font-medium">Smart expense tracking for your group.</p>
                 
                 <div id="login-error" class="hidden bg-red-50/80 backdrop-blur-sm text-red-600 p-4 rounded-xl mb-6 text-xs border border-red-200 flex items-start gap-3 text-left shadow-sm">
-                    <i data-lucide="alert-circle" class="w-4 h-4 mt-0.5 flex-shrink-0"></i>
-                    <span id="login-error-text"></span>
+                    <i data-lucide="shield-alert" class="w-5 h-5 mt-0.5 flex-shrink-0"></i>
+                    <div>
+                        <div class="font-bold mb-1">⚠️ Access Restricted</div>
+                        <span id="login-error-text"></span>
+                    </div>
                 </div>
 
                 <button 
@@ -300,6 +303,6 @@
     </div>
 
     <!-- Scripts -->
-    <script type="module" src="script.js"></script>
+    <script type="module" src="script.js?v=2.0"></script>
 </body>
 </html>
