@@ -158,7 +158,6 @@ mess-maneger/
 ├── .env                    # Firebase credentials (Git-ignored)
 ├── .env.example            # Safe template for developers
 ├── .gitignore              # Prevents credential exposure
-├── manifest.json           # PWA configuration
 ├── SETUP.md               # Environment setup guide
 ├── SECURITY_SETUP.md      # Security configuration guide
 └── README.md              # This file
