@@ -11,8 +11,8 @@ service cloud.firestore {
       return request.auth != null && (
         request.auth.token.email.lower() == 'jyotirmoy713128@gmail.com'
         // Add more authorized emails here:
-        // || request.auth.token.email.lower() == 'soumikmondal6201@gmail.com'
-        // || request.auth.token.email.lower() == 'subhajit.kar16082006@gmail.com'
+        || request.auth.token.email.lower() == 'soumikmondal6201@gmail.com'
+        || request.auth.token.email.lower() == 'subhajit.kar16082006@gmail.com'
       );
     }
     
