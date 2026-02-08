@@ -30,7 +30,7 @@ service cloud.firestore {
       allow read, write: if isAuthorizedUser();
     }
     
-    // Mess expenses collection - more granular control
+    // Mess expenses collection - authorized users have full control
     match /artifacts/{appId}/public/data/mess_expenses/{expenseId} {
       // Only authorized users can read expenses
       allow read: if isAuthorizedUser();
@@ -43,11 +43,11 @@ service cloud.firestore {
                     && request.resource.data.cost is number
                     && request.resource.data.cost > 0;
       
-      // Users can only update their own expenses
-      allow update: if isAuthorizedUser() && resource.data.userId == request.auth.uid;
+      // Authorized users can update any expense
+      allow update: if isAuthorizedUser();
       
-      // Users can only delete their own expenses
-      allow delete: if isAuthorizedUser() && resource.data.userId == request.auth.uid;
+      // Authorized users can delete any expense
+      allow delete: if isAuthorizedUser();
     }
     
     // Allow read access to other documents under data for authorized users
