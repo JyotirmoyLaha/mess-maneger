@@ -375,13 +375,11 @@ let state = {
 
 - [ ] Advanced analytics & charts
 - [ ] Multi-currency support
+- [ ] Email notifications
 - [ ] Expense splitting algorithm
 - [x] Export to PDF (Daily & Monthly)
 - [ ] Dark mode
-- [ ] Push notifications
-- [ ] Native mobile apps
 - [ ] Budget alerts
-
 ---
 
 ## 🤝 Contributing
