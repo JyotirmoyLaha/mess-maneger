@@ -25,8 +25,14 @@ service cloud.firestore {
     // MESS MANAGER DATA SECURITY RULES
     // ============================================
     
-    match /artifacts/{appId}/public/data/{document=**} {
-      // Only authorized users can read mess data
+    // Fund summary document - allow all authorized users to read and write
+    match /artifacts/{appId}/public/data/mess_fund/{document=**} {
+      allow read, write: if isAuthorizedUser();
+    }
+    
+    // Mess expenses collection - more granular control
+    match /artifacts/{appId}/public/data/mess_expenses/{expenseId} {
+      // Only authorized users can read expenses
       allow read: if isAuthorizedUser();
       
       // Only authorized users can create expenses
@@ -37,14 +43,16 @@ service cloud.firestore {
                     && request.resource.data.cost is number
                     && request.resource.data.cost > 0;
       
-      // Users can only update their own expenses, or authorized users can update fund
-      allow update: if isAuthorizedUser() && (
-                      resource.data.userId == request.auth.uid ||
-                      request.resource.data.keys().hasAll(['amount', 'currentMonth'])
-                    );
+      // Users can only update their own expenses
+      allow update: if isAuthorizedUser() && resource.data.userId == request.auth.uid;
       
       // Users can only delete their own expenses
       allow delete: if isAuthorizedUser() && resource.data.userId == request.auth.uid;
+    }
+    
+    // Allow read access to other documents under data for authorized users
+    match /artifacts/{appId}/public/data/{document=**} {
+      allow read: if isAuthorizedUser();
     }
     
     // Deny all other access by default
