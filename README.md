@@ -3,7 +3,6 @@
 > A **production-grade Progressive Web App** for real-time expense tracking with premium UI/UX, Firebase real-time synchronization, and secure Google authentication.
 
 [![GitHub](https://img.shields.io/badge/GitHub-JyotirmoyLaha/mess--maneger-blue?logo=github)](https://github.com/JyotirmoyLaha/mess-maneger)
-[![PWA](https://img.shields.io/badge/PWA-Ready-purple)]()
 [![Firebase](https://img.shields.io/badge/Backend-Firebase-orange)]()
 [![Live Demo](https://img.shields.io/badge/Live-Demo-success?logo=render)](https://mess-maneger.onrender.com/)
 
@@ -55,7 +54,6 @@ This project demonstrates **full-stack web development expertise** including:
 - **Firestore Real-time Listeners** - Multi-device synchronization without polling
 - **Google OAuth 2.0** - Enterprise-grade authentication
 - **Responsive Design** - Mobile-first Tailwind CSS with max-width constraints
-- **PWA Ready** - Manifest configuration for installable app experience
 - **Error Handling** - Graceful failures with user-friendly error messages
 - **Performance** - Efficient DOM updates, event delegation, CSS animations
 
@@ -419,9 +417,4 @@ This project demonstrates production-ready code quality, modern web technologies
 
 ---
 
-## 📄 License
-
-MIT License - Feel free to use this project as a reference or template.
-
----
-
+\
