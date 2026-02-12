@@ -23,10 +23,14 @@ const appId = 'default-app-id';
 // Add mess member emails here to grant access
 // ============================================
 const AUTHORIZED_EMAILS = [
-    'jyotirmoy713128@gmail.com',  // Add your mess members' emails here
+    'jyotirmoy713128@gmail.com',  // Admin - can access everything
     'soumikmondal6201@gmail.com',
     'subhajit.kar16082006@gmail.com',
+    'debdeepmondal96@gmail.com',
 ];
+
+// Admin email with full access permissions
+const ADMIN_EMAIL = 'jyotirmoy713128@gmail.com';
 
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
@@ -43,7 +47,7 @@ try {
 }
 
 let state = {
-    user: null, username: '', userPhoto: '', expenses: [], totalFund: 0, editId: null, deleteTargetId: null, loading: true, hasJoined: false, viewMode: 'daily', currentMonth: '', previousMonthSpent: 0, groupedExpenses: {}
+    user: null, username: '', userPhoto: '', expenses: [], totalFund: 0, editId: null, deleteTargetId: null, loading: true, hasJoined: false, viewMode: 'daily', currentMonth: '', previousMonthSpent: 0, groupedExpenses: {}, isAdmin: false
 };
 
 const views = { loading: document.getElementById('loading-view'), login: document.getElementById('login-view'), dashboard: document.getElementById('dashboard-view') };
@@ -108,6 +112,7 @@ onAuthStateChanged(auth, (user) => {
         // Authorized user - proceed normally
         state.username = user.displayName || (user.email ? user.email.split('@')[0] : 'Guest');
         state.userPhoto = user.photoURL;
+        state.isAdmin = user.email.toLowerCase() === ADMIN_EMAIL.toLowerCase();
         state.hasJoined = true;
         setupDataListener();
     } else { state.hasJoined = false; }
@@ -246,12 +251,36 @@ elements.expenseForm.addEventListener('submit', async (e) => {
 elements.cancelEditBtn.addEventListener('click', cancelEdit);
 function cancelEdit() { state.editId = null; elements.itemName.value = ''; elements.itemCost.value = ''; updateFormState(); }
 
+// Check if current user can edit/delete an expense
+function canModifyExpense(expense) {
+    if (!expense || !state.user) return false;
+    // Admin can modify any expense
+    if (state.isAdmin) return true;
+    // User can only modify their own expenses
+    return expense.userId === state.user.uid;
+}
+
 document.addEventListener('click', (e) => {
     const deleteBtn = e.target.closest('.delete-btn');
-    if (deleteBtn) { state.deleteTargetId = deleteBtn.dataset.id; elements.deleteModal.classList.remove('hidden'); return; }
+    if (deleteBtn) { 
+        const id = deleteBtn.dataset.id;
+        const expense = state.expenses.find(x => x.id === id);
+        if (!canModifyExpense(expense)) {
+            showToast('You can only delete your own entries', 'error');
+            return;
+        }
+        state.deleteTargetId = deleteBtn.dataset.id; 
+        elements.deleteModal.classList.remove('hidden'); 
+        return; 
+    }
     const editBtn = e.target.closest('.edit-btn');
     if (editBtn) {
-        const id = editBtn.dataset.id; const expense = state.expenses.find(x => x.id === id);
+        const id = editBtn.dataset.id; 
+        const expense = state.expenses.find(x => x.id === id);
+        if (!canModifyExpense(expense)) {
+            showToast('You can only edit your own entries', 'error');
+            return;
+        }
         if (expense) { state.editId = id; elements.itemName.value = expense.item; elements.itemCost.value = expense.cost; updateFormState(); window.scrollTo({ top: 0, behavior: 'smooth' }); }
     }
     const downloadDayBtn = e.target.closest('.download-day-btn');
@@ -287,7 +316,14 @@ function render() {
         views.loading.classList.add('hidden'); 
         views.login.classList.add('hidden'); 
         views.dashboard.classList.remove('hidden'); 
-        elements.displayUsername.textContent = state.username; 
+        elements.displayUsername.textContent = state.username;
+        // Show admin badge if user is admin
+        const adminBadge = document.getElementById('admin-badge');
+        if (state.isAdmin) {
+            adminBadge.classList.remove('hidden');
+        } else {
+            adminBadge.classList.add('hidden');
+        }
         renderDashboardData(); 
     }
 }
@@ -358,8 +394,12 @@ function renderDashboardData() {
                 <div class="flex flex-col items-end gap-1">
                     <span class="text-emerald-600 font-bold text-sm bg-emerald-50 px-2 py-0.5 rounded-md border border-emerald-100">₹${expense.cost.toLocaleString('en-IN')}</span>
                     <div class="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                        <button class="edit-btn p-1.5 hover:bg-blue-50 rounded text-blue-500 transition" data-id="${expense.id}"><i data-lucide="edit-2" class="w-3.5 h-3.5"></i></button>
-                        <button class="delete-btn p-1.5 hover:bg-red-50 rounded text-red-500 transition" data-id="${expense.id}"><i data-lucide="trash-2" class="w-3.5 h-3.5"></i></button>
+                        ${canModifyExpense(expense) ? `
+                            <button class="edit-btn p-1.5 hover:bg-blue-50 rounded text-blue-500 transition" data-id="${expense.id}" title="Edit entry"><i data-lucide="edit-2" class="w-3.5 h-3.5"></i></button>
+                            <button class="delete-btn p-1.5 hover:bg-red-50 rounded text-red-500 transition" data-id="${expense.id}" title="Delete entry"><i data-lucide="trash-2" class="w-3.5 h-3.5"></i></button>
+                        ` : `
+                            <span class="text-[10px] text-slate-400 px-2 py-1 bg-slate-50 rounded border border-slate-200" title="You can only edit your own entries">Read-only</span>
+                        `}
                     </div>
                 </div>
             </div>`).join('');
