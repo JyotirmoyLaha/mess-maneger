@@ -237,6 +237,13 @@ elements.expenseForm.addEventListener('submit', async (e) => {
     try {
         const collectionRef = collection(db, 'artifacts', appId, 'public', 'data', 'mess_expenses');
         if (state.editId) {
+            // Check permission before updating
+            const expense = state.expenses.find(x => x.id === state.editId);
+            if (!canModifyExpense(expense)) {
+                showError("You don't have permission to edit this entry.", false);
+                btnText.innerText = originalText;
+                return;
+            }
             const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'mess_expenses', state.editId);
             await updateDoc(docRef, { item: name, cost: parseFloat(cost), updatedAt: new Date().toISOString() });
             cancelEdit();
@@ -300,6 +307,16 @@ document.addEventListener('click', (e) => {
 elements.cancelDeleteBtn.addEventListener('click', () => { state.deleteTargetId = null; elements.deleteModal.classList.add('hidden'); });
 elements.confirmDeleteBtn.addEventListener('click', async () => {
     if (!state.deleteTargetId) return;
+    
+    // Check permission before deleting
+    const expense = state.expenses.find(x => x.id === state.deleteTargetId);
+    if (!canModifyExpense(expense)) {
+        showError("You don't have permission to delete this entry.", false);
+        elements.deleteModal.classList.add('hidden');
+        state.deleteTargetId = null;
+        return;
+    }
+    
     const originalText = elements.confirmDeleteBtn.innerHTML;
     elements.confirmDeleteBtn.innerHTML = `<i data-lucide="loader-2" class="w-5 h-5 animate-spin"></i>`;
     try {
