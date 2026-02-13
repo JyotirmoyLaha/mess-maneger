@@ -5,6 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Mess Manager</title>
     
+    <!-- SEO -->
+    <meta name="description" content="Mess Manager — Smart expense tracking for your group. Track shared expenses, split bills, and manage your mess fund effortlessly.">
+    
     <!-- PWA Settings -->
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#0f172a">
@@ -15,7 +18,7 @@
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
 
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Lucide Icons -->
@@ -44,63 +47,92 @@
     <div id="app" class="w-full relative max-w-md mx-auto min-h-screen flex flex-col">
         
         <!-- LOADING VIEW -->
-        <div id="loading-view" class="flex flex-col items-center justify-center h-screen fixed inset-0 z-50 bg-white/30 backdrop-blur-xl">
+        <div id="loading-view" class="flex flex-col items-center justify-center h-screen fixed inset-0 z-50 loading-screen">
             <div class="relative">
-                <div class="w-16 h-16 border-4 border-emerald-200 border-t-emerald-600 rounded-full animate-spin"></div>
+                <div class="w-20 h-20 border-4 border-emerald-200/40 border-t-emerald-500 rounded-full loading-spinner"></div>
                 <div class="absolute inset-0 flex items-center justify-center">
-                    <i data-lucide="chef-hat" class="w-6 h-6 text-emerald-600"></i>
+                    <div class="bg-white/80 backdrop-blur-sm p-2 rounded-xl shadow-sm">
+                        <i data-lucide="chef-hat" class="w-7 h-7 text-emerald-600"></i>
+                    </div>
                 </div>
             </div>
-            <p id="loading-text" class="mt-4 font-semibold text-slate-600 text-sm tracking-wide animate-pulse">Initializing...</p>
+            <p id="loading-text" class="mt-6 font-bold text-slate-600 text-sm tracking-widest uppercase animate-pulse">Initializing...</p>
+            <div class="mt-3 flex gap-1.5">
+                <div class="w-2 h-2 bg-emerald-400 rounded-full animate-bounce" style="animation-delay: 0s"></div>
+                <div class="w-2 h-2 bg-emerald-500 rounded-full animate-bounce" style="animation-delay: 0.15s"></div>
+                <div class="w-2 h-2 bg-emerald-600 rounded-full animate-bounce" style="animation-delay: 0.3s"></div>
+            </div>
         </div>
 
         <!-- LOGIN VIEW -->
         <div id="login-view" class="hidden h-screen flex flex-col items-center justify-center p-6">
-            <div class="glass-card w-full p-8 rounded-3xl text-center relative overflow-hidden group">
-                <!-- Decorative sheen -->
-                <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-emerald-400 to-transparent opacity-50"></div>
-                
-                <div class="flex justify-center mb-6">
-                    <div class="bg-gradient-to-br from-emerald-500 to-teal-700 p-5 rounded-2xl shadow-lg shadow-emerald-200 transform group-hover:scale-105 transition duration-500">
-                        <i data-lucide="chef-hat" class="w-10 h-10 text-white"></i>
+            <div class="login-card-wrapper w-full">
+                <div class="glass-card w-full p-8 rounded-3xl text-center relative overflow-hidden group slide-up">
+                    <!-- Decorative sheen -->
+                    <div class="absolute top-0 left-0 w-full h-1.5 bg-gradient-to-r from-transparent via-emerald-400/60 to-transparent"></div>
+                    <!-- Corner accents -->
+                    <div class="absolute top-0 right-0 w-24 h-24 bg-gradient-to-bl from-emerald-400/10 to-transparent rounded-bl-full"></div>
+                    <div class="absolute bottom-0 left-0 w-32 h-32 bg-gradient-to-tr from-cyan-400/10 to-transparent rounded-tr-full"></div>
+                    
+                    <div class="flex justify-center mb-8">
+                        <div class="bg-gradient-to-br from-emerald-500 to-teal-700 p-5 rounded-2xl shadow-xl shadow-emerald-500/25 transform group-hover:scale-110 transition-all duration-500 pulse-glow float-animation">
+                            <i data-lucide="chef-hat" class="w-12 h-12 text-white"></i>
+                        </div>
                     </div>
-                </div>
-                
-                <h1 class="text-3xl font-extrabold text-slate-800 mb-2 tracking-tight">Mess Manager</h1>
-                <p class="text-slate-500 mb-10 text-sm font-medium">Smart expense tracking for your group.</p>
-                
-                <div id="login-error" class="hidden bg-red-50/80 backdrop-blur-sm text-red-600 p-4 rounded-xl mb-6 text-xs border border-red-200 flex items-start gap-3 text-left shadow-sm">
-                    <i data-lucide="shield-alert" class="w-5 h-5 mt-0.5 flex-shrink-0"></i>
-                    <div>
-                        <div class="font-bold mb-1">⚠️ Access Restricted</div>
-                        <span id="login-error-text"></span>
+                    
+                    <h1 class="text-3xl font-black text-slate-800 mb-2 tracking-tight">Mess Manager</h1>
+                    <p class="text-slate-500 mb-10 text-sm font-semibold">Smart expense tracking for your group.</p>
+                    
+                    <div id="login-error" class="hidden bg-red-50/90 backdrop-blur-sm text-red-600 p-4 rounded-xl mb-6 text-xs border border-red-200/80 flex items-start gap-3 text-left shadow-sm scale-in">
+                        <div class="bg-red-100 p-1.5 rounded-lg flex-shrink-0">
+                            <i data-lucide="shield-alert" class="w-4 h-4 text-red-500"></i>
+                        </div>
+                        <div>
+                            <div class="font-bold mb-1 text-red-700">⚠️ Access Restricted</div>
+                            <span id="login-error-text"></span>
+                        </div>
                     </div>
-                </div>
 
-                <button 
-                    id="google-login-btn"
-                    class="w-full bg-white hover:bg-gray-50 text-slate-700 font-bold py-4 px-6 rounded-xl border border-gray-200 shadow-sm hover:shadow-md transition-all duration-200 flex items-center justify-center gap-3 group/btn"
-                >
-                    <img src="https://www.svgrepo.com/show/475656/google-color.svg" class="w-6 h-6 group-hover/btn:scale-110 transition-transform" alt="Google">
-                    <span>Continue with Google</span>
-                </button>
-                
-                <p class="mt-8 text-[10px] text-slate-400 uppercase tracking-widest font-bold">Secure • Fast • Simple</p>
-                
-                <!-- Footer -->
-                <div class="mt-8 pt-6 border-t border-slate-200">
-                    <p class="text-slate-600 text-sm font-medium mb-3">Built by <span class="font-bold text-emerald-600">Jyotirmoy Laha</span></p>
-                    <p class="text-slate-500 text-xs mb-3 font-medium">Get in touch</p>
-                    <div class="flex items-center justify-center gap-4">
-                        <a href="mailto:jyotirmoy713128@gmail.com" target="_blank" rel="noopener noreferrer" class="bg-white hover:bg-emerald-50 p-2.5 rounded-lg shadow-sm hover:shadow-md transition-all border border-gray-200 group/social" title="Email">
-                            <i data-lucide="mail" class="w-5 h-5 text-slate-600 group-hover/social:text-emerald-600 transition-colors"></i>
-                        </a>
-                        <a href="https://www.linkedin.com/in/jyotirmoy-laha-416818319/" target="_blank" rel="noopener noreferrer" class="bg-white hover:bg-emerald-50 p-2.5 rounded-lg shadow-sm hover:shadow-md transition-all border border-gray-200 group/social" title="LinkedIn">
-                            <i data-lucide="linkedin" class="w-5 h-5 text-slate-600 group-hover/social:text-emerald-600 transition-colors"></i>
-                        </a>
-                        <a href="https://github.com/JyotirmoyLaha" target="_blank" rel="noopener noreferrer" class="bg-white hover:bg-emerald-50 p-2.5 rounded-lg shadow-sm hover:shadow-md transition-all border border-gray-200 group/social" title="GitHub">
-                            <i data-lucide="github" class="w-5 h-5 text-slate-600 group-hover/social:text-emerald-600 transition-colors"></i>
-                        </a>
+                    <button 
+                        id="google-login-btn"
+                        class="google-btn-premium w-full bg-white hover:bg-gray-50 text-slate-700 font-bold py-4 px-6 rounded-xl border border-gray-200 shadow-sm hover:shadow-lg transition-all duration-300 flex items-center justify-center gap-3 group/btn hover:-translate-y-0.5"
+                    >
+                        <img src="https://www.svgrepo.com/show/475656/google-color.svg" class="w-6 h-6 group-hover/btn:scale-110 transition-transform duration-300" alt="Google">
+                        <span class="font-bold">Continue with Google</span>
+                    </button>
+                    
+                    <div class="mt-8 flex items-center justify-center gap-3">
+                        <div class="flex items-center gap-1.5 text-[10px] text-slate-400 font-bold uppercase tracking-widest">
+                            <i data-lucide="lock" class="w-3 h-3"></i>
+                            <span>Secure</span>
+                        </div>
+                        <span class="text-slate-300">•</span>
+                        <div class="flex items-center gap-1.5 text-[10px] text-slate-400 font-bold uppercase tracking-widest">
+                            <i data-lucide="zap" class="w-3 h-3"></i>
+                            <span>Fast</span>
+                        </div>
+                        <span class="text-slate-300">•</span>
+                        <div class="flex items-center gap-1.5 text-[10px] text-slate-400 font-bold uppercase tracking-widest">
+                            <i data-lucide="sparkles" class="w-3 h-3"></i>
+                            <span>Simple</span>
+                        </div>
+                    </div>
+                    
+                    <!-- Footer -->
+                    <div class="mt-8 pt-6 border-t border-slate-200/60">
+                        <p class="text-slate-600 text-sm font-semibold mb-3">Built by <span class="animated-gradient-text font-extrabold">Jyotirmoy Laha</span></p>
+                        <p class="text-slate-400 text-xs mb-4 font-semibold uppercase tracking-wider">Get in touch</p>
+                        <div class="flex items-center justify-center gap-3">
+                            <a href="mailto:jyotirmoy713128@gmail.com" target="_blank" rel="noopener noreferrer" class="social-link bg-white hover:bg-emerald-50 p-3 rounded-xl shadow-sm hover:shadow-lg transition-all border border-gray-200/80 group/social" title="Email">
+                                <i data-lucide="mail" class="w-5 h-5 text-slate-500 group-hover/social:text-emerald-600 transition-colors"></i>
+                            </a>
+                            <a href="https://www.linkedin.com/in/jyotirmoy-laha-416818319/" target="_blank" rel="noopener noreferrer" class="social-link bg-white hover:bg-emerald-50 p-3 rounded-xl shadow-sm hover:shadow-lg transition-all border border-gray-200/80 group/social" title="LinkedIn">
+                                <i data-lucide="linkedin" class="w-5 h-5 text-slate-500 group-hover/social:text-emerald-600 transition-colors"></i>
+                            </a>
+                            <a href="https://github.com/JyotirmoyLaha" target="_blank" rel="noopener noreferrer" class="social-link bg-white hover:bg-emerald-50 p-3 rounded-xl shadow-sm hover:shadow-lg transition-all border border-gray-200/80 group/social" title="GitHub">
+                                <i data-lucide="github" class="w-5 h-5 text-slate-500 group-hover/social:text-emerald-600 transition-colors"></i>
+                            </a>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -110,87 +142,111 @@
         <div id="dashboard-view" class="hidden flex-1 pb-24">
             
             <!-- Header -->
-            <header class="pt-8 pb-4 px-6 flex justify-between items-center">
+            <header class="pt-8 pb-4 px-6 flex justify-between items-center slide-up">
                 <div>
-                    <p class="text-slate-500 text-xs font-bold uppercase tracking-wider mb-0.5">Mess Expense</p>
-                    <h1 class="text-2xl font-extrabold text-slate-800 flex items-center gap-2 flex-wrap">
-                       Hi,  <span id="display-username" class="truncate max-w-[150px]">User</span>
-                       <span id="admin-badge" class="hidden bg-amber-500/20 border border-amber-500/50 text-amber-700 text-xs font-bold px-2 py-1 rounded-full flex items-center gap-1.5">
+                    <p class="text-emerald-300/70 text-[10px] font-bold uppercase tracking-[0.2em] mb-1 flex items-center gap-1.5">
+                        <i data-lucide="layout-dashboard" class="w-3 h-3"></i>
+                        Mess Expense
+                    </p>
+                    <h1 class="text-2xl font-extrabold text-white flex items-center gap-2 flex-wrap">
+                       Hi,  <span id="display-username" class="truncate max-w-[150px] text-transparent bg-clip-text bg-gradient-to-r from-emerald-300 to-cyan-200">User</span>
+                       <span id="admin-badge" class="hidden admin-badge-glow bg-amber-500/20 border border-amber-500/50 text-amber-300 text-xs font-bold px-2.5 py-1 rounded-full flex items-center gap-1.5">
                            <i data-lucide="shield-alert" class="w-3.5 h-3.5"></i>
                            Admin
                        </span>
-                        <span class="text-emerald-500">👋</span>
+                        <span class="text-emerald-500 inline-block hover:scale-125 transition-transform cursor-default">👋</span>
                     </h1>
                 </div>
-                <button id="logout-btn" class="bg-white/50 hover:bg-white p-3 rounded-full shadow-sm hover:shadow-md transition-all border border-white backdrop-blur-sm text-slate-600">
+                <button id="logout-btn" class="logout-btn-premium bg-white/10 hover:bg-white/15 p-3 rounded-xl shadow-sm hover:shadow-md transition-all border border-white/10 backdrop-blur-md text-white/70 hover:text-white">
                     <i data-lucide="log-out" class="w-5 h-5"></i>
                 </button>
             </header>
 
-            <div class="px-4 space-y-6">
+            <div class="px-4 space-y-5">
                 
                 <!-- FUND STATUS CARD (Premium Credit Card Look) -->
-                <div class="relative w-full overflow-hidden rounded-3xl shadow-xl shadow-emerald-900/20 transform transition-transform hover:scale-[1.01] duration-300">
+                <div class="fund-card shimmer-effect relative w-full overflow-hidden rounded-3xl shadow-2xl shadow-emerald-900/30 transform transition-all duration-500 hover:scale-[1.02] hover:-translate-y-1 slide-up" style="animation-delay: 0.1s">
                     <!-- Gradient Background -->
                     <div class="absolute inset-0 bg-gradient-to-br from-slate-800 via-slate-900 to-black z-0"></div>
                     <!-- Decorative Circles -->
                     <div class="absolute top-[-50px] right-[-50px] w-40 h-40 bg-emerald-500 rounded-full opacity-20 blur-2xl"></div>
                     <div class="absolute bottom-[-30px] left-[-30px] w-32 h-32 bg-blue-500 rounded-full opacity-20 blur-2xl"></div>
+                    <!-- Extra decorative element -->
+                    <div class="absolute top-[40%] right-[10%] w-24 h-24 bg-purple-500 rounded-full opacity-10 blur-3xl"></div>
                     
                     <div class="relative z-10 p-6 text-white">
                         <div class="flex justify-between items-start mb-8">
                             <div>
-                                <p class="text-slate-400 text-xs font-semibold uppercase tracking-widest mb-1">Total Fund</p>
-                                <div class="flex items-center gap-2">
-                                    <h2 class="text-2xl font-bold tracking-tight" id="total-fund">₹0.00</h2>
-                                    <button id="edit-fund-btn" class="bg-white/10 hover:bg-white/20 p-1.5 rounded-lg transition backdrop-blur-md">
+                                <p class="text-slate-400 text-[10px] font-bold uppercase tracking-[0.15em] mb-1.5 flex items-center gap-1.5">
+                                    <span class="w-1.5 h-1.5 bg-emerald-400 rounded-full inline-block animate-pulse"></span>
+                                    Total Fund
+                                </p>
+                                <div class="flex items-center gap-3">
+                                    <h2 class="text-3xl font-black tracking-tight" id="total-fund">₹0.00</h2>
+                                    <button id="edit-fund-btn" class="bg-white/10 hover:bg-white/20 p-2 rounded-xl transition-all duration-300 backdrop-blur-md border border-white/10 hover:border-white/20 hover:scale-110 active:scale-95">
                                         <i data-lucide="edit-2" class="w-3.5 h-3.5 text-emerald-300"></i>
                                     </button>
                                 </div>
                             </div>
-                            <div class="bg-white/10 p-2.5 rounded-xl backdrop-blur-md border border-white/10">
-                                <i data-lucide="wallet" class="w-6 h-6 text-emerald-300"></i>
+                            <div class="bg-white/10 p-3 rounded-2xl backdrop-blur-md border border-white/10 float-animation">
+                                <i data-lucide="wallet" class="w-7 h-7 text-emerald-300"></i>
                             </div>
                         </div>
 
                         <div class="flex justify-between items-end">
                             <div>
-                                <p class="text-slate-400 text-xs font-medium mb-1">Current Balance</p>
-                                <p class="text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-emerald-200 to-teal-100" id="fund-balance">₹0.00</p>
+                                <p class="text-slate-400 text-[10px] font-bold uppercase tracking-wider mb-1">Current Balance</p>
+                                <p class="text-3xl font-black text-transparent bg-clip-text bg-gradient-to-r from-emerald-200 to-teal-100" id="fund-balance">₹0.00</p>
                             </div>
                             <div class="text-right">
-                                <p class="text-slate-400 text-[10px] uppercase font-bold mb-1">Spent</p>
-                                <p class="text-sm font-semibold text-red-300 bg-red-500/10 px-2 py-1 rounded-md" id="total-spent">₹0.00</p>
+                                <p class="text-slate-400 text-[10px] uppercase font-bold mb-1.5 tracking-wider">Spent</p>
+                                <p class="text-sm font-bold text-red-300 bg-red-500/15 px-3 py-1.5 rounded-lg border border-red-500/20" id="total-spent">₹0.00</p>
                             </div>
+                        </div>
+
+                        <!-- Spending Progress Bar -->
+                        <div class="spending-progress" id="spending-progress">
+                            <div class="spending-progress-bar" id="spending-progress-bar" style="width: 0%"></div>
+                        </div>
+                        <div class="flex justify-between mt-1.5">
+                            <span class="text-[9px] text-slate-500 font-semibold uppercase tracking-wider">0%</span>
+                            <span class="text-[9px] text-slate-500 font-semibold uppercase tracking-wider" id="spending-percentage">0% spent</span>
                         </div>
                         
                         <!-- Previous Month Info -->
                         <div id="prev-month-info" class="mt-4 pt-4 border-t border-white/10 hidden">
                             <div class="flex justify-between items-center">
-                                <p class="text-slate-400 text-[10px] uppercase font-bold">Last Month Spent</p>
-                                <p class="text-xs font-semibold text-amber-300 bg-amber-500/10 px-2 py-1 rounded-md" id="prev-month-spent">₹0.00</p>
+                                <div class="flex items-center gap-2">
+                                    <div class="bg-amber-500/10 p-1.5 rounded-lg">
+                                        <i data-lucide="calendar-clock" class="w-3.5 h-3.5 text-amber-300"></i>
+                                    </div>
+                                    <p class="text-slate-400 text-[10px] uppercase font-bold tracking-wider">Last Month Spent</p>
+                                </div>
+                                <p class="text-xs font-bold text-amber-300 bg-amber-500/15 px-3 py-1.5 rounded-lg border border-amber-500/20" id="prev-month-spent">₹0.00</p>
                             </div>
                         </div>
                     </div>
                 </div>
 
                 <!-- ADD EXPENSE -->
-                <div class="glass-card rounded-2xl p-1 relative overflow-hidden">
-                    <div class="absolute bottom-0 left-0 h-[2px] w-full bg-gradient-to-r from-emerald-400 via-blue-500 to-emerald-400 opacity-50"></div>
-                    
-                    <div id="dashboard-error" class="hidden mx-4 mt-4 bg-red-50 text-red-600 p-3 rounded-lg text-xs flex items-center gap-2">
-                        <i data-lucide="alert-circle" class="w-4 h-4"></i>
+                <div class="expense-form-card glass-card rounded-2xl p-1 relative overflow-hidden slide-up" style="animation-delay: 0.2s">
+                    <div id="dashboard-error" class="hidden mx-4 mt-4 bg-red-50/90 backdrop-blur-sm text-red-600 p-3 rounded-xl text-xs flex items-center gap-2 border border-red-200/60 scale-in">
+                        <div class="bg-red-100 p-1 rounded-lg">
+                            <i data-lucide="alert-circle" class="w-4 h-4"></i>
+                        </div>
                         <span id="dashboard-error-text"></span>
                     </div>
 
-                    <form id="expense-form" class="p-4 flex flex-col gap-3">
-                        <div class="flex justify-between items-center mb-1">
-                            <h3 class="text-sm font-bold text-slate-700 flex items-center gap-2">
-                                <i data-lucide="plus-circle" class="w-4 h-4 text-emerald-600"></i>
-                                Add Expense
+                    <form id="expense-form" class="p-5 flex flex-col gap-3">
+                        <div class="flex justify-between items-center mb-2">
+                            <h3 id="form-title" class="text-sm font-bold text-slate-700 flex items-center gap-2">
+                                <div class="bg-emerald-100 p-1.5 rounded-lg">
+                                    <i data-lucide="plus-circle" class="w-4 h-4 text-emerald-600"></i>
+                                </div>
+                                <span>Add Expense</span>
                             </h3>
                             <div class="flex items-center gap-2">
-                                <button id="cancel-edit-btn" type="button" class="hidden text-xs text-red-500 font-bold hover:bg-red-50 px-2 py-1 rounded transition">Cancel</button>
+                                <button id="cancel-edit-btn" type="button" class="hidden text-xs text-red-500 font-bold hover:bg-red-50 px-3 py-1.5 rounded-lg transition-all border border-red-200/60">Cancel</button>
                             </div>
                         </div>
                         <input type="hidden" id="edit-id">
@@ -204,7 +260,7 @@
                                     type="text" 
                                     id="item-name"
                                     placeholder="What did you buy?" 
-                                    class="w-full pl-10 pr-4 py-3 bg-slate-50 border-none rounded-xl text-slate-700 text-sm font-medium focus:ring-2 focus:ring-emerald-500/20 focus:bg-white transition-all placeholder:text-slate-400"
+                                    class="input-premium w-full pl-10 pr-4 py-3.5 bg-slate-50/80 rounded-xl text-slate-700 text-sm font-medium focus:bg-white transition-all placeholder:text-slate-400"
                                     required
                                 />
                             </div>
@@ -216,7 +272,7 @@
                                     type="number" 
                                     id="item-cost"
                                     placeholder="0" 
-                                    class="w-full pl-8 pr-4 py-3 bg-slate-50 border-none rounded-xl text-slate-700 text-sm font-bold focus:ring-2 focus:ring-emerald-500/20 focus:bg-white transition-all placeholder:text-slate-400"
+                                    class="input-premium w-full pl-8 pr-4 py-3.5 bg-slate-50/80 rounded-xl text-slate-700 text-sm font-bold focus:bg-white transition-all placeholder:text-slate-400"
                                     required
                                     step="0.01"
                                 />
@@ -225,7 +281,7 @@
                         <button 
                             type="submit" 
                             id="submit-btn"
-                            class="w-full py-3.5 rounded-xl font-bold text-white shadow-lg shadow-emerald-500/30 flex items-center justify-center gap-2 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 active:scale-[0.98] transition-all"
+                            class="submit-btn-premium w-full py-3.5 rounded-xl font-bold text-white shadow-lg shadow-emerald-500/30 flex items-center justify-center gap-2 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 active:scale-[0.98] transition-all"
                         >
                             <span id="btn-text">Add Item</span>
                             <i data-lucide="arrow-right" class="w-4 h-4"></i>
@@ -234,18 +290,20 @@
                 </div>
 
                 <!-- LIST SECTION -->
-                <div>
+                <div class="slide-up" style="animation-delay: 0.3s">
                     <div class="flex justify-between items-center mb-4 px-1">
-                        <h3 class="text-slate-800 text-sm font-bold flex items-center gap-2">
-                            <i data-lucide="history" class="w-4 h-4 text-slate-400"></i>
+                        <h3 class="text-white/90 text-sm font-bold flex items-center gap-2">
+                            <div class="bg-white/10 p-1.5 rounded-lg backdrop-blur-sm">
+                                <i data-lucide="history" class="w-4 h-4 text-emerald-300/80"></i>
+                            </div>
                             Recent
                         </h3>
                         
-                        <div class="flex bg-white/60 p-1 rounded-xl backdrop-blur-md shadow-sm border border-white/40">
-                            <button id="view-daily" class="px-3 py-1.5 text-[10px] font-bold uppercase rounded-lg shadow-sm bg-slate-800 text-white transition-all">
+                        <div class="view-toggle-container flex p-1 rounded-xl">
+                            <button id="view-daily" class="view-toggle-btn px-3.5 py-1.5 text-[10px] font-bold uppercase rounded-lg shadow-sm bg-slate-800 text-white transition-all">
                                 Daily
                             </button>
-                            <button id="view-monthly" class="px-3 py-1.5 text-[10px] font-bold uppercase rounded-lg text-slate-500 hover:bg-slate-100 transition-all">
+                            <button id="view-monthly" class="view-toggle-btn px-3.5 py-1.5 text-[10px] font-bold uppercase rounded-lg text-slate-500 hover:bg-slate-100/80 transition-all">
                                 Monthly
                             </button>
                         </div>
@@ -255,11 +313,12 @@
                         <!-- Items injected here -->
                     </div>
                     
-                    <div id="empty-state" class="hidden flex flex-col items-center justify-center py-12 glass-card rounded-2xl border-dashed border-2 border-slate-300">
-                        <div class="bg-slate-100 p-4 rounded-full mb-3">
-                            <i data-lucide="clipboard-list" class="w-8 h-8 text-slate-300"></i>
+                    <div id="empty-state" class="hidden flex flex-col items-center justify-center py-16 glass-card rounded-2xl border-dashed border-2 border-slate-300/50">
+                        <div class="empty-state-icon bg-slate-100/80 p-5 rounded-2xl mb-4 shadow-sm">
+                            <i data-lucide="clipboard-list" class="w-10 h-10 text-slate-300"></i>
                         </div>
-                        <p class="text-slate-400 font-medium text-sm">No expenses yet</p>
+                        <p class="text-slate-400 font-bold text-sm mb-1">No expenses yet</p>
+                        <p class="text-slate-300 text-xs">Start tracking by adding your first item above</p>
                     </div>
                 </div>
             </div>
@@ -268,14 +327,14 @@
         <!-- MODALS -->
         
         <!-- Fund Modal -->
-        <div id="fund-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-6 bg-slate-900/60 backdrop-blur-sm fade-in">
-            <div class="bg-white w-full max-w-sm rounded-3xl p-6 shadow-2xl scale-100 transition-all">
+        <div id="fund-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-6 bg-slate-900/60 modal-backdrop">
+            <div class="modal-content bg-white w-full max-w-sm rounded-3xl p-7 shadow-2xl">
                 <div class="text-center mb-6">
-                    <div class="w-14 h-14 bg-blue-50 rounded-2xl flex items-center justify-center mx-auto mb-4">
-                        <i data-lucide="piggy-bank" class="w-7 h-7 text-blue-600"></i>
+                    <div class="modal-icon w-16 h-16 bg-gradient-to-br from-blue-50 to-cyan-50 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-sm border border-blue-100/50">
+                        <i data-lucide="piggy-bank" class="w-8 h-8 text-blue-600"></i>
                     </div>
-                    <h3 class="text-xl font-bold text-slate-800">Update Fund</h3>
-                    <p class="text-slate-500 text-sm mt-1">Total collected amount</p>
+                    <h3 class="text-xl font-black text-slate-800">Update Fund</h3>
+                    <p class="text-slate-500 text-sm mt-1 font-medium">Total collected amount</p>
                 </div>
                 <form id="fund-form">
                     <div class="relative mb-6">
@@ -283,17 +342,17 @@
                         <input 
                             type="number" 
                             id="fund-input" 
-                            class="w-full pl-10 pr-4 py-4 bg-slate-50 border-2 border-transparent focus:border-blue-500/20 focus:bg-white rounded-xl text-slate-800 text-2xl font-bold outline-none transition-all placeholder:text-slate-300" 
+                            class="input-premium w-full pl-10 pr-4 py-4 bg-slate-50/80 rounded-xl text-slate-800 text-2xl font-bold outline-none transition-all placeholder:text-slate-300" 
                             placeholder="0.00" 
                             step="0.01" 
                             required 
                         />
                     </div>
                     <div class="flex gap-3">
-                        <button type="button" id="cancel-fund-btn" class="flex-1 py-3.5 rounded-xl font-bold text-slate-600 bg-slate-100 hover:bg-slate-200 transition">
+                        <button type="button" id="cancel-fund-btn" class="flex-1 py-3.5 rounded-xl font-bold text-slate-600 bg-slate-100 hover:bg-slate-200 transition-all hover:scale-[1.02] active:scale-[0.98]">
                             Cancel
                         </button>
-                        <button type="submit" class="flex-1 py-3.5 rounded-xl font-bold text-white bg-blue-600 hover:bg-blue-700 shadow-lg shadow-blue-500/30 transition">
+                        <button type="submit" class="flex-1 py-3.5 rounded-xl font-bold text-white bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-500 hover:to-cyan-500 shadow-lg shadow-blue-500/30 transition-all hover:scale-[1.02] active:scale-[0.98] hover:-translate-y-0.5">
                             Save
                         </button>
                     </div>
@@ -302,20 +361,20 @@
         </div>
 
         <!-- Delete Modal -->
-        <div id="delete-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-6 bg-slate-900/60 backdrop-blur-sm fade-in">
-            <div class="bg-white w-full max-w-sm rounded-3xl p-6 shadow-2xl">
+        <div id="delete-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-6 bg-slate-900/60 modal-backdrop">
+            <div class="modal-content bg-white w-full max-w-sm rounded-3xl p-7 shadow-2xl">
                 <div class="text-center mb-6">
-                    <div class="w-14 h-14 bg-red-50 rounded-2xl flex items-center justify-center mx-auto mb-4">
-                        <i data-lucide="trash-2" class="w-7 h-7 text-red-500"></i>
+                    <div class="modal-icon w-16 h-16 bg-gradient-to-br from-red-50 to-orange-50 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-sm border border-red-100/50">
+                        <i data-lucide="trash-2" class="w-8 h-8 text-red-500"></i>
                     </div>
-                    <h3 class="text-xl font-bold text-slate-800">Delete Item?</h3>
-                    <p class="text-slate-500 text-sm mt-1">This action cannot be undone.</p>
+                    <h3 class="text-xl font-black text-slate-800">Delete Item?</h3>
+                    <p class="text-slate-500 text-sm mt-1 font-medium">This action cannot be undone.</p>
                 </div>
                 <div class="flex gap-3">
-                    <button id="cancel-delete-btn" class="flex-1 py-3.5 rounded-xl font-bold text-slate-600 bg-slate-100 hover:bg-slate-200 transition">
+                    <button id="cancel-delete-btn" class="flex-1 py-3.5 rounded-xl font-bold text-slate-600 bg-slate-100 hover:bg-slate-200 transition-all hover:scale-[1.02] active:scale-[0.98]">
                         Keep
                     </button>
-                    <button id="confirm-delete-btn" class="flex-1 py-3.5 rounded-xl font-bold text-white bg-red-500 hover:bg-red-600 shadow-lg shadow-red-500/30 transition flex items-center justify-center">
+                    <button id="confirm-delete-btn" class="flex-1 py-3.5 rounded-xl font-bold text-white bg-gradient-to-r from-red-500 to-orange-500 hover:from-red-400 hover:to-orange-400 shadow-lg shadow-red-500/30 transition-all flex items-center justify-center hover:scale-[1.02] active:scale-[0.98] hover:-translate-y-0.5">
                         Delete
                     </button>
                 </div>
@@ -324,6 +383,6 @@
     </div>
 
     <!-- Scripts -->
-    <script type="module" src="script.js?v=2.0"></script>
+    <script type="module" src="script.js?v=3.0"></script>
 </body>
 </html>

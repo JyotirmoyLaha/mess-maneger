@@ -1,8 +1,19 @@
+/* =============================================
+   MESS MANAGER — PREMIUM DESIGN SYSTEM
+   ============================================= */
+
+/* --- BASE & TYPOGRAPHY --- */
 body {
-    font-family: 'Plus Jakarta Sans', sans-serif;
-    background-color: #0f172a; /* Fallback */
+    font-family: 'Inter', 'Plus Jakarta Sans', system-ui, sans-serif;
+    background-color: #0f172a;
     color: #1e293b;
     overscroll-behavior-y: none;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+*, *::before, *::after {
+    box-sizing: border-box;
 }
 
 /* --- PREMIUM ANIMATED BACKGROUND --- */
@@ -48,6 +59,17 @@ body {
         radial-gradient(ellipse at 40% 80%, rgba(16, 185, 129, 0.12) 0%, transparent 50%);
     pointer-events: none;
     z-index: 0;
+}
+
+/* Overlay mesh pattern for depth */
+.animated-bg::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image: radial-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+    background-size: 24px 24px;
+    pointer-events: none;
+    z-index: 1;
 }
 
 @keyframes gradientMove {
@@ -168,19 +190,541 @@ body {
     100% { transform: translateY(-1000px) rotate(360deg) scale(0.9); opacity: 0; filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1)); }
 }
 
-/* Premium Glass Card Effect */
+
+/* =============================================
+   PREMIUM GLASS CARD SYSTEM
+   ============================================= */
 .glass-card {
-    background: rgba(255, 255, 255, 0.7);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
-    border: 1px solid rgba(255, 255, 255, 0.5);
-    box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.07);
+    background: rgba(255, 255, 255, 0.72);
+    backdrop-filter: blur(24px) saturate(1.8);
+    -webkit-backdrop-filter: blur(24px) saturate(1.8);
+    border: 1px solid rgba(255, 255, 255, 0.55);
+    box-shadow: 
+        0 8px 32px rgba(31, 38, 135, 0.08),
+        0 2px 8px rgba(0, 0, 0, 0.04),
+        inset 0 1px 0 rgba(255, 255, 255, 0.6);
+    transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1),
+                box-shadow 0.35s ease,
+                border-color 0.35s ease;
 }
 
-/* Custom Scrollbar */
+.glass-card:hover {
+    box-shadow: 
+        0 20px 60px rgba(31, 38, 135, 0.12),
+        0 4px 16px rgba(0, 0, 0, 0.06),
+        inset 0 1px 0 rgba(255, 255, 255, 0.8);
+    border-color: rgba(255, 255, 255, 0.7);
+}
+
+
+/* =============================================
+   ANIMATION KEYFRAMES
+   ============================================= */
+
+/* Smooth Fade In (enhanced) */
+.fade-in { 
+    animation: fadeIn 0.5s cubic-bezier(0.22, 1, 0.36, 1) forwards; 
+}
+@keyframes fadeIn { 
+    from { opacity: 0; transform: translateY(16px); } 
+    to { opacity: 1; transform: translateY(0); } 
+}
+
+/* Slide Up entrance */
+.slide-up {
+    animation: slideUp 0.6s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+@keyframes slideUp {
+    from { opacity: 0; transform: translateY(40px) scale(0.97); }
+    to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+/* Scale In (for modals) */
+.scale-in {
+    animation: scaleIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+@keyframes scaleIn {
+    from { opacity: 0; transform: scale(0.85); }
+    to { opacity: 1; transform: scale(1); }
+}
+
+/* Shimmer sweep for cards */
+@keyframes shimmer {
+    0% { background-position: -200% 0; }
+    100% { background-position: 200% 0; }
+}
+
+.shimmer-effect {
+    position: relative;
+    overflow: hidden;
+}
+.shimmer-effect::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(
+        90deg, 
+        transparent 0%, 
+        rgba(255, 255, 255, 0.08) 40%, 
+        rgba(255, 255, 255, 0.15) 50%, 
+        rgba(255, 255, 255, 0.08) 60%, 
+        transparent 100%
+    );
+    background-size: 200% 100%;
+    animation: shimmer 3s ease-in-out infinite;
+    pointer-events: none;
+    z-index: 1;
+}
+
+/* Pulse glow for icons */
+@keyframes pulseGlow {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.4); }
+    50% { box-shadow: 0 0 20px 6px rgba(16, 185, 129, 0.15); }
+}
+.pulse-glow {
+    animation: pulseGlow 3s ease-in-out infinite;
+}
+
+/* Gradient text animation */
+@keyframes gradientText {
+    0%, 100% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+}
+.animated-gradient-text {
+    background: linear-gradient(135deg, #10b981, #06b6d4, #8b5cf6, #10b981);
+    background-size: 300% 300%;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    animation: gradientText 4s ease infinite;
+}
+
+/* Float animation */
+@keyframes float {
+    0%, 100% { transform: translateY(0px); }
+    50% { transform: translateY(-8px); }
+}
+.float-animation {
+    animation: float 4s ease-in-out infinite;
+}
+
+/* Stagger delay utilities for list items */
+.stagger-1 { animation-delay: 0.05s; }
+.stagger-2 { animation-delay: 0.1s; }
+.stagger-3 { animation-delay: 0.15s; }
+.stagger-4 { animation-delay: 0.2s; }
+.stagger-5 { animation-delay: 0.25s; }
+.stagger-6 { animation-delay: 0.3s; }
+
+
+/* =============================================
+   LOGIN CARD ENHANCEMENTS
+   ============================================= */
+.login-card-wrapper {
+    position: relative;
+}
+.login-card-wrapper::before {
+    content: '';
+    position: absolute;
+    inset: -2px;
+    border-radius: 1.6rem;
+    background: linear-gradient(135deg, #10b981, #06b6d4, #8b5cf6, #f59e0b, #10b981);
+    background-size: 400% 400%;
+    animation: gradientText 6s ease infinite;
+    z-index: -1;
+    opacity: 0.7;
+    filter: blur(4px);
+}
+
+/* Google button premium hover */
+.google-btn-premium {
+    position: relative;
+    overflow: hidden;
+}
+.google-btn-premium::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(16, 185, 129, 0.06), transparent);
+    transition: left 0.5s ease;
+}
+.google-btn-premium:hover::before {
+    left: 100%;
+}
+
+
+/* =============================================
+   FUND CARD (Credit Card Style) ENHANCEMENTS
+   ============================================= */
+.fund-card {
+    position: relative;
+    overflow: hidden;
+}
+
+/* Animated shine sweep */
+.fund-card::after {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: linear-gradient(
+        to right,
+        transparent 0%,
+        rgba(255, 255, 255, 0.03) 45%,
+        rgba(255, 255, 255, 0.08) 50%,
+        rgba(255, 255, 255, 0.03) 55%,
+        transparent 100%
+    );
+    transform: rotate(25deg);
+    animation: cardShine 5s ease-in-out infinite;
+    pointer-events: none;
+    z-index: 5;
+}
+
+@keyframes cardShine {
+    0% { transform: rotate(25deg) translateX(-120%); }
+    40%, 100% { transform: rotate(25deg) translateX(120%); }
+}
+
+/* Animated spending progress bar */
+.spending-progress {
+    height: 4px;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.1);
+    overflow: hidden;
+    margin-top: 16px;
+}
+.spending-progress-bar {
+    height: 100%;
+    border-radius: 999px;
+    background: linear-gradient(90deg, #34d399, #10b981, #059669);
+    transition: width 0.8s cubic-bezier(0.22, 1, 0.36, 1);
+    position: relative;
+}
+.spending-progress-bar.over-budget {
+    background: linear-gradient(90deg, #f87171, #ef4444, #dc2626);
+}
+.spending-progress-bar::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+    animation: shimmer 2s ease-in-out infinite;
+    background-size: 200% 100%;
+}
+
+
+/* =============================================
+   EXPENSE FORM ENHANCEMENTS
+   ============================================= */
+.expense-form-card {
+    position: relative;
+}
+.expense-form-card::before {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 3px;
+    background: linear-gradient(90deg, #10b981, #06b6d4, #8b5cf6, #10b981);
+    background-size: 200% 100%;
+    animation: shimmer 4s linear infinite;
+    border-radius: 0 0 1rem 1rem;
+}
+
+/* Input focus animations */
+.input-premium {
+    transition: all 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+    border: 2px solid transparent !important;
+}
+.input-premium:focus {
+    border-color: rgba(16, 185, 129, 0.3) !important;
+    box-shadow: 
+        0 0 0 4px rgba(16, 185, 129, 0.08),
+        0 4px 12px rgba(16, 185, 129, 0.1) !important;
+    transform: translateY(-1px);
+}
+
+/* Submit button premium */
+.submit-btn-premium {
+    position: relative;
+    overflow: hidden;
+    transition: all 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.submit-btn-premium::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.15), transparent);
+    transition: left 0.5s ease;
+}
+.submit-btn-premium:hover::before {
+    left: 100%;
+}
+.submit-btn-premium:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 28px rgba(16, 185, 129, 0.35);
+}
+.submit-btn-premium:active {
+    transform: translateY(0) scale(0.98);
+}
+
+
+/* =============================================
+   EXPENSE LIST GROUP CARDS
+   ============================================= */
+.expense-group-card {
+    animation: slideUp 0.5s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+    opacity: 0;
+}
+.expense-group-card:nth-child(1) { animation-delay: 0s; }
+.expense-group-card:nth-child(2) { animation-delay: 0.1s; }
+.expense-group-card:nth-child(3) { animation-delay: 0.2s; }
+.expense-group-card:nth-child(4) { animation-delay: 0.3s; }
+.expense-group-card:nth-child(5) { animation-delay: 0.4s; }
+
+/* Group header */
+.expense-group-header {
+    background: rgba(248, 250, 252, 0.9);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid rgba(226, 232, 240, 0.7);
+    position: relative;
+    overflow: hidden;
+}
+.expense-group-header::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, rgba(16, 185, 129, 0.3), transparent);
+}
+
+/* Individual expense item */
+.expense-item {
+    transition: all 0.25s cubic-bezier(0.22, 1, 0.36, 1);
+    position: relative;
+}
+.expense-item:hover {
+    background: rgba(248, 250, 252, 0.7) !important;
+    transform: translateX(4px);
+}
+.expense-item::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 3px;
+    height: 0;
+    background: linear-gradient(180deg, #10b981, #06b6d4);
+    border-radius: 0 4px 4px 0;
+    transition: height 0.25s ease;
+}
+.expense-item:hover::before {
+    height: 60%;
+}
+
+/* Cost badge */
+.cost-badge {
+    transition: all 0.25s ease;
+}
+.expense-item:hover .cost-badge {
+    transform: scale(1.05);
+    box-shadow: 0 2px 8px rgba(16, 185, 129, 0.2);
+}
+
+/* Action buttons */
+.action-btn {
+    transition: all 0.2s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.action-btn:hover {
+    transform: scale(1.15);
+}
+.action-btn:active {
+    transform: scale(0.9);
+}
+
+
+/* =============================================
+   MODALS — PREMIUM ENTRANCE
+   ============================================= */
+.modal-backdrop {
+    animation: backdropIn 0.3s ease forwards;
+}
+@keyframes backdropIn {
+    from { opacity: 0; backdrop-filter: blur(0); }
+    to { opacity: 1; backdrop-filter: blur(8px); }
+}
+
+.modal-content {
+    animation: modalIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+@keyframes modalIn {
+    from { opacity: 0; transform: scale(0.85) translateY(20px); }
+    to { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+/* Modal icon bounce */
+.modal-icon {
+    animation: iconBounce 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) 0.2s both;
+}
+@keyframes iconBounce {
+    from { transform: scale(0) rotate(-15deg); }
+    to { transform: scale(1) rotate(0deg); }
+}
+
+
+/* =============================================
+   TOAST NOTIFICATIONS
+   ============================================= */
+.toast-notification {
+    animation: toastIn 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+@keyframes toastIn {
+    from { opacity: 0; transform: translateX(-50%) translateY(20px) scale(0.9); }
+    to { opacity: 1; transform: translateX(-50%) translateY(0) scale(1); }
+}
+
+
+/* =============================================
+   EMPTY STATE
+   ============================================= */
+.empty-state-icon {
+    animation: float 4s ease-in-out infinite, pulseGlow 3s ease-in-out infinite;
+}
+
+
+/* =============================================
+   VIEW TOGGLE SWITCH
+   ============================================= */
+.view-toggle-container {
+    background: rgba(255, 255, 255, 0.6);
+    border: 1px solid rgba(255, 255, 255, 0.4);
+    backdrop-filter: blur(12px);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+}
+.view-toggle-btn {
+    transition: all 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+    position: relative;
+}
+.view-toggle-btn.active {
+    box-shadow: 0 2px 8px rgba(15, 23, 42, 0.15);
+}
+
+
+/* =============================================
+   LOADING SCREEN
+   ============================================= */
+.loading-screen {
+    background: rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(30px) saturate(1.5);
+}
+.loading-spinner {
+    animation: spin 1s cubic-bezier(0.5, 0, 0.5, 1) infinite;
+}
+@keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+
+/* =============================================
+   CUSTOM SCROLLBAR
+   ============================================= */
 .no-scrollbar::-webkit-scrollbar { display: none; }
 .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
 
-/* Smooth Fade In */
-.fade-in { animation: fadeIn 0.4s cubic-bezier(0.4, 0, 0.2, 1) forwards; }
-@keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+/* Styled scrollbar for content areas */
+::-webkit-scrollbar {
+    width: 5px;
+}
+::-webkit-scrollbar-track {
+    background: transparent;
+}
+::-webkit-scrollbar-thumb {
+    background: rgba(148, 163, 184, 0.3);
+    border-radius: 999px;
+}
+::-webkit-scrollbar-thumb:hover {
+    background: rgba(148, 163, 184, 0.5);
+}
+
+
+/* =============================================
+   RESPONSIVE & UTILITY
+   ============================================= */
+@media (max-width: 480px) {
+    .glass-card {
+        backdrop-filter: blur(16px) saturate(1.6);
+        -webkit-backdrop-filter: blur(16px) saturate(1.6);
+    }
+}
+
+/* Selection colors */
+::selection {
+    background: rgba(16, 185, 129, 0.2);
+    color: #065f46;
+}
+
+/* Social link hover glow */
+.social-link {
+    transition: all 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.social-link:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 20px rgba(16, 185, 129, 0.15);
+}
+
+/* Logout button */
+.logout-btn-premium {
+    transition: all 0.3s ease;
+}
+.logout-btn-premium:hover {
+    background: rgba(239, 68, 68, 0.08) !important;
+    color: #ef4444 !important;
+    border-color: rgba(239, 68, 68, 0.2) !important;
+    transform: rotate(5deg);
+}
+
+/* Admin badge glow */
+.admin-badge-glow {
+    animation: adminGlow 2s ease-in-out infinite;
+}
+@keyframes adminGlow {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(245, 158, 11, 0.3); }
+    50% { box-shadow: 0 0 12px 3px rgba(245, 158, 11, 0.15); }
+}
+
+/* Edit/delete button container */
+.action-buttons-container {
+    transition: all 0.3s ease;
+}
+
+/* Download PDF button */
+.download-pdf-btn {
+    transition: all 0.25s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.download-pdf-btn:hover {
+    transform: scale(1.08);
+    box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+}
+.download-pdf-btn:active {
+    transform: scale(0.95);
+}

@@ -362,6 +362,16 @@ function renderDashboardData() {
     elements.totalFund.textContent = formatCurrency(state.totalFund);
     elements.fundBalance.textContent = formatBalance(remaining);
     
+    // Update spending progress bar
+    const progressBar = document.getElementById('spending-progress-bar');
+    const progressLabel = document.getElementById('spending-percentage');
+    if (progressBar && progressLabel) {
+        const pct = state.totalFund > 0 ? Math.min((totalSpent / state.totalFund) * 100, 100) : 0;
+        progressBar.style.width = `${pct}%`;
+        progressLabel.textContent = `${Math.round(pct)}% spent`;
+        if (remaining < 0) { progressBar.classList.add('over-budget'); } else { progressBar.classList.remove('over-budget'); }
+    }
+    
     // Display previous month spent if available
     if (state.previousMonthSpent && state.previousMonthSpent > 0) {
         elements.prevMonthInfo.classList.remove('hidden');
@@ -393,55 +403,58 @@ function renderDashboardData() {
     keys.sort((a, b) => grouped[b].sortTime - grouped[a].sortTime);
     state.groupedExpenses = grouped;
 
-    elements.expensesList.innerHTML = keys.map(key => {
+    elements.expensesList.innerHTML = keys.map((key, groupIdx) => {
         const group = grouped[key];
-        const itemsHtml = group.items.map(expense => `
-            <div class="flex justify-between items-center py-4 border-b border-slate-100 last:border-0 hover:bg-slate-50/50 px-5 transition group">
+        const itemsHtml = group.items.map((expense, idx) => `
+            <div class="expense-item flex justify-between items-center py-4 border-b border-slate-100/60 last:border-0 px-5 group" style="animation-delay: ${idx * 0.03}s">
                 <div class="flex-1">
                     <div class="flex items-center gap-3">
+                        <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-emerald-50 to-teal-50 flex items-center justify-center border border-emerald-100/50 flex-shrink-0">
+                            <i data-lucide="shopping-bag" class="w-3.5 h-3.5 text-emerald-500"></i>
+                        </div>
                         <span class="font-bold text-slate-700 text-sm">${escapeHtml(expense.item)}</span>
                     </div>
-                    <div class="flex items-center gap-2 mt-1">
-                        ${expense.userPhoto ? `<img src="${expense.userPhoto}" class="w-4 h-4 rounded-full shadow-sm">` : `<div class="w-4 h-4 rounded-full bg-slate-200 flex items-center justify-center"><i data-lucide="user" class="w-2.5 h-2.5 text-slate-500"></i></div>`} 
-                        <span class="text-[11px] font-medium text-slate-400">${escapeHtml(expense.addedBy)}</span>
+                    <div class="flex items-center gap-2 mt-1.5 ml-11">
+                        ${expense.userPhoto ? `<img src="${expense.userPhoto}" class="w-4 h-4 rounded-full shadow-sm ring-2 ring-white">` : `<div class="w-4 h-4 rounded-full bg-slate-200 flex items-center justify-center ring-2 ring-white"><i data-lucide="user" class="w-2.5 h-2.5 text-slate-500"></i></div>`} 
+                        <span class="text-[11px] font-semibold text-slate-400">${escapeHtml(expense.addedBy)}</span>
                         <span class="text-[10px] text-slate-300">•</span>
-                        <span class="text-[11px] text-slate-400">${new Date(expense.date).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</span>
+                        <span class="text-[11px] text-slate-400 flex items-center gap-1"><i data-lucide="clock" class="w-2.5 h-2.5"></i>${new Date(expense.date).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</span>
                     </div>
                 </div>
-                <div class="flex flex-col items-end gap-1">
-                    <span class="text-emerald-600 font-bold text-sm bg-emerald-50 px-2 py-0.5 rounded-md border border-emerald-100">₹${expense.cost.toLocaleString('en-IN')}</span>
-                    <div class="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                <div class="flex flex-col items-end gap-1.5">
+                    <span class="cost-badge text-emerald-600 font-bold text-sm bg-emerald-50 px-2.5 py-1 rounded-lg border border-emerald-100/80 shadow-sm">₹${expense.cost.toLocaleString('en-IN')}</span>
+                    <div class="action-buttons-container flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
                         ${canModifyExpense(expense) ? `
-                            <button class="edit-btn p-1.5 hover:bg-blue-50 rounded text-blue-500 transition" data-id="${expense.id}" title="Edit entry"><i data-lucide="edit-2" class="w-3.5 h-3.5"></i></button>
-                            <button class="delete-btn p-1.5 hover:bg-red-50 rounded text-red-500 transition" data-id="${expense.id}" title="Delete entry"><i data-lucide="trash-2" class="w-3.5 h-3.5"></i></button>
+                            <button class="action-btn edit-btn p-1.5 hover:bg-blue-50 rounded-lg text-blue-500 transition" data-id="${expense.id}" title="Edit entry"><i data-lucide="edit-2" class="w-3.5 h-3.5"></i></button>
+                            <button class="action-btn delete-btn p-1.5 hover:bg-red-50 rounded-lg text-red-500 transition" data-id="${expense.id}" title="Delete entry"><i data-lucide="trash-2" class="w-3.5 h-3.5"></i></button>
                         ` : `
-                            <span class="text-[10px] text-slate-400 px-2 py-1 bg-slate-50 rounded border border-slate-200" title="You can only edit your own entries">Read-only</span>
+                            <span class="text-[10px] text-slate-400 px-2 py-1 bg-slate-50 rounded-lg border border-slate-200/60" title="You can only edit your own entries">Read-only</span>
                         `}
                     </div>
                 </div>
             </div>`).join('');
         return `
-            <div class="fade-in glass-card rounded-2xl overflow-hidden mb-4 border border-white/60">
-                <div class="bg-slate-50/80 backdrop-blur-sm px-5 py-3 flex justify-between items-center border-b border-slate-100">
-                    <div class="flex items-center gap-2">
-                        <div class="bg-white p-1.5 rounded-lg shadow-sm">
-                            <i data-lucide="${state.viewMode === 'daily' ? 'calendar' : 'calendar-days'}" class="w-4 h-4 text-slate-400"></i>
+            <div class="expense-group-card glass-card rounded-2xl overflow-hidden border border-white/50" style="animation-delay: ${groupIdx * 0.1}s">
+                <div class="expense-group-header px-5 py-3.5 flex justify-between items-center">
+                    <div class="flex items-center gap-2.5">
+                        <div class="bg-white p-1.5 rounded-lg shadow-sm border border-slate-100/60">
+                            <i data-lucide="${state.viewMode === 'daily' ? 'calendar' : 'calendar-days'}" class="w-4 h-4 text-emerald-500"></i>
                         </div>
                         <span class="text-xs font-bold text-slate-600 uppercase tracking-wide">${group.label}</span>
                     </div>
                     <div class="flex items-center gap-2">
                         ${state.viewMode === 'daily' ? `
-                            <button class="download-day-btn text-[10px] font-bold uppercase bg-emerald-600 text-white px-2 py-1 rounded-lg shadow-sm hover:bg-emerald-500 transition flex items-center gap-1" data-key="${key}">
+                            <button class="download-pdf-btn download-day-btn text-[10px] font-bold uppercase bg-gradient-to-r from-emerald-600 to-teal-600 text-white px-2.5 py-1.5 rounded-lg shadow-sm flex items-center gap-1" data-key="${key}">
                                 <i data-lucide="download" class="w-3 h-3"></i>
                                 PDF
                             </button>
                         ` : `
-                            <button class="download-month-btn text-[10px] font-bold uppercase bg-emerald-600 text-white px-2 py-1 rounded-lg shadow-sm hover:bg-emerald-500 transition flex items-center gap-1" data-key="${key}">
+                            <button class="download-pdf-btn download-month-btn text-[10px] font-bold uppercase bg-gradient-to-r from-emerald-600 to-teal-600 text-white px-2.5 py-1.5 rounded-lg shadow-sm flex items-center gap-1" data-key="${key}">
                                 <i data-lucide="download" class="w-3 h-3"></i>
                                 PDF
                             </button>
                         `}
-                        <span class="text-slate-600 font-bold text-xs bg-white px-2 py-1 rounded-lg border border-slate-100 shadow-sm">Total: ₹${group.total.toLocaleString('en-IN')}</span>
+                        <span class="text-slate-600 font-bold text-xs bg-white px-2.5 py-1.5 rounded-lg border border-slate-100/80 shadow-sm">Total: ₹${group.total.toLocaleString('en-IN')}</span>
                     </div>
                 </div>
                 <div>${itemsHtml}</div>
@@ -456,11 +469,11 @@ function updateFormState() {
     const btnText = document.getElementById('btn-text');
     if (state.editId) {
         submitBtn.classList.replace('from-emerald-600', 'from-blue-600'); submitBtn.classList.replace('to-teal-600', 'to-indigo-600');
-        btnText.innerText = "Update Entry"; formTitle.innerHTML = `<i data-lucide="edit-2" class="w-5 h-5 text-blue-500"></i><span class="text-blue-600">Edit Item</span>`;
+        btnText.innerText = "Update Entry"; formTitle.innerHTML = `<div class="bg-blue-100 p-1.5 rounded-lg"><i data-lucide="edit-2" class="w-4 h-4 text-blue-500"></i></div><span class="text-blue-600">Edit Item</span>`;
         if (elements.cancelEditBtn) elements.cancelEditBtn.classList.remove('hidden');
     } else {
         submitBtn.classList.replace('from-blue-600', 'from-emerald-600'); submitBtn.classList.replace('to-indigo-600', 'to-teal-600');
-        btnText.innerText = "Add Item"; formTitle.innerHTML = `<i data-lucide="plus-circle" class="w-5 h-5 text-emerald-500"></i><span>Add Expense</span>`;
+        btnText.innerText = "Add Item"; formTitle.innerHTML = `<div class="bg-emerald-100 p-1.5 rounded-lg"><i data-lucide="plus-circle" class="w-4 h-4 text-emerald-600"></i></div><span>Add Expense</span>`;
         if (elements.cancelEditBtn) elements.cancelEditBtn.classList.add('hidden');
     }
     if (typeof lucide !== 'undefined') lucide.createIcons();
@@ -486,11 +499,11 @@ function formatBalance(amount) {
 function escapeHtml(text) { if (!text) return ''; return text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;"); }
 function showToast(msg, type='success') {
     const toast = document.createElement('div');
-    toast.className = `fixed bottom-6 left-1/2 -translate-x-1/2 px-6 py-3 rounded-2xl shadow-xl text-white text-sm font-bold fade-in z-50 flex items-center gap-2 ${type === 'success' ? 'bg-slate-800' : 'bg-red-500'}`;
-    toast.innerHTML = type === 'success' ? `<i data-lucide="check-circle" class="w-4 h-4"></i> ${msg}` : `<i data-lucide="alert-circle" class="w-4 h-4"></i> ${msg}`;
+    toast.className = `toast-notification fixed bottom-6 left-1/2 -translate-x-1/2 px-6 py-3.5 rounded-2xl shadow-2xl text-white text-sm font-bold z-50 flex items-center gap-2.5 backdrop-blur-md ${type === 'success' ? 'bg-slate-800/95 border border-slate-700/50' : 'bg-red-500/95 border border-red-400/50'}`;
+    toast.innerHTML = type === 'success' ? `<div class="bg-emerald-500/20 p-1 rounded-lg"><i data-lucide="check-circle" class="w-4 h-4 text-emerald-400"></i></div> ${msg}` : `<div class="bg-red-400/20 p-1 rounded-lg"><i data-lucide="alert-circle" class="w-4 h-4"></i></div> ${msg}`;
     document.body.appendChild(toast);
     lucide.createIcons();
-    setTimeout(() => toast.remove(), 3000);
+    setTimeout(() => { toast.style.opacity = '0'; toast.style.transform = 'translateX(-50%) translateY(10px)'; toast.style.transition = 'all 0.3s ease'; setTimeout(() => toast.remove(), 300); }, 2700);
 }
 
 function formatRupees(amount) {
