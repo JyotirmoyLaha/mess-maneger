@@ -55,7 +55,8 @@ try {
 }
 
 let state = {
-    user: null, username: '', userPhoto: '', expenses: [], totalFund: 0, editId: null, deleteTargetId: null, loading: true, hasJoined: false, viewMode: 'daily', currentMonth: '', previousMonthSpent: 0, groupedExpenses: {}, isAdmin: false, memberFunds: {}, memberFundsMonth: ''
+    user: null, username: '', userPhoto: '', expenses: [], totalFund: 0, editId: null, deleteTargetId: null, loading: true, hasJoined: false, viewMode: 'daily', currentMonth: '', previousMonthSpent: 0, groupedExpenses: {}, isAdmin: false, memberFunds: {}, memberFundsMonth: '',
+    carryForwardBalance: 0, monthlyRemainingHistory: []
 };
 
 const views = { loading: document.getElementById('loading-view'), login: document.getElementById('login-view'), dashboard: document.getElementById('dashboard-view') };
@@ -68,7 +69,8 @@ const elements = {
     dashError: document.getElementById('dashboard-error'), dashErrorText: document.getElementById('dashboard-error-text'), viewDailyBtn: document.getElementById('view-daily'), viewMonthlyBtn: document.getElementById('view-monthly'),
     deleteModal: document.getElementById('delete-modal'), cancelDeleteBtn: document.getElementById('cancel-delete-btn'), confirmDeleteBtn: document.getElementById('confirm-delete-btn'),
     fundModal: document.getElementById('fund-modal'), fundForm: document.getElementById('fund-form'), fundInput: document.getElementById('fund-input'), cancelFundBtn: document.getElementById('cancel-fund-btn'),
-    prevMonthInfo: document.getElementById('prev-month-info'), prevMonthSpent: document.getElementById('prev-month-spent')
+    prevMonthInfo: document.getElementById('prev-month-info'), prevMonthSpent: document.getElementById('prev-month-spent'),
+    remainingHistoryList: document.getElementById('remaining-history-list'), totalCarryForward: document.getElementById('total-carry-forward')
 };
 
 // --- STANDARD LOGIC ---
@@ -153,6 +155,7 @@ function setupDataListener() {
         renderDashboardData();
     });
     setupMemberFundsListener();
+    setupRemainingHistoryListener();
 }
 
 // Get current month as a key (YYYY-MM format)
@@ -167,8 +170,17 @@ async function checkAndUpdateMonthChange() {
     
     // If month has changed
     if (state.currentMonth && state.currentMonth !== currentMonth) {
-        // Calculate total spent for all expenses
-        const totalSpent = state.expenses.reduce((acc, curr) => acc + (curr.cost || 0), 0);
+        // Calculate total spent for the OLD month's expenses only
+        const oldMonthExpenses = state.expenses.filter(exp => {
+            const expDate = new Date(exp.date);
+            const expMonthKey = `${expDate.getFullYear()}-${String(expDate.getMonth() + 1).padStart(2, '0')}`;
+            return expMonthKey === state.currentMonth;
+        });
+        const totalSpent = oldMonthExpenses.reduce((acc, curr) => acc + (curr.cost || 0), 0);
+        const remainingBalance = state.totalFund - totalSpent;
+        
+        // Save remaining balance to history
+        await saveRemainingToHistory(state.currentMonth, remainingBalance, state.totalFund, totalSpent);
         
         // Update fund document with new month data
         try {
@@ -181,7 +193,7 @@ async function checkAndUpdateMonthChange() {
                 updatedBy: state.username
             }, { merge: true });
             
-            showToast(`Month changed! Previous month spent: ₹${totalSpent.toLocaleString('en-IN')}`);
+            showToast(`Month changed! Remaining ₹${remainingBalance.toLocaleString('en-IN')} saved to history`);
         } catch (err) {
             console.error("Error updating month change:", err);
         }
@@ -197,6 +209,56 @@ async function checkAndUpdateMonthChange() {
             console.error("Error initializing month:", err);
         }
     }
+}
+
+// Save remaining balance to monthly history
+async function saveRemainingToHistory(monthKey, remainingAmount, totalFund, totalSpent) {
+    try {
+        const historyRef = doc(db, 'artifacts', appId, 'public', 'data', 'month_remaining', 'history');
+        const docSnap = await getDoc(historyRef);
+        let history = [];
+        if (docSnap.exists()) {
+            history = docSnap.data().months || [];
+        }
+        // Avoid duplicate entry for same month
+        const existingIdx = history.findIndex(h => h.month === monthKey);
+        const entry = {
+            month: monthKey,
+            remaining: remainingAmount,
+            totalFund: totalFund,
+            totalSpent: totalSpent,
+            savedAt: new Date().toISOString()
+        };
+        if (existingIdx >= 0) {
+            history[existingIdx] = entry;
+        } else {
+            history.push(entry);
+        }
+        // Sort by month descending
+        history.sort((a, b) => b.month.localeCompare(a.month));
+        await setDoc(historyRef, {
+            months: history,
+            lastUpdated: new Date().toISOString(),
+            updatedBy: state.username
+        });
+    } catch (err) {
+        console.error('Error saving remaining to history:', err);
+    }
+}
+
+// Listener for remaining balance history
+function setupRemainingHistoryListener() {
+    const historyRef = doc(db, 'artifacts', appId, 'public', 'data', 'month_remaining', 'history');
+    onSnapshot(historyRef, (docSnap) => {
+        if (docSnap.exists()) {
+            state.monthlyRemainingHistory = docSnap.data().months || [];
+            state.carryForwardBalance = state.monthlyRemainingHistory.reduce((sum, m) => sum + (m.remaining || 0), 0);
+        } else {
+            state.monthlyRemainingHistory = [];
+            state.carryForwardBalance = 0;
+        }
+        renderRemainingHistory();
+    });
 }
 
 elements.editFundBtn.addEventListener('click', () => { elements.fundInput.value = state.totalFund; elements.fundModal.classList.remove('hidden'); });
@@ -363,6 +425,7 @@ function render() {
         }
         renderDashboardData();
         renderMemberFunds();
+        renderRemainingHistory();
     }
 }
 
@@ -969,6 +1032,78 @@ function renderMemberFunds() {
                 Grand Total
             </span>
             <span class="font-extrabold text-sm text-slate-700 bg-white px-3 py-1.5 rounded-lg border border-slate-200/80 shadow-sm">₹${grandTotal.toLocaleString('en-IN')}</span>
+        </div>`;
+
+    if (typeof lucide !== 'undefined') lucide.createIcons();
+}
+
+// ============================================
+// PREVIOUS MONTHS REMAINING BALANCE
+// ============================================
+
+function renderRemainingHistory() {
+    const card = document.getElementById('remaining-history-card');
+    const listEl = elements.remainingHistoryList;
+    const totalEl = elements.totalCarryForward;
+    if (!listEl || !card) return;
+
+    const history = state.monthlyRemainingHistory || [];
+    if (history.length === 0) {
+        card.classList.add('hidden');
+        return;
+    }
+    card.classList.remove('hidden');
+
+    // Total carry-forward
+    const totalRemaining = history.reduce((sum, m) => sum + (m.remaining || 0), 0);
+    if (totalEl) {
+        totalEl.textContent = `₹${totalRemaining.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+    }
+
+    const monthColors = [
+        { bg: 'from-teal-50 to-emerald-50', border: 'border-teal-100/50', icon: 'text-teal-500', badge: 'bg-teal-50 text-teal-600 border-teal-100/80' },
+        { bg: 'from-cyan-50 to-sky-50', border: 'border-cyan-100/50', icon: 'text-cyan-500', badge: 'bg-cyan-50 text-cyan-600 border-cyan-100/80' },
+        { bg: 'from-indigo-50 to-blue-50', border: 'border-indigo-100/50', icon: 'text-indigo-500', badge: 'bg-indigo-50 text-indigo-600 border-indigo-100/80' },
+        { bg: 'from-violet-50 to-purple-50', border: 'border-violet-100/50', icon: 'text-violet-500', badge: 'bg-violet-50 text-violet-600 border-violet-100/80' },
+        { bg: 'from-rose-50 to-pink-50', border: 'border-rose-100/50', icon: 'text-rose-500', badge: 'bg-rose-50 text-rose-600 border-rose-100/80' }
+    ];
+
+    listEl.innerHTML = history.map((entry, idx) => {
+        const [year, month] = entry.month.split('-');
+        const monthDate = new Date(Number(year), Number(month) - 1, 1);
+        const monthLabel = monthDate.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+        const color = monthColors[idx % monthColors.length];
+        const isPositive = (entry.remaining || 0) >= 0;
+
+        return `
+        <div class="flex justify-between items-center py-3.5 px-5 group">
+            <div class="flex items-center gap-3">
+                <div class="w-9 h-9 rounded-xl bg-gradient-to-br ${color.bg} flex items-center justify-center ${color.border} border flex-shrink-0 shadow-sm">
+                    <i data-lucide="calendar-check" class="w-4 h-4 ${color.icon}"></i>
+                </div>
+                <div>
+                    <span class="font-bold text-slate-700 text-sm">${monthLabel}</span>
+                    <div class="text-[10px] text-slate-400 font-medium">
+                        Fund: ₹${(entry.totalFund || 0).toLocaleString('en-IN')} · Spent: ₹${(entry.totalSpent || 0).toLocaleString('en-IN')}
+                    </div>
+                </div>
+            </div>
+            <span class="font-bold text-sm ${isPositive ? color.badge : 'bg-red-50 text-red-600 border-red-100/80'} px-2.5 py-1 rounded-lg border shadow-sm">
+                ${isPositive ? '+' : ''}₹${(entry.remaining || 0).toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+            </span>
+        </div>`;
+    }).join('');
+
+    // Grand total row
+    listEl.innerHTML += `
+        <div class="flex justify-between items-center py-3.5 px-5 bg-gradient-to-r from-teal-50 to-emerald-50/80 rounded-b-2xl">
+            <span class="font-bold text-slate-600 text-sm flex items-center gap-2">
+                <div class="bg-teal-200/80 p-1.5 rounded-lg">
+                    <span class="text-xs font-black text-teal-600">Σ</span>
+                </div>
+                Total Carry Forward
+            </span>
+            <span class="font-extrabold text-sm ${totalRemaining >= 0 ? 'text-teal-700' : 'text-red-600'} bg-white px-3 py-1.5 rounded-lg border border-teal-200/80 shadow-sm">₹${totalRemaining.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
         </div>`;
 
     if (typeof lucide !== 'undefined') lucide.createIcons();
