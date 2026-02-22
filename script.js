@@ -32,6 +32,14 @@ const AUTHORIZED_EMAILS = [
 // Admin email with full access permissions
 const ADMIN_EMAIL = 'jyotirmoy713128@gmail.com';
 
+const MESS_MEMBERS = [
+    { id: 'jyotirmoy', name: 'Jyotirmoy' },
+    { id: 'soumik', name: 'Soumik' },
+    { id: 'subhajit', name: 'Subhajit' },
+    { id: 'debdeep', name: 'Debdeep' },
+    { id: 'siddarth', name: 'Siddarth' }
+];
+
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const googleProvider = new GoogleAuthProvider();
@@ -47,7 +55,7 @@ try {
 }
 
 let state = {
-    user: null, username: '', userPhoto: '', expenses: [], totalFund: 0, editId: null, deleteTargetId: null, loading: true, hasJoined: false, viewMode: 'daily', currentMonth: '', previousMonthSpent: 0, groupedExpenses: {}, isAdmin: false
+    user: null, username: '', userPhoto: '', expenses: [], totalFund: 0, editId: null, deleteTargetId: null, loading: true, hasJoined: false, viewMode: 'daily', currentMonth: '', previousMonthSpent: 0, groupedExpenses: {}, isAdmin: false, memberFunds: {}, memberFundsMonth: ''
 };
 
 const views = { loading: document.getElementById('loading-view'), login: document.getElementById('login-view'), dashboard: document.getElementById('dashboard-view') };
@@ -144,6 +152,7 @@ function setupDataListener() {
         checkAndUpdateMonthChange();
         renderDashboardData();
     });
+    setupMemberFundsListener();
 }
 
 // Get current month as a key (YYYY-MM format)
@@ -302,6 +311,17 @@ document.addEventListener('click', (e) => {
         if (!key || !state.groupedExpenses[key]) return;
         downloadMonthlyExpensePdf(key, state.groupedExpenses[key]);
     }
+    const editMemberBtn = e.target.closest('.edit-member-btn');
+    if (editMemberBtn) {
+        const memberId = editMemberBtn.dataset.memberId;
+        const memberName = editMemberBtn.dataset.memberName;
+        const memberTotal = parseFloat(editMemberBtn.dataset.memberTotal) || 0;
+        document.getElementById('edit-member-id').value = memberId;
+        document.getElementById('edit-member-total').value = memberTotal;
+        document.getElementById('edit-member-name-label').textContent = `Update total for ${memberName}`;
+        document.getElementById('edit-member-modal').classList.remove('hidden');
+        if (typeof lucide !== 'undefined') lucide.createIcons();
+    }
 });
 
 elements.cancelDeleteBtn.addEventListener('click', () => { state.deleteTargetId = null; elements.deleteModal.classList.add('hidden'); });
@@ -341,7 +361,8 @@ function render() {
         } else {
             adminBadge.classList.add('hidden');
         }
-        renderDashboardData(); 
+        renderDashboardData();
+        renderMemberFunds();
     }
 }
 
@@ -739,5 +760,262 @@ function downloadMonthlyExpensePdf(monthKey, group) {
     const fileMonth = `${yearStr}-${String(Number(monthIndex) + 1).padStart(2, '0')}`;
     doc.save(`expenses-${fileMonth}.pdf`);
 }
+
+// ============================================
+// MEMBER FUND CONTRIBUTIONS
+// ============================================
+
+function setupMemberFundsListener() {
+    const fundsRef = doc(db, 'artifacts', appId, 'public', 'data', 'member_funds', 'current');
+    onSnapshot(fundsRef, (docSnap) => {
+        if (docSnap.exists()) {
+            const data = docSnap.data();
+            const currentMonth = getCurrentMonthKey();
+            if (data.month !== currentMonth) {
+                state.memberFunds = {};
+                state.memberFundsMonth = currentMonth;
+                if (state.isAdmin) {
+                    resetMemberFunds(currentMonth);
+                }
+            } else {
+                state.memberFunds = data.members || {};
+                state.memberFundsMonth = data.month;
+            }
+        } else {
+            state.memberFunds = {};
+            state.memberFundsMonth = getCurrentMonthKey();
+            if (state.isAdmin) {
+                initializeMemberFunds();
+            }
+        }
+        renderMemberFunds();
+    });
+}
+
+async function initializeMemberFunds() {
+    const currentMonth = getCurrentMonthKey();
+    const members = {};
+    MESS_MEMBERS.forEach(m => {
+        members[m.id] = { name: m.name, totalMoney: 0, contributions: [] };
+    });
+    try {
+        const fundsRef = doc(db, 'artifacts', appId, 'public', 'data', 'member_funds', 'current');
+        await setDoc(fundsRef, {
+            month: currentMonth,
+            members: members,
+            lastUpdated: new Date().toISOString(),
+            updatedBy: state.username
+        });
+    } catch (err) {
+        console.error('Error initializing member funds:', err);
+    }
+}
+
+async function resetMemberFunds(newMonth) {
+    const members = {};
+    MESS_MEMBERS.forEach(m => {
+        members[m.id] = { name: m.name, totalMoney: 0, contributions: [] };
+    });
+    try {
+        const fundsRef = doc(db, 'artifacts', appId, 'public', 'data', 'member_funds', 'current');
+        await setDoc(fundsRef, {
+            month: newMonth,
+            members: members,
+            lastUpdated: new Date().toISOString(),
+            updatedBy: state.username,
+            resetAt: new Date().toISOString()
+        });
+        showToast('Member funds reset for new month');
+    } catch (err) {
+        console.error('Error resetting member funds:', err);
+    }
+}
+
+async function addMemberMoney(memberId, amount) {
+    if (!state.isAdmin) { showToast('Only admin can add money', 'error'); return; }
+    if (!memberId || isNaN(amount) || amount <= 0) return;
+
+    const currentMonth = getCurrentMonthKey();
+    const fundsRef = doc(db, 'artifacts', appId, 'public', 'data', 'member_funds', 'current');
+
+    try {
+        const docSnap = await getDoc(fundsRef);
+        let data;
+        if (docSnap.exists()) {
+            data = docSnap.data();
+            if (data.month !== currentMonth) {
+                await resetMemberFunds(currentMonth);
+                data = { month: currentMonth, members: {} };
+                MESS_MEMBERS.forEach(m => {
+                    data.members[m.id] = { name: m.name, totalMoney: 0, contributions: [] };
+                });
+            }
+        } else {
+            data = { month: currentMonth, members: {} };
+            MESS_MEMBERS.forEach(m => {
+                data.members[m.id] = { name: m.name, totalMoney: 0, contributions: [] };
+            });
+        }
+
+        if (!data.members[memberId]) {
+            const member = MESS_MEMBERS.find(m => m.id === memberId);
+            data.members[memberId] = { name: member ? member.name : memberId, totalMoney: 0, contributions: [] };
+        }
+
+        data.members[memberId].contributions.push({
+            amount: amount,
+            date: new Date().toISOString()
+        });
+        data.members[memberId].totalMoney = data.members[memberId].contributions.reduce((sum, c) => sum + c.amount, 0);
+        data.lastUpdated = new Date().toISOString();
+        data.updatedBy = state.username;
+
+        await setDoc(fundsRef, data);
+        showToast(`₹${amount} added for ${data.members[memberId].name}`);
+    } catch (err) {
+        showToast('Failed to add money', 'error');
+        console.error(err);
+    }
+}
+
+async function editMemberMoney(memberId, newTotal) {
+    if (!state.isAdmin) { showToast('Only admin can edit', 'error'); return; }
+    if (!memberId || isNaN(newTotal) || newTotal < 0) return;
+
+    const currentMonth = getCurrentMonthKey();
+    const fundsRef = doc(db, 'artifacts', appId, 'public', 'data', 'member_funds', 'current');
+
+    try {
+        const docSnap = await getDoc(fundsRef);
+        let data;
+        if (docSnap.exists()) {
+            data = docSnap.data();
+        } else {
+            data = { month: currentMonth, members: {} };
+            MESS_MEMBERS.forEach(m => {
+                data.members[m.id] = { name: m.name, totalMoney: 0, contributions: [] };
+            });
+        }
+
+        if (!data.members[memberId]) {
+            const member = MESS_MEMBERS.find(m => m.id === memberId);
+            data.members[memberId] = { name: member ? member.name : memberId, totalMoney: 0, contributions: [] };
+        }
+
+        data.members[memberId].totalMoney = newTotal;
+        data.members[memberId].contributions = [{ amount: newTotal, date: new Date().toISOString(), note: 'Edited by admin' }];
+        data.lastUpdated = new Date().toISOString();
+        data.updatedBy = state.username;
+
+        await setDoc(fundsRef, data);
+        showToast(`Updated ${data.members[memberId].name}'s total to ₹${newTotal}`);
+    } catch (err) {
+        showToast('Failed to update', 'error');
+        console.error(err);
+    }
+}
+
+function renderMemberFunds() {
+    const listEl = document.getElementById('member-funds-list');
+    const monthEl = document.getElementById('member-fund-month');
+    const addBtn = document.getElementById('add-money-btn');
+    if (!listEl) return;
+
+    const now = new Date();
+    if (monthEl) {
+        monthEl.textContent = now.toLocaleDateString('en-US', { month: 'short', year: 'numeric' });
+    }
+
+    if (addBtn) {
+        if (state.isAdmin) addBtn.classList.remove('hidden');
+        else addBtn.classList.add('hidden');
+    }
+
+    let grandTotal = 0;
+    const colors = [
+        { bg: 'from-emerald-50 to-teal-50', border: 'border-emerald-100/50', icon: 'text-emerald-500', badge: 'bg-emerald-50 text-emerald-600 border-emerald-100/80' },
+        { bg: 'from-blue-50 to-cyan-50', border: 'border-blue-100/50', icon: 'text-blue-500', badge: 'bg-blue-50 text-blue-600 border-blue-100/80' },
+        { bg: 'from-purple-50 to-violet-50', border: 'border-purple-100/50', icon: 'text-purple-500', badge: 'bg-purple-50 text-purple-600 border-purple-100/80' },
+        { bg: 'from-amber-50 to-orange-50', border: 'border-amber-100/50', icon: 'text-amber-500', badge: 'bg-amber-50 text-amber-600 border-amber-100/80' },
+        { bg: 'from-rose-50 to-pink-50', border: 'border-rose-100/50', icon: 'text-rose-500', badge: 'bg-rose-50 text-rose-600 border-rose-100/80' }
+    ];
+
+    listEl.innerHTML = MESS_MEMBERS.map((member, idx) => {
+        const memberData = state.memberFunds[member.id] || { totalMoney: 0, contributions: [] };
+        const total = memberData.totalMoney || 0;
+        grandTotal += total;
+        const contributionCount = (memberData.contributions || []).length;
+        const color = colors[idx % colors.length];
+
+        return `
+        <div class="member-fund-item flex justify-between items-center py-3.5 px-5 group">
+            <div class="flex items-center gap-3">
+                <div class="w-9 h-9 rounded-xl bg-gradient-to-br ${color.bg} flex items-center justify-center ${color.border} border flex-shrink-0 shadow-sm">
+                    <i data-lucide="user" class="w-4 h-4 ${color.icon}"></i>
+                </div>
+                <div>
+                    <span class="font-bold text-slate-700 text-sm">${escapeHtml(member.name)}</span>
+                    <div class="text-[10px] text-slate-400 font-medium">${contributionCount} contribution${contributionCount !== 1 ? 's' : ''}</div>
+                </div>
+            </div>
+            <div class="flex items-center gap-2">
+                <span class="font-bold text-sm ${color.badge} px-2.5 py-1 rounded-lg border shadow-sm">₹${total.toLocaleString('en-IN')}</span>
+                ${state.isAdmin ? `
+                    <button class="edit-member-btn action-btn p-1.5 hover:bg-blue-50 rounded-lg text-blue-500 transition opacity-0 group-hover:opacity-100" data-member-id="${member.id}" data-member-name="${escapeHtml(member.name)}" data-member-total="${total}" title="Edit total">
+                        <i data-lucide="edit-2" class="w-3.5 h-3.5"></i>
+                    </button>
+                ` : ''}
+            </div>
+        </div>`;
+    }).join('');
+
+    listEl.innerHTML += `
+        <div class="flex justify-between items-center py-3.5 px-5 bg-gradient-to-r from-slate-50 to-slate-100/80 rounded-b-2xl">
+            <span class="font-bold text-slate-600 text-sm flex items-center gap-2">
+                <div class="bg-slate-200/80 p-1.5 rounded-lg">
+                    <span class="text-xs font-black text-slate-500">Σ</span>
+                </div>
+                Grand Total
+            </span>
+            <span class="font-extrabold text-sm text-slate-700 bg-white px-3 py-1.5 rounded-lg border border-slate-200/80 shadow-sm">₹${grandTotal.toLocaleString('en-IN')}</span>
+        </div>`;
+
+    if (typeof lucide !== 'undefined') lucide.createIcons();
+}
+
+// --- Member Fund Event Handlers ---
+document.getElementById('add-money-btn')?.addEventListener('click', () => {
+    const modal = document.getElementById('add-money-modal');
+    document.getElementById('add-money-member').value = '';
+    document.getElementById('add-money-amount').value = '';
+    modal.classList.remove('hidden');
+    if (typeof lucide !== 'undefined') lucide.createIcons();
+});
+
+document.getElementById('cancel-add-money-btn')?.addEventListener('click', () => {
+    document.getElementById('add-money-modal').classList.add('hidden');
+});
+
+document.getElementById('add-money-form')?.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const memberId = document.getElementById('add-money-member').value;
+    const amount = parseFloat(document.getElementById('add-money-amount').value);
+    if (!memberId || isNaN(amount) || amount <= 0) return;
+    await addMemberMoney(memberId, amount);
+    document.getElementById('add-money-modal').classList.add('hidden');
+});
+
+document.getElementById('cancel-edit-member-btn')?.addEventListener('click', () => {
+    document.getElementById('edit-member-modal').classList.add('hidden');
+});
+
+document.getElementById('edit-member-form')?.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const memberId = document.getElementById('edit-member-id').value;
+    const newTotal = parseFloat(document.getElementById('edit-member-total').value);
+    if (!memberId || isNaN(newTotal) || newTotal < 0) return;
+    await editMemberMoney(memberId, newTotal);
+    document.getElementById('edit-member-modal').classList.add('hidden');
+});
 
 initAuth();
