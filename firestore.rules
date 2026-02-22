@@ -51,10 +51,9 @@ service cloud.firestore {
       allow delete: if isAuthorizedUser();
     }
     
-    // Member fund contributions - all authorized can read, only admin can write
+    // Member fund contributions - all authorized users can read and write
     match /artifacts/{appId}/public/data/member_funds/{document=**} {
-      allow read: if isAuthorizedUser();
-      allow write: if request.auth != null && request.auth.token.email.lower() == 'jyotirmoy713128@gmail.com';
+      allow read, write: if isAuthorizedUser();
     }
 
     // Allow read access to other documents under data for authorized users

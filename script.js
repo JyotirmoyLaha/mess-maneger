@@ -774,9 +774,7 @@ function setupMemberFundsListener() {
             if (data.month !== currentMonth) {
                 state.memberFunds = {};
                 state.memberFundsMonth = currentMonth;
-                if (state.isAdmin) {
-                    resetMemberFunds(currentMonth);
-                }
+                resetMemberFunds(currentMonth);
             } else {
                 state.memberFunds = data.members || {};
                 state.memberFundsMonth = data.month;
@@ -784,9 +782,7 @@ function setupMemberFundsListener() {
         } else {
             state.memberFunds = {};
             state.memberFundsMonth = getCurrentMonthKey();
-            if (state.isAdmin) {
-                initializeMemberFunds();
-            }
+            initializeMemberFunds();
         }
         renderMemberFunds();
     });
@@ -832,7 +828,6 @@ async function resetMemberFunds(newMonth) {
 }
 
 async function addMemberMoney(memberId, amount) {
-    if (!state.isAdmin) { showToast('Only admin can add money', 'error'); return; }
     if (!memberId || isNaN(amount) || amount <= 0) return;
 
     const currentMonth = getCurrentMonthKey();
@@ -879,7 +874,6 @@ async function addMemberMoney(memberId, amount) {
 }
 
 async function editMemberMoney(memberId, newTotal) {
-    if (!state.isAdmin) { showToast('Only admin can edit', 'error'); return; }
     if (!memberId || isNaN(newTotal) || newTotal < 0) return;
 
     const currentMonth = getCurrentMonthKey();
@@ -927,8 +921,7 @@ function renderMemberFunds() {
     }
 
     if (addBtn) {
-        if (state.isAdmin) addBtn.classList.remove('hidden');
-        else addBtn.classList.add('hidden');
+        addBtn.classList.remove('hidden');
     }
 
     let grandTotal = 0;
@@ -960,11 +953,9 @@ function renderMemberFunds() {
             </div>
             <div class="flex items-center gap-2">
                 <span class="font-bold text-sm ${color.badge} px-2.5 py-1 rounded-lg border shadow-sm">₹${total.toLocaleString('en-IN')}</span>
-                ${state.isAdmin ? `
-                    <button class="edit-member-btn action-btn p-1.5 hover:bg-blue-50 rounded-lg text-blue-500 transition opacity-0 group-hover:opacity-100" data-member-id="${member.id}" data-member-name="${escapeHtml(member.name)}" data-member-total="${total}" title="Edit total">
+                                <button class="edit-member-btn action-btn p-1.5 hover:bg-blue-50 rounded-lg text-blue-500 transition opacity-0 group-hover:opacity-100" data-member-id="${member.id}" data-member-name="${escapeHtml(member.name)}" data-member-total="${total}" title="Edit total">
                         <i data-lucide="edit-2" class="w-3.5 h-3.5"></i>
                     </button>
-                ` : ''}
             </div>
         </div>`;
     }).join('');
@@ -1016,6 +1007,50 @@ document.getElementById('edit-member-form')?.addEventListener('submit', async (e
     if (!memberId || isNaN(newTotal) || newTotal < 0) return;
     await editMemberMoney(memberId, newTotal);
     document.getElementById('edit-member-modal').classList.add('hidden');
+});
+
+// --- Add to Fund (inline form in fund card) ---
+document.getElementById('add-to-fund-form')?.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const amountInput = document.getElementById('add-to-fund-amount');
+    const memberSelect = document.getElementById('add-to-fund-member');
+    const amount = parseFloat(amountInput.value);
+    const memberId = memberSelect.value;
+    if (isNaN(amount) || amount <= 0 || !memberId) return;
+
+    const submitBtn = e.target.querySelector('button[type="submit"]');
+    const originalHtml = submitBtn.innerHTML;
+    submitBtn.innerHTML = `<div class="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>`;
+    submitBtn.disabled = true;
+
+    try {
+        // 1. Add amount to total fund
+        const fundRef = doc(db, 'artifacts', appId, 'public', 'data', 'mess_fund', 'summary');
+        const newTotal = state.totalFund + amount;
+        await setDoc(fundRef, {
+            amount: newTotal,
+            currentMonth: state.currentMonth || getCurrentMonthKey(),
+            previousMonthSpent: state.previousMonthSpent,
+            updatedBy: state.username,
+            updatedAt: new Date().toISOString()
+        }, { merge: true });
+
+        // 2. Add amount to member's contribution
+        await addMemberMoney(memberId, amount);
+
+        // Reset form
+        amountInput.value = '';
+        memberSelect.value = '';
+        const member = MESS_MEMBERS.find(m => m.id === memberId);
+        showToast(`₹${amount} added to fund by ${member ? member.name : memberId}`);
+    } catch (err) {
+        showToast('Failed to add to fund', 'error');
+        console.error(err);
+    } finally {
+        submitBtn.innerHTML = originalHtml;
+        submitBtn.disabled = false;
+        if (typeof lucide !== 'undefined') lucide.createIcons();
+    }
 });
 
 initAuth();

@@ -785,3 +785,19 @@ select.input-premium {
     padding-right: 40px;
     cursor: pointer;
 }
+
+/* Fund card member select (dark theme dropdown) */
+.fund-member-select {
+    appearance: none;
+    -webkit-appearance: none;
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%2394a3b8' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
+    background-position: right 10px center;
+    background-repeat: no-repeat;
+    background-size: 16px;
+    padding-right: 32px;
+    cursor: pointer;
+}
+.fund-member-select option {
+    background: #1e293b;
+    color: #e2e8f0;
+}
