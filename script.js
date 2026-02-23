@@ -1,9 +1,9 @@
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js';
-import { 
-    getFirestore, collection, addDoc, updateDoc, deleteDoc, doc, onSnapshot, initializeFirestore, setDoc, getDoc 
+import {
+    getFirestore, collection, addDoc, updateDoc, deleteDoc, doc, onSnapshot, initializeFirestore, setDoc, getDoc
 } from 'https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js';
-import { 
-    getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged, signInWithCustomToken, signOut 
+import {
+    getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged, signInWithCustomToken, signOut
 } from 'https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js';
 
 // --- Configuration from Environment Variables or Hardcoded ---
@@ -46,9 +46,9 @@ const googleProvider = new GoogleAuthProvider();
 
 let db;
 try {
-    db = initializeFirestore(app, { 
+    db = initializeFirestore(app, {
         experimentalForceLongPolling: true,
-        useFetchStreams: false 
+        useFetchStreams: false
     });
 } catch (e) {
     db = getFirestore(app);
@@ -77,11 +77,11 @@ const elements = {
 
 async function initAuth() {
     if (firebaseConfig.apiKey === "PASTE_API_KEY_HERE") {
-        state.loading = false; render(); 
+        state.loading = false; render();
         setTimeout(() => showError("Config Error: Update index.html with keys.", true), 100); return;
     }
     if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
-        try { await signInWithCustomToken(auth, __initial_auth_token); } catch(e) { }
+        try { await signInWithCustomToken(auth, __initial_auth_token); } catch (e) { }
     }
 }
 
@@ -107,7 +107,7 @@ onAuthStateChanged(auth, (user) => {
         // Check if user email is authorized
         const userEmail = user.email ? user.email.toLowerCase() : '';
         const isAuthorized = AUTHORIZED_EMAILS.some(email => email.toLowerCase() === userEmail);
-        
+
         if (!isAuthorized) {
             // Unauthorized user - sign them out immediately
             signOut(auth).then(() => {
@@ -118,7 +118,7 @@ onAuthStateChanged(auth, (user) => {
             });
             return;
         }
-        
+
         // Authorized user - proceed normally
         state.username = user.displayName || (user.email ? user.email.split('@')[0] : 'Guest');
         state.userPhoto = user.photoURL;
@@ -142,11 +142,11 @@ function setupDataListener() {
     });
     const fundRef = doc(db, 'artifacts', appId, 'public', 'data', 'mess_fund', 'summary');
     onSnapshot(fundRef, (doc) => {
-        if (doc.exists()) { 
+        if (doc.exists()) {
             state.totalFund = doc.data().amount || 0;
             state.currentMonth = doc.data().currentMonth || getCurrentMonthKey();
             state.previousMonthSpent = doc.data().previousMonthSpent || 0;
-        } else { 
+        } else {
             state.totalFund = 0;
             state.currentMonth = getCurrentMonthKey();
             state.previousMonthSpent = 0;
@@ -167,7 +167,7 @@ function getCurrentMonthKey() {
 // Check if month has changed and update accordingly
 async function checkAndUpdateMonthChange() {
     const currentMonth = getCurrentMonthKey();
-    
+
     // If month has changed
     if (state.currentMonth && state.currentMonth !== currentMonth) {
         // Calculate total spent for the OLD month's expenses only
@@ -178,21 +178,21 @@ async function checkAndUpdateMonthChange() {
         });
         const totalSpent = oldMonthExpenses.reduce((acc, curr) => acc + (curr.cost || 0), 0);
         const remainingBalance = state.totalFund - totalSpent;
-        
+
         // Save remaining balance to history
         await saveRemainingToHistory(state.currentMonth, remainingBalance, state.totalFund, totalSpent);
-        
+
         // Update fund document with new month data
         try {
             const fundRef = doc(db, 'artifacts', appId, 'public', 'data', 'mess_fund', 'summary');
-            await setDoc(fundRef, { 
+            await setDoc(fundRef, {
                 amount: state.totalFund,
                 currentMonth: currentMonth,
                 previousMonthSpent: totalSpent,
                 monthChangedAt: new Date().toISOString(),
                 updatedBy: state.username
             }, { merge: true });
-            
+
             showToast(`Month changed! Remaining ₹${remainingBalance.toLocaleString('en-IN')} saved to history`);
         } catch (err) {
             console.error("Error updating month change:", err);
@@ -201,7 +201,7 @@ async function checkAndUpdateMonthChange() {
         // First time setup - initialize current month
         try {
             const fundRef = doc(db, 'artifacts', appId, 'public', 'data', 'mess_fund', 'summary');
-            await setDoc(fundRef, { 
+            await setDoc(fundRef, {
                 currentMonth: currentMonth,
                 previousMonthSpent: 0
             }, { merge: true });
@@ -269,12 +269,12 @@ elements.fundForm.addEventListener('submit', async (e) => {
     if (isNaN(amount) || amount < 0) return;
     try {
         const fundRef = doc(db, 'artifacts', appId, 'public', 'data', 'mess_fund', 'summary');
-        await setDoc(fundRef, { 
-            amount: amount, 
+        await setDoc(fundRef, {
+            amount: amount,
             currentMonth: state.currentMonth || getCurrentMonthKey(),
             previousMonthSpent: state.previousMonthSpent,
-            updatedBy: state.username, 
-            updatedAt: new Date().toISOString() 
+            updatedBy: state.username,
+            updatedAt: new Date().toISOString()
         }, { merge: true });
         elements.fundModal.classList.add('hidden');
         showToast(`Fund updated`);
@@ -300,11 +300,11 @@ elements.expenseForm.addEventListener('submit', async (e) => {
     e.preventDefault();
     const name = elements.itemName.value; const cost = elements.itemCost.value;
     if (!name || !cost) return;
-    
+
     const btnText = document.getElementById('btn-text');
     const originalText = btnText.innerText;
     btnText.innerText = "Saving...";
-    
+
     try {
         const collectionRef = collection(db, 'artifacts', appId, 'public', 'data', 'mess_expenses');
         if (state.editId) {
@@ -340,20 +340,20 @@ function canModifyExpense(expense) {
 
 document.addEventListener('click', (e) => {
     const deleteBtn = e.target.closest('.delete-btn');
-    if (deleteBtn) { 
+    if (deleteBtn) {
         const id = deleteBtn.dataset.id;
         const expense = state.expenses.find(x => x.id === id);
         if (!canModifyExpense(expense)) {
             showToast('You can only delete your own entries', 'error');
             return;
         }
-        state.deleteTargetId = deleteBtn.dataset.id; 
-        elements.deleteModal.classList.remove('hidden'); 
-        return; 
+        state.deleteTargetId = deleteBtn.dataset.id;
+        elements.deleteModal.classList.remove('hidden');
+        return;
     }
     const editBtn = e.target.closest('.edit-btn');
     if (editBtn) {
-        const id = editBtn.dataset.id; 
+        const id = editBtn.dataset.id;
         const expense = state.expenses.find(x => x.id === id);
         if (!canModifyExpense(expense)) {
             showToast('You can only edit your own entries', 'error');
@@ -389,7 +389,7 @@ document.addEventListener('click', (e) => {
 elements.cancelDeleteBtn.addEventListener('click', () => { state.deleteTargetId = null; elements.deleteModal.classList.add('hidden'); });
 elements.confirmDeleteBtn.addEventListener('click', async () => {
     if (!state.deleteTargetId) return;
-    
+
     // Check permission before deleting
     const expense = state.expenses.find(x => x.id === state.deleteTargetId);
     if (!canModifyExpense(expense)) {
@@ -398,23 +398,23 @@ elements.confirmDeleteBtn.addEventListener('click', async () => {
         state.deleteTargetId = null;
         return;
     }
-    
+
     const originalText = elements.confirmDeleteBtn.innerHTML;
     elements.confirmDeleteBtn.innerHTML = `<i data-lucide="loader-2" class="w-5 h-5 animate-spin"></i>`;
     try {
         const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'mess_expenses', state.deleteTargetId);
         await deleteDoc(docRef); elements.deleteModal.classList.add('hidden');
-    } catch(err) { showError(`Delete Failed.`, false); elements.deleteModal.classList.add('hidden'); } 
+    } catch (err) { showError(`Delete Failed.`, false); elements.deleteModal.classList.add('hidden'); }
     finally { elements.confirmDeleteBtn.innerHTML = originalText; elements.confirmDeleteBtn.disabled = false; state.deleteTargetId = null; }
 });
 
 function render() {
     if (state.loading) { views.loading.classList.remove('hidden'); views.login.classList.add('hidden'); views.dashboard.classList.add('hidden'); }
     else if (!state.hasJoined) { views.loading.classList.add('hidden'); views.login.classList.remove('hidden'); views.dashboard.classList.add('hidden'); lucide.createIcons(); }
-    else { 
-        views.loading.classList.add('hidden'); 
-        views.login.classList.add('hidden'); 
-        views.dashboard.classList.remove('hidden'); 
+    else {
+        views.loading.classList.add('hidden');
+        views.login.classList.add('hidden');
+        views.dashboard.classList.remove('hidden');
         elements.displayUsername.textContent = state.username;
         // Show admin badge if user is admin
         const adminBadge = document.getElementById('admin-badge');
@@ -437,15 +437,15 @@ function renderDashboardData() {
         const expMonthKey = `${expDate.getFullYear()}-${String(expDate.getMonth() + 1).padStart(2, '0')}`;
         return expMonthKey === currentMonthKey;
     });
-    
+
     // Calculate total spent for current month only
     const totalSpent = currentMonthExpenses.reduce((acc, curr) => acc + (curr.cost || 0), 0);
     const remaining = state.totalFund - totalSpent;
-    
+
     elements.totalSpent.textContent = formatCurrency(totalSpent);
     elements.totalFund.textContent = formatCurrency(state.totalFund);
     elements.fundBalance.textContent = formatBalance(remaining);
-    
+
     // Update spending progress bar
     const progressBar = document.getElementById('spending-progress-bar');
     const progressLabel = document.getElementById('spending-percentage');
@@ -455,16 +455,16 @@ function renderDashboardData() {
         progressLabel.textContent = `${Math.round(pct)}% spent`;
         if (remaining < 0) { progressBar.classList.add('over-budget'); } else { progressBar.classList.remove('over-budget'); }
     }
-    
+
     // Display previous month spent if available
     if (state.previousMonthSpent && state.previousMonthSpent > 0) {
         elements.prevMonthInfo.classList.remove('hidden');
-        elements.prevMonthSpent.textContent = `₹${state.previousMonthSpent.toLocaleString('en-IN', {minimumFractionDigits: 2})}`;
+        elements.prevMonthSpent.textContent = `₹${state.previousMonthSpent.toLocaleString('en-IN', { minimumFractionDigits: 2 })}`;
     } else {
         elements.prevMonthInfo.classList.add('hidden');
     }
-    
-    if(remaining < 0) {
+
+    if (remaining < 0) {
         elements.fundBalance.classList.remove('from-emerald-200', 'to-teal-100', 'text-transparent', 'bg-clip-text');
         elements.fundBalance.classList.add('text-red-300');
     } else {
@@ -474,7 +474,7 @@ function renderDashboardData() {
 
     if (state.expenses.length === 0) { elements.expensesList.innerHTML = ''; elements.emptyState.classList.remove('hidden'); return; }
     elements.emptyState.classList.add('hidden');
-    
+
     const grouped = {}; const keys = [];
     state.expenses.forEach(ex => {
         const d = new Date(ex.date);
@@ -502,7 +502,7 @@ function renderDashboardData() {
                         ${expense.userPhoto ? `<img src="${expense.userPhoto}" class="w-4 h-4 rounded-full shadow-sm ring-2 ring-white">` : `<div class="w-4 h-4 rounded-full bg-slate-200 flex items-center justify-center ring-2 ring-white"><i data-lucide="user" class="w-2.5 h-2.5 text-slate-500"></i></div>`} 
                         <span class="text-[11px] font-semibold text-slate-400">${escapeHtml(expense.addedBy)}</span>
                         <span class="text-[10px] text-slate-300">•</span>
-                        <span class="text-[11px] text-slate-400 flex items-center gap-1"><i data-lucide="clock" class="w-2.5 h-2.5"></i>${new Date(expense.date).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</span>
+                        <span class="text-[11px] text-slate-400 flex items-center gap-1"><i data-lucide="clock" class="w-2.5 h-2.5"></i>${new Date(expense.date).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
                     </div>
                 </div>
                 <div class="flex flex-col items-end gap-1.5">
@@ -581,7 +581,7 @@ function formatBalance(amount) {
 }
 
 function escapeHtml(text) { if (!text) return ''; return text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;"); }
-function showToast(msg, type='success') {
+function showToast(msg, type = 'success') {
     const toast = document.createElement('div');
     toast.className = `toast-notification fixed bottom-6 left-1/2 -translate-x-1/2 px-6 py-3.5 rounded-2xl shadow-2xl text-white text-sm font-bold z-50 flex items-center gap-2.5 backdrop-blur-md ${type === 'success' ? 'bg-slate-800/95 border border-slate-700/50' : 'bg-red-500/95 border border-red-400/50'}`;
     toast.innerHTML = type === 'success' ? `<div class="bg-emerald-500/20 p-1 rounded-lg"><i data-lucide="check-circle" class="w-4 h-4 text-emerald-400"></i></div> ${msg}` : `<div class="bg-red-400/20 p-1 rounded-lg"><i data-lucide="alert-circle" class="w-4 h-4"></i></div> ${msg}`;
@@ -595,33 +595,48 @@ function formatRupees(amount) {
     return `₹${value.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
 }
 
+// ── PDF HELPERS ────────────────────────────────────────────────────────────────
+// Column layout constants (in pt, A4 = 595.28 × 841.89 pt)
+// margin = 40  →  usable width = 515
+//
+// DAILY:   | Item (220) | Added By (130) | Time (70) | Cost (95) |  = 515
+// MONTHLY: | Date (70)  | Item (175)     | Added By (130) | Cost (140) | = 515
+
 function buildPdfHeader(doc, title, subtitle) {
     const pageWidth = doc.internal.pageSize.getWidth();
     const margin = 40;
 
+    // Dark navy header band
     doc.setFillColor(15, 23, 42);
-    doc.rect(0, 0, pageWidth, 86, 'F');
+    doc.rect(0, 0, pageWidth, 90, 'F');
 
+    // Emerald accent stripe
     doc.setFillColor(16, 185, 129);
-    doc.rect(0, 82, pageWidth, 4, 'F');
+    doc.rect(0, 86, pageWidth, 4, 'F');
 
+    // App name (left)
     doc.setFont('helvetica', 'bold');
-    doc.setFontSize(18);
+    doc.setFontSize(20);
     doc.setTextColor(255, 255, 255);
-    doc.text('Mess Manager', margin, 34);
+    doc.text('Mess Manager', margin, 36);
 
-    doc.setFontSize(12);
-    doc.setTextColor(209, 250, 229);
+    // Subtitle below app name
+    doc.setFontSize(10);
+    doc.setFont('helvetica', 'normal');
+    doc.setTextColor(167, 243, 208);   // emerald-200
     doc.text(subtitle, margin, 54);
 
-    doc.setFontSize(16);
+    // Report title (right)
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(15);
     doc.setTextColor(255, 255, 255);
-    doc.text(title, pageWidth - margin, 44, { align: 'right' });
+    doc.text(title, pageWidth - margin, 40, { align: 'right' });
 
+    // Generated-by (right, small)
     doc.setFont('helvetica', 'normal');
-    doc.setFontSize(9);
+    doc.setFontSize(8.5);
     doc.setTextColor(226, 232, 240);
-    doc.text(`Generated by ${state.username || 'Mess Manager'}`, pageWidth - margin, 64, { align: 'right' });
+    doc.text(`Generated by ${state.username || 'Mess Manager'}`, pageWidth - margin, 58, { align: 'right' });
 }
 
 function buildPdfFooter(doc) {
@@ -629,28 +644,49 @@ function buildPdfFooter(doc) {
     const pageWidth = doc.internal.pageSize.getWidth();
     const pageHeight = doc.internal.pageSize.getHeight();
     const margin = 40;
+    const footerY = pageHeight - 40;  // single footer band at very bottom
 
-    for (let i = 1; i <= pageCount; i += 1) {
+    for (let i = 1; i <= pageCount; i++) {
         doc.setPage(i);
         doc.setDrawColor(226, 232, 240);
-        doc.line(margin, pageHeight - 44, pageWidth - margin, pageHeight - 44);
+        doc.line(margin, footerY - 12, pageWidth - margin, footerY - 12);
         doc.setFont('helvetica', 'normal');
-        doc.setFontSize(9);
+        doc.setFontSize(8.5);
         doc.setTextColor(148, 163, 184);
-        doc.text('Smart mess expense report', margin, pageHeight - 28);
-        doc.text(`Page ${i} of ${pageCount}`, pageWidth - margin, pageHeight - 28, { align: 'right' });
+        doc.text('Mess Manager • Smart expense report', margin, footerY);
+        doc.text(`Page ${i} of ${pageCount}`, pageWidth - margin, footerY, { align: 'right' });
     }
 }
 
-function addTableHeader(doc, columns, startX, startY, rowHeight) {
+/**
+ * Draw a coloured header row for the table.
+ * @param {Object[]} columns  – array of { label, x, width, align? }
+ * @param {number}   y        – baseline Y of the text inside the header
+ */
+function addTableHeader(doc, columns, startX, y) {
     const pageWidth = doc.internal.pageSize.getWidth();
-    doc.setFillColor(241, 245, 249);
-    doc.rect(startX, startY - 14, pageWidth - startX * 2, rowHeight, 'F');
+    const rowH = 22;
+    const usableW = pageWidth - startX * 2;
+
+    // Header background
+    doc.setFillColor(30, 41, 59);   // slate-800
+    doc.rect(startX, y - 16, usableW, rowH, 'F');
+
     doc.setFont('helvetica', 'bold');
-    doc.setFontSize(10);
-    doc.setTextColor(30, 41, 59);
-    columns.forEach((h, i) => doc.text(h.label, h.x, startY));
+    doc.setFontSize(9);
+    doc.setTextColor(209, 250, 229);   // emerald-100
+
+    columns.forEach(col => {
+        const align = col.align || 'left';
+        if (align === 'right') {
+            doc.text(col.label.toUpperCase(), col.x + col.width, y, { align: 'right' });
+        } else {
+            doc.text(col.label.toUpperCase(), col.x, y);
+        }
+    });
+
     doc.setFont('helvetica', 'normal');
+    doc.setFontSize(10);
     doc.setTextColor(51, 65, 85);
 }
 
@@ -659,6 +695,7 @@ function addRowDivider(doc, startX, y, pageWidth) {
     doc.line(startX, y, pageWidth - startX, y);
 }
 
+// ── DAILY PDF ───────────────────────────────────────────────────────────────────
 function downloadDailyExpensePdf(dayKey, group) {
     if (!group || !group.items || group.items.length === 0) { showToast('No expenses for this day', 'error'); return; }
     const { jsPDF } = window.jspdf || {};
@@ -668,78 +705,118 @@ function downloadDailyExpensePdf(dayKey, group) {
     const pageWidth = doc.internal.pageSize.getWidth();
     const pageHeight = doc.internal.pageSize.getHeight();
     const margin = 40;
-    let y = 112;
+    const FOOTER_ZONE = 70;   // reserved at bottom for footer + summary card
+    const LINE_H = 14;   // base line-height
+    const ROW_PAD = 8;    // extra vertical padding per row
+    let y = 106;              // first content Y (just below header + stripe)
 
+    // ── Header ──────────────────────────────────────────────────────────────────
     const dayDate = new Date(dayKey);
-    const title = dayDate.toLocaleDateString('en-US', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
-    buildPdfHeader(doc, 'Daily Expenses', title);
+    const dateLabel = dayDate.toLocaleDateString('en-US', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+    buildPdfHeader(doc, 'Daily Report', dateLabel);
 
+    // Report meta line
     doc.setFont('helvetica', 'normal');
-    doc.setFontSize(10);
-    doc.setTextColor(71, 85, 105);
-    doc.text(`Report date: ${new Date().toLocaleDateString('en-US')}`, margin, y);
+    doc.setFontSize(9);
+    doc.setTextColor(100, 116, 139);   // slate-500
+    doc.text(`Generated: ${new Date().toLocaleDateString('en-US', { day: 'numeric', month: 'long', year: 'numeric' })}`, margin, y);
     y += 18;
 
-    const columns = [
-        { label: 'Item', x: margin },
-        { label: 'Added By', x: margin + 240 },
-        { label: 'Time', x: margin + 375 },
-        { label: 'Cost', x: pageWidth - margin - 20 }
+    // ── Column definitions ───────────────────────────────────────────────────────
+    // usable width = 515 pt  ;  margin = 40 each side
+    const cols = [
+        { label: 'Item', x: margin, width: 220, align: 'left' },
+        { label: 'Added By', x: margin + 228, width: 130, align: 'left' },
+        { label: 'Time', x: margin + 366, width: 70, align: 'left' },
+        { label: 'Cost', x: margin + 436, width: 79, align: 'right' },
     ];
-    addTableHeader(doc, columns, margin, y, 22);
-    y += 16;
 
+    // ── Draw table header ────────────────────────────────────────────────────────
+    addTableHeader(doc, cols, margin, y);
+    y += 14;   // move past header band
+
+    // ── Rows ─────────────────────────────────────────────────────────────────────
     const items = [...group.items].sort((a, b) => new Date(a.date) - new Date(b.date));
+    doc.setFontSize(10);
+
     items.forEach((expense, index) => {
-        if (y > pageHeight - 90) {
+        // Compute wrapped lines for 'item' column to determine row height
+        doc.setFont('helvetica', 'normal');
+        const itemLines = doc.splitTextToSize(String(expense.item || '—'), cols[0].width - 4);
+        const byLines = doc.splitTextToSize(String(expense.addedBy || '—'), cols[1].width - 4);
+        const rowLines = Math.max(itemLines.length, byLines.length, 1);
+        const rowH = rowLines * LINE_H + ROW_PAD;
+
+        // Page-break check
+        if (y + rowH > pageHeight - FOOTER_ZONE) {
             doc.addPage();
-            y = 96;
-            addTableHeader(doc, columns, margin, y, 22);
-            y += 16;
+            y = 50;
+            addTableHeader(doc, cols, margin, y);
+            y += 14;
         }
 
-        if (index % 2 === 1) {
-            doc.setFillColor(248, 250, 252);
-            doc.rect(margin, y - 12, pageWidth - margin * 2, 18, 'F');
-        }
+        // Alternating row background
+        const bgColor = index % 2 === 0 ? [255, 255, 255] : [248, 250, 252];
+        doc.setFillColor(...bgColor);
+        doc.rect(margin, y - LINE_H + 2, pageWidth - margin * 2, rowH, 'F');
 
-        const item = String(expense.item || '');
-        const addedBy = String(expense.addedBy || '');
         const time = new Date(expense.date).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
         const cost = formatRupees(expense.cost || 0);
+        const rowMidY = y + (rowH - LINE_H) / 2;  // vertically centre single-line values
 
-        doc.setFontSize(10);
-        doc.text(item, columns[0].x, y, { maxWidth: 210 });
-        doc.text(addedBy, columns[1].x, y, { maxWidth: 120 });
-        doc.text(time, columns[2].x, y);
-        doc.setFont('helvetica', 'bold');
-        doc.text(cost, columns[3].x, y, { align: 'right' });
+        // Item (may wrap)
         doc.setFont('helvetica', 'normal');
-        y += 18;
+        doc.setTextColor(30, 41, 59);
+        doc.text(itemLines, cols[0].x, y);
+
+        // Added By (may wrap)
+        doc.setTextColor(71, 85, 105);
+        doc.text(byLines, cols[1].x, y);
+
+        // Time (always single-line, centred in row)
+        doc.setTextColor(100, 116, 139);
+        doc.text(time, cols[2].x, rowMidY);
+
+        // Cost (right-aligned, bold)
+        doc.setFont('helvetica', 'bold');
+        doc.setTextColor(5, 150, 105);   // emerald-600
+        doc.text(cost, cols[3].x + cols[3].width, rowMidY, { align: 'right' });
+
+        // Light horizontal divider
+        doc.setFont('helvetica', 'normal');
+        doc.setDrawColor(226, 232, 240);
+        doc.line(margin, y + rowH - LINE_H + 2, pageWidth - margin, y + rowH - LINE_H + 2);
+
+        y += rowH;
     });
 
-    y += 8;
-    addRowDivider(doc, margin, y, pageWidth);
-    y += 18;
+    // ── Summary card ─────────────────────────────────────────────────────────────
+    y += 12;
+    // Ensure the summary card fits; if not, add a new page
+    const cardH = 52;
+    if (y + cardH > pageHeight - 50) { doc.addPage(); y = 60; }
 
-    const cardWidth = 200;
-    const cardHeight = 46;
-    doc.setFillColor(16, 185, 129);
-    doc.roundedRect(pageWidth - margin - cardWidth, y - 28, cardWidth, cardHeight, 8, 8, 'F');
+    const cardW = 200;
+    const cardX = pageWidth - margin - cardW;
+    doc.setFillColor(16, 185, 129);   // emerald-500
+    doc.roundedRect(cardX, y, cardW, cardH, 8, 8, 'F');
+
     doc.setFont('helvetica', 'bold');
-    doc.setFontSize(11);
-    doc.setTextColor(236, 253, 245);
-    doc.text('TOTAL', pageWidth - margin - cardWidth + 16, y - 6);
-    doc.setFontSize(14);
+    doc.setFontSize(9);
+    doc.setTextColor(209, 250, 229);
+    doc.text('TOTAL FOR THE DAY', cardX + 12, y + 17);
+
+    doc.setFontSize(15);
     doc.setTextColor(255, 255, 255);
-    doc.text(formatRupees(group.total), pageWidth - margin - 16, y + 10, { align: 'right' });
+    doc.text(formatRupees(group.total), cardX + cardW - 12, y + 38, { align: 'right' });
 
     buildPdfFooter(doc);
 
     const fileDate = dayDate.toISOString().slice(0, 10);
-    doc.save(`expenses-${fileDate}.pdf`);
+    doc.save(`mess-daily-${fileDate}.pdf`);
 }
 
+// ── MONTHLY PDF ─────────────────────────────────────────────────────────────────
 function downloadMonthlyExpensePdf(monthKey, group) {
     if (!group || !group.items || group.items.length === 0) { showToast('No expenses for this month', 'error'); return; }
     const { jsPDF } = window.jspdf || {};
@@ -747,81 +824,127 @@ function downloadMonthlyExpensePdf(monthKey, group) {
 
     const [yearStr, monthIndexStr] = String(monthKey).split('-');
     const monthIndex = Number(monthIndexStr);
-    const monthDate = new Date(Number(yearStr), Number(monthIndex), 1);
+    const monthDate = new Date(Number(yearStr), monthIndex, 1);
 
     const doc = new jsPDF({ unit: 'pt', format: 'a4' });
     const pageWidth = doc.internal.pageSize.getWidth();
     const pageHeight = doc.internal.pageSize.getHeight();
     const margin = 40;
-    let y = 112;
+    const FOOTER_ZONE = 70;
+    const LINE_H = 14;
+    const ROW_PAD = 8;
+    let y = 106;
 
-    const title = monthDate.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
-    buildPdfHeader(doc, 'Monthly Expenses', title);
+    // ── Header ──────────────────────────────────────────────────────────────────
+    const monthLabel = monthDate.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+    buildPdfHeader(doc, 'Monthly Report', monthLabel);
 
+    // Report meta line
     doc.setFont('helvetica', 'normal');
-    doc.setFontSize(10);
-    doc.setTextColor(71, 85, 105);
-    doc.text(`Report date: ${new Date().toLocaleDateString('en-US')}`, margin, y);
+    doc.setFontSize(9);
+    doc.setTextColor(100, 116, 139);
+    doc.text(`Generated: ${new Date().toLocaleDateString('en-US', { day: 'numeric', month: 'long', year: 'numeric' })}`, margin, y);
     y += 18;
 
-    const columns = [
-        { label: 'Date', x: margin },
-        { label: 'Item', x: margin + 90 },
-        { label: 'Added By', x: margin + 310 },
-        { label: 'Cost', x: pageWidth - margin - 20 }
+    // ── Summary stats bar ────────────────────────────────────────────────────────
+    const totalEntries = group.items.length;
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(9);
+    doc.setTextColor(71, 85, 105);
+    doc.text(`Total entries: ${totalEntries}`, margin, y);
+    doc.text(`Month total: ${formatRupees(group.total)}`, pageWidth - margin, y, { align: 'right' });
+    y += 18;
+
+    // ── Column definitions ───────────────────────────────────────────────────────
+    // usable width = 515 pt
+    const cols = [
+        { label: 'Date', x: margin, width: 70, align: 'left' },
+        { label: 'Item', x: margin + 78, width: 175, align: 'left' },
+        { label: 'Added By', x: margin + 261, width: 130, align: 'left' },
+        { label: 'Cost', x: margin + 391, width: 124, align: 'right' },
     ];
-    addTableHeader(doc, columns, margin, y, 22);
-    y += 16;
 
+    // ── Draw table header ────────────────────────────────────────────────────────
+    addTableHeader(doc, cols, margin, y);
+    y += 14;
+
+    // ── Rows ─────────────────────────────────────────────────────────────────────
     const items = [...group.items].sort((a, b) => new Date(a.date) - new Date(b.date));
+    doc.setFontSize(10);
+
     items.forEach((expense, index) => {
-        if (y > pageHeight - 90) {
-            doc.addPage();
-            y = 96;
-            addTableHeader(doc, columns, margin, y, 22);
-            y += 16;
-        }
-
-        if (index % 2 === 1) {
-            doc.setFillColor(248, 250, 252);
-            doc.rect(margin, y - 12, pageWidth - margin * 2, 18, 'F');
-        }
-
-        const date = new Date(expense.date).toLocaleDateString('en-US', { day: '2-digit', month: 'short' });
-        const item = String(expense.item || '');
-        const addedBy = String(expense.addedBy || '');
-        const cost = formatRupees(expense.cost || 0);
-
-        doc.setFontSize(10);
-        doc.text(date, columns[0].x, y);
-        doc.text(item, columns[1].x, y, { maxWidth: 190 });
-        doc.text(addedBy, columns[2].x, y, { maxWidth: 140 });
-        doc.setFont('helvetica', 'bold');
-        doc.text(cost, columns[3].x, y, { align: 'right' });
         doc.setFont('helvetica', 'normal');
-        y += 18;
+        const itemLines = doc.splitTextToSize(String(expense.item || '—'), cols[1].width - 4);
+        const byLines = doc.splitTextToSize(String(expense.addedBy || '—'), cols[2].width - 4);
+        const rowLines = Math.max(itemLines.length, byLines.length, 1);
+        const rowH = rowLines * LINE_H + ROW_PAD;
+
+        // Page-break check
+        if (y + rowH > pageHeight - FOOTER_ZONE) {
+            doc.addPage();
+            y = 50;
+            addTableHeader(doc, cols, margin, y);
+            y += 14;
+        }
+
+        // Alternating row background
+        const bgColor = index % 2 === 0 ? [255, 255, 255] : [248, 250, 252];
+        doc.setFillColor(...bgColor);
+        doc.rect(margin, y - LINE_H + 2, pageWidth - margin * 2, rowH, 'F');
+
+        const dateStr = new Date(expense.date).toLocaleDateString('en-IN', { day: '2-digit', month: 'short' });
+        const cost = formatRupees(expense.cost || 0);
+        const rowMidY = y + (rowH - LINE_H) / 2;
+
+        // Date (always single-line)
+        doc.setFont('helvetica', 'normal');
+        doc.setTextColor(100, 116, 139);
+        doc.text(dateStr, cols[0].x, rowMidY);
+
+        // Item (may wrap)
+        doc.setTextColor(30, 41, 59);
+        doc.text(itemLines, cols[1].x, y);
+
+        // Added By (may wrap)
+        doc.setTextColor(71, 85, 105);
+        doc.text(byLines, cols[2].x, y);
+
+        // Cost (right-aligned, bold, coloured)
+        doc.setFont('helvetica', 'bold');
+        doc.setTextColor(5, 150, 105);
+        doc.text(cost, cols[3].x + cols[3].width, rowMidY, { align: 'right' });
+
+        // Row divider
+        doc.setFont('helvetica', 'normal');
+        doc.setDrawColor(226, 232, 240);
+        doc.line(margin, y + rowH - LINE_H + 2, pageWidth - margin, y + rowH - LINE_H + 2);
+
+        y += rowH;
     });
 
-    y += 8;
-    addRowDivider(doc, margin, y, pageWidth);
-    y += 18;
+    // ── Summary card ─────────────────────────────────────────────────────────────
+    y += 12;
+    const cardH = 52;
+    if (y + cardH > pageHeight - 50) { doc.addPage(); y = 60; }
 
-    const cardWidth = 220;
-    const cardHeight = 46;
-    doc.setFillColor(15, 118, 110);
-    doc.roundedRect(pageWidth - margin - cardWidth, y - 28, cardWidth, cardHeight, 8, 8, 'F');
+    const cardW = 220;
+    const cardX = pageWidth - margin - cardW;
+    doc.setFillColor(15, 118, 110);   // teal-700
+    doc.roundedRect(cardX, y, cardW, cardH, 8, 8, 'F');
+
     doc.setFont('helvetica', 'bold');
-    doc.setFontSize(11);
-    doc.setTextColor(204, 251, 241);
-    doc.text('MONTH TOTAL', pageWidth - margin - cardWidth + 16, y - 6);
-    doc.setFontSize(14);
+    doc.setFontSize(9);
+    doc.setTextColor(204, 251, 241);   // teal-100
+    doc.text('TOTAL FOR THE MONTH', cardX + 12, y + 17);
+
+    doc.setFontSize(15);
     doc.setTextColor(255, 255, 255);
-    doc.text(formatRupees(group.total), pageWidth - margin - 16, y + 10, { align: 'right' });
+    doc.text(formatRupees(group.total), cardX + cardW - 12, y + 38, { align: 'right' });
 
     buildPdfFooter(doc);
 
     const fileMonth = `${yearStr}-${String(Number(monthIndex) + 1).padStart(2, '0')}`;
-    doc.save(`expenses-${fileMonth}.pdf`);
+    doc.save(`mess-monthly-${fileMonth}.pdf`);
 }
 
 // ============================================
