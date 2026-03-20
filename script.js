@@ -1343,10 +1343,8 @@ document.getElementById('edit-member-form')?.addEventListener('submit', async (e
 document.getElementById('add-to-fund-form')?.addEventListener('submit', async (e) => {
     e.preventDefault();
     const amountInput = document.getElementById('add-to-fund-amount');
-    const memberSelect = document.getElementById('add-to-fund-member');
     const amount = parseFloat(amountInput.value);
-    const memberId = memberSelect.value;
-    if (isNaN(amount) || amount <= 0 || !memberId) return;
+    if (isNaN(amount) || amount <= 0) return;
 
     const submitBtn = e.target.querySelector('button[type="submit"]');
     const originalHtml = submitBtn.innerHTML;
@@ -1354,7 +1352,7 @@ document.getElementById('add-to-fund-form')?.addEventListener('submit', async (e
     submitBtn.disabled = true;
 
     try {
-        // 1. Add amount to total fund
+        // Add amount to total fund only
         const fundRef = doc(db, 'artifacts', appId, 'public', 'data', 'mess_fund', 'summary');
         const newTotal = state.totalFund + amount;
         await setDoc(fundRef, {
@@ -1365,14 +1363,9 @@ document.getElementById('add-to-fund-form')?.addEventListener('submit', async (e
             updatedAt: new Date().toISOString()
         }, { merge: true });
 
-        // 2. Add amount to member's contribution
-        await addMemberMoney(memberId, amount);
-
         // Reset form
         amountInput.value = '';
-        memberSelect.value = '';
-        const member = MESS_MEMBERS.find(m => m.id === memberId);
-        showToast(`₹${amount} added to fund by ${member ? member.name : memberId}`);
+        showToast(`₹${amount} added to fund`);
     } catch (err) {
         showToast('Failed to add to fund', 'error');
         console.error(err);
