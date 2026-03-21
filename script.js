@@ -1023,17 +1023,25 @@ function downloadMonthlyExpensePdf(monthKey, group) {
 // MEMBER FUND CONTRIBUTIONS
 // ============================================
 
+let _isResettingMemberFunds = false;
+let _lastResetMonth = '';
+
 function setupMemberFundsListener() {
     const fundsRef = doc(db, 'artifacts', appId, 'public', 'data', 'member_funds', 'current');
     onSnapshot(fundsRef, (docSnap) => {
+        // If we are currently writing a reset, ignore this snapshot to prevent loops
+        if (_isResettingMemberFunds) return;
+
         if (docSnap.exists()) {
             const data = docSnap.data();
             const currentMonth = getCurrentMonthKey();
-            if (data.month !== currentMonth) {
+            if (data.month !== currentMonth && _lastResetMonth !== currentMonth) {
+                // Month has changed and we haven't already reset for this month
                 state.memberFunds = {};
                 state.memberFundsMonth = currentMonth;
                 resetMemberFunds(currentMonth);
             } else {
+                // Same month or already reset — just use the data as-is
                 state.memberFunds = data.members || {};
                 state.memberFundsMonth = data.month;
             }
@@ -1052,6 +1060,7 @@ async function initializeMemberFunds() {
     MESS_MEMBERS.forEach(m => {
         members[m.id] = { name: m.name, totalMoney: 0, contributions: [] };
     });
+    _isResettingMemberFunds = true;
     try {
         const fundsRef = doc(db, 'artifacts', appId, 'public', 'data', 'member_funds', 'current');
         await setDoc(fundsRef, {
@@ -1060,8 +1069,11 @@ async function initializeMemberFunds() {
             lastUpdated: new Date().toISOString(),
             updatedBy: state.username
         });
+        _lastResetMonth = currentMonth;
     } catch (err) {
         console.error('Error initializing member funds:', err);
+    } finally {
+        _isResettingMemberFunds = false;
     }
 }
 
@@ -1070,6 +1082,7 @@ async function resetMemberFunds(newMonth) {
     MESS_MEMBERS.forEach(m => {
         members[m.id] = { name: m.name, totalMoney: 0, contributions: [] };
     });
+    _isResettingMemberFunds = true;
     try {
         const fundsRef = doc(db, 'artifacts', appId, 'public', 'data', 'member_funds', 'current');
         await setDoc(fundsRef, {
@@ -1079,9 +1092,12 @@ async function resetMemberFunds(newMonth) {
             updatedBy: state.username,
             resetAt: new Date().toISOString()
         });
+        _lastResetMonth = newMonth;
         showToast('Member funds reset for new month');
     } catch (err) {
         console.error('Error resetting member funds:', err);
+    } finally {
+        _isResettingMemberFunds = false;
     }
 }
 
