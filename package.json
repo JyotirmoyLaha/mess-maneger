@@ -1,0 +1,8 @@
+{
+  "name": "mess-manager",
+  "version": "1.0.0",
+  "description": "Mess Manager - Expense tracking for shared living",
+  "scripts": {
+    "build": "node build.js"
+  }
+}
