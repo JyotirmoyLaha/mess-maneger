@@ -6,17 +6,9 @@ import {
     getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged, signInWithCustomToken, signOut
 } from 'https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js';
 
-// --- Configuration from Environment Variables or Hardcoded ---
-const firebaseConfig = {
-    apiKey: "AIzaSyC7z-IuvKCSer2rTRatJW5DRtO9NDZdPeg",
-    authDomain: "messjyotirmoy.firebaseapp.com",
-    projectId: "messjyotirmoy",
-    storageBucket: "messjyotirmoy.firebasestorage.app",
-    messagingSenderId: "13122110126",
-    appId: "1:13122110126:web:bb6d03aa476dbf5929a33f"
-};
-
-const appId = 'default-app-id';
+// --- Configuration loaded from gitignored config.js ---
+// To set up: copy config.example.js → config.js and add your Firebase credentials
+import { firebaseConfig, appId } from './config.js';
 
 // ============================================
 // AUTHORIZED MEMBERS EMAIL WHITELIST

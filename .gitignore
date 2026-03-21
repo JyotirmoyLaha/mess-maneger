@@ -3,6 +3,9 @@
 .env.local
 .env.*.local
 
+# Firebase config with real API keys (use config.example.js as template)
+config.js
+
 # Node modules
 node_modules/
 package-lock.json
