@@ -412,9 +412,6 @@ This project showcases expertise in:
 - ✅ Responsive web design
 - ✅ Git workflow & version control
 
-### Hiring?
-This project demonstrates production-ready code quality, modern web technologies, and attention to detail. Available for freelance & contract work.
+
 
 ---
-
-\
