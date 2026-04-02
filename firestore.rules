@@ -1,4 +1,4 @@
-rules_version = '2';
+rules_version = '2';tgyhui
 
 service cloud.firestore {
   match /databases/{database}/documents {
