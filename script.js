@@ -11,18 +11,33 @@ import {
 import { firebaseConfig, appId } from './config.js';
 
 // ============================================
-// AUTHORIZED MEMBERS EMAIL WHITELIST
-// Add mess member emails here to grant access
+// AUTHORIZED MEMBERS - Loaded from Firestore
+// Admin configures emails in Firestore collection:
+// artifacts/{appId}/public/data/settings/access_control
 // ============================================
-const AUTHORIZED_EMAILS = [
-    'jyotirmoy713128@gmail.com',  // Admin - can access everything
-    'soumikmondal6201@gmail.com',
-    'subhajit.kar16082006@gmail.com',
-    'debdeepmondal96@gmail.com',
-];
+let AUTHORIZED_EMAILS = [];
+let ADMIN_EMAIL = '';
 
-// Admin email with full access permissions
-const ADMIN_EMAIL = 'jyotirmoy713128@gmail.com';
+// Fetch authorized emails from Firestore
+async function loadAccessControl() {
+    try {
+        const accessControlRef = doc(db, 'artifacts', appId, 'public', 'data', 'settings', 'access_control');
+        const docSnap = await getDoc(accessControlRef);
+        
+        if (docSnap.exists()) {
+            const data = docSnap.data();
+            AUTHORIZED_EMAILS = data.authorized_emails || [];
+            ADMIN_EMAIL = data.admin_email || '';
+            return true;
+        } else {
+            console.error('Access control document not found in Firestore');
+            return false;
+        }
+    } catch (error) {
+        console.error('Error loading access control:', error);
+        return false;
+    }
+}
 
 const MESS_MEMBERS = [
     { id: 'jyotirmoy', name: 'Jyotirmoy' },
@@ -93,9 +108,22 @@ elements.googleLoginBtn.addEventListener('click', async () => {
     }
 });
 
-onAuthStateChanged(auth, (user) => {
+onAuthStateChanged(auth, async (user) => {
     state.user = user;
     if (user) {
+        // Load access control from Firestore first
+        const accessLoaded = await loadAccessControl();
+        
+        if (!accessLoaded) {
+            signOut(auth).then(() => {
+                state.hasJoined = false;
+                state.loading = false;
+                showError('Unable to verify access. Please contact admin to set up access control in Firestore.', true);
+                render();
+            });
+            return;
+        }
+
         // Check if user email is authorized
         const userEmail = user.email ? user.email.toLowerCase() : '';
         const isAuthorized = AUTHORIZED_EMAILS.some(email => email.toLowerCase() === userEmail);
@@ -114,7 +142,7 @@ onAuthStateChanged(auth, (user) => {
         // Authorized user - proceed normally
         state.username = user.displayName || (user.email ? user.email.split('@')[0] : 'Guest');
         state.userPhoto = user.photoURL;
-        state.isAdmin = user.email.toLowerCase() === ADMIN_EMAIL.toLowerCase();
+        state.isAdmin = ADMIN_EMAIL && user.email.toLowerCase() === ADMIN_EMAIL.toLowerCase();
         state.hasJoined = true;
         setupDataListener();
     } else { state.hasJoined = false; }

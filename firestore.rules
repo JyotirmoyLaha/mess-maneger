@@ -4,61 +4,69 @@ service cloud.firestore {
   match /databases/{database}/documents {
     
     // ============================================
-    // AUTHORIZED MEMBERS EMAIL WHITELIST
-    // Update this list to match script.js
+    // ADMIN EMAIL - Only admin can modify access control
     // ============================================
-    function isAuthorizedUser() {
-      return request.auth != null && (
-        request.auth.token.email.lower() == 'jyotirmoy713128@gmail.com'
-        // Add more authorized emails here:
-        || request.auth.token.email.lower() == 'soumikmondal6201@gmail.com'
-        || request.auth.token.email.lower() == 'subhajit.kar16082006@gmail.com'
-        || request.auth.token.email.lower() == 'debdeepmondal96@gmail.com'
-      );
+    function isAdmin() {
+      return request.auth != null && 
+             request.auth.token.email.lower() == 'jyotirmoy713128@gmail.com';
     }
     
-    // Helper function to check if user is authenticated
+    // ============================================
+    // AUTHORIZED USERS - Check against Firestore data
+    // ============================================
+    function isAuthorizedUser() {
+      return request.auth != null && 
+             exists(/databases/$(database)/documents/artifacts/$(resource.data.appId)/public/data/settings/access_control) &&
+             request.auth.token.email.lower() in get(/databases/$(database)/documents/artifacts/$(resource.data.appId)/public/data/settings/access_control).data.authorized_emails;
+    }
+    
+    // Simplified check - just verify auth exists (access control checked in app)
     function isSignedIn() {
       return request.auth != null;
+    }
+    
+    // ============================================
+    // ACCESS CONTROL SETTINGS
+    // ============================================
+    
+    // Access control document - anyone can read (needed before auth), only admin can write
+    match /artifacts/{appId}/public/data/settings/access_control {
+      allow read: if true;  // Must be readable to check authorization
+      allow write: if isAdmin();
     }
     
     // ============================================
     // MESS MANAGER DATA SECURITY RULES
     // ============================================
     
-    // Fund summary document - allow all authorized users to read and write
+    // Fund summary document - allow authenticated users to read and write
     match /artifacts/{appId}/public/data/mess_fund/{document=**} {
-      allow read, write: if isAuthorizedUser();
+      allow read, write: if isSignedIn();
     }
     
-    // Mess expenses collection - authorized users have full control
+    // Mess expenses collection - authenticated users have access
     match /artifacts/{appId}/public/data/mess_expenses/{expenseId} {
-      // Only authorized users can read expenses
-      allow read: if isAuthorizedUser();
+      allow read: if isSignedIn();
       
-      // Only authorized users can create expenses
-      allow create: if isAuthorizedUser() 
+      allow create: if isSignedIn() 
                     && request.resource.data.userId == request.auth.uid
                     && request.resource.data.addedBy is string
                     && request.resource.data.item is string
                     && request.resource.data.cost is number
                     && request.resource.data.cost > 0;
       
-      // Authorized users can update any expense
-      allow update: if isAuthorizedUser();
-      
-      // Authorized users can delete any expense
-      allow delete: if isAuthorizedUser();
+      allow update: if isSignedIn();
+      allow delete: if isSignedIn();
     }
     
-    // Member fund contributions - all authorized users can read and write
+    // Member fund contributions - authenticated users can read and write
     match /artifacts/{appId}/public/data/member_funds/{document=**} {
-      allow read, write: if isAuthorizedUser();
+      allow read, write: if isSignedIn();
     }
 
-    // Allow read access to other documents under data for authorized users
+    // Allow read access to other documents under data for authenticated users
     match /artifacts/{appId}/public/data/{document=**} {
-      allow read: if isAuthorizedUser();
+      allow read: if isSignedIn();
     }
     
     // Deny all other access by default
