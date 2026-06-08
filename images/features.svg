@@ -1,0 +1,121 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="180" viewBox="0 0 900 180">
+  <defs>
+    <linearGradient id="cardBg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#02110c"/>
+      <stop offset="100%" style="stop-color:#062319"/>
+    </linearGradient>
+    <filter id="cGlow" x="-15%" y="-15%" width="130%" height="130%">
+      <feGaussianBlur stdDeviation="2.5" result="blur"/>
+      <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+  </defs>
+
+  <!-- Card 1: Real-time Sync -->
+  <g transform="translate(15, 15)">
+    <rect width="160" height="150" rx="12" fill="url(#cardBg)" stroke="#2dd4bf" stroke-width="1.25" opacity="0.9">
+      <animate attributeName="stroke-opacity" values="0.3;0.8;0.3" dur="3s" repeatCount="indefinite"/>
+    </rect>
+    <!-- Syncing circles icon -->
+    <g transform="translate(80, 45)" filter="url(#cGlow)">
+      <circle cx="0" cy="0" r="14" fill="none" stroke="#2dd4bf" stroke-width="1.5"/>
+      <circle cx="-14" cy="0" r="3" fill="#2dd4bf">
+        <animate attributeName="opacity" values="0.3;1;0.3" dur="2s" repeatCount="indefinite"/>
+      </circle>
+      <circle cx="14" cy="0" r="3" fill="#2dd4bf">
+        <animate attributeName="opacity" values="1;0.3;1" dur="2s" repeatCount="indefinite"/>
+      </circle>
+      <!-- Circular motion representation -->
+      <path d="M -8 -8 A 11 11 0 0 1 8 -8" fill="none" stroke="#2dd4bf" stroke-width="1.2" stroke-linecap="round">
+        <animateTransform attributeName="transform" type="rotate" values="0;360" dur="4s" repeatCount="indefinite"/>
+      </path>
+    </g>
+    <text x="80" y="85" text-anchor="middle" font-family="'Segoe UI', sans-serif" font-size="11.5" fill="#e2e8f0" font-weight="600">Real-time Sync</text>
+    <text x="80" y="100" text-anchor="middle" font-family="'Segoe UI', sans-serif" font-size="9" fill="#94a3b8">Instant Update</text>
+    <text x="80" y="130" text-anchor="middle" font-family="'Courier New', monospace" font-size="8.5" fill="#2dd4bf" opacity="0.75">onSnapshot() Listener</text>
+    <text x="80" y="142" text-anchor="middle" font-family="'Courier New', monospace" font-size="8" fill="#2dd4bf" opacity="0.55">&lt; 500ms latency</text>
+  </g>
+
+  <!-- Card 2: Security & Auth -->
+  <g transform="translate(190, 15)">
+    <rect width="160" height="150" rx="12" fill="url(#cardBg)" stroke="#fbbf24" stroke-width="1.25" opacity="0.9">
+      <animate attributeName="stroke-opacity" values="0.3;0.8;0.3" dur="3.5s" repeatCount="indefinite"/>
+    </rect>
+    <!-- Lock Shield Icon -->
+    <g transform="translate(80, 45)" filter="url(#cGlow)">
+      <path d="M -10 -8 L 10 -8 L 10 2 A 10 10 0 0 1 -10 2 Z" fill="none" stroke="#fbbf24" stroke-width="1.5"/>
+      <path d="M -6 -8 L -6 -13 A 6 6 0 0 1 6 -13 L 6 -8" fill="none" stroke="#fbbf24" stroke-width="1.5">
+        <animate attributeName="stroke-dasharray" values="24;0;24" dur="4s" repeatCount="indefinite"/>
+      </path>
+      <circle cx="0" cy="-3" r="2.5" fill="#fbbf24"/>
+    </g>
+    <text x="80" y="85" text-anchor="middle" font-family="'Segoe UI', sans-serif" font-size="11.5" fill="#e2e8f0" font-weight="600">Secure Access</text>
+    <text x="80" y="100" text-anchor="middle" font-family="'Segoe UI', sans-serif" font-size="9" fill="#94a3b8">OAuth &amp; Rules</text>
+    <text x="80" y="130" text-anchor="middle" font-family="'Courier New', monospace" font-size="8.5" fill="#fbbf24" opacity="0.75">Email Whitelists</text>
+    <text x="80" y="142" text-anchor="middle" font-family="'Courier New', monospace" font-size="8" fill="#fbbf24" opacity="0.55">Backend Isolation</text>
+  </g>
+
+  <!-- Card 3: Smart Calculations -->
+  <g transform="translate(365, 15)">
+    <rect width="160" height="150" rx="12" fill="url(#cardBg)" stroke="#34d399" stroke-width="1.25" opacity="0.9">
+      <animate attributeName="stroke-opacity" values="0.3;0.8;0.3" dur="4s" repeatCount="indefinite"/>
+    </rect>
+    <!-- Animated Chart Icon -->
+    <g transform="translate(80, 45)" filter="url(#cGlow)">
+      <rect x="-14" y="-2" width="6" height="16" rx="1" fill="#34d399">
+        <animate attributeName="height" values="16;8;20;16" dur="3s" repeatCount="indefinite"/>
+        <animate attributeName="y" values="-2;6;-6;-2" dur="3s" repeatCount="indefinite"/>
+      </rect>
+      <rect x="-4" y="-10" width="6" height="24" rx="1" fill="#34d399">
+        <animate attributeName="height" values="24;16;12;24" dur="4s" repeatCount="indefinite"/>
+        <animate attributeName="y" values="-10;-2;2;-10" dur="4s" repeatCount="indefinite"/>
+      </rect>
+      <rect x="6" y="-6" width="6" height="20" rx="1" fill="#34d399">
+        <animate attributeName="height" values="20;24;6;20" dur="2.5s" repeatCount="indefinite"/>
+        <animate attributeName="y" values="-6;-10;8;-6" dur="2.5s" repeatCount="indefinite"/>
+      </rect>
+    </g>
+    <text x="80" y="85" text-anchor="middle" font-family="'Segoe UI', sans-serif" font-size="11.5" fill="#e2e8f0" font-weight="600">Smart Funds</text>
+    <text x="80" y="100" text-anchor="middle" font-family="'Segoe UI', sans-serif" font-size="9" fill="#94a3b8">Spend Analytics</text>
+    <text x="80" y="130" text-anchor="middle" font-family="'Courier New', monospace" font-size="8.5" fill="#34d399" opacity="0.75">Auto-Month Reset</text>
+    <text x="80" y="142" text-anchor="middle" font-family="'Courier New', monospace" font-size="8" fill="#34d399" opacity="0.55">Dynamic Balance</text>
+  </g>
+
+  <!-- Card 4: Reports Exporter -->
+  <g transform="translate(540, 15)">
+    <rect width="160" height="150" rx="12" fill="url(#cardBg)" stroke="#2dd4bf" stroke-width="1.25" opacity="0.9">
+      <animate attributeName="stroke-opacity" values="0.3;0.8;0.3" dur="3.2s" repeatCount="indefinite"/>
+    </rect>
+    <!-- Document Export Icon -->
+    <g transform="translate(80, 45)" filter="url(#cGlow)">
+      <rect x="-10" y="-12" width="20" height="24" rx="2" fill="none" stroke="#2dd4bf" stroke-width="1.5"/>
+      <line x1="-5" y1="-4" x2="5" y2="-4" stroke="#2dd4bf" stroke-width="1.5"/>
+      <line x1="-5" y1="2" x2="2" y2="2" stroke="#2dd4bf" stroke-width="1.5"/>
+      <!-- Download Arrow -->
+      <path d="M 0 -8 L 0 6 M -3 3 L 0 6 L 3 3" fill="none" stroke="#fbbf24" stroke-width="1.5">
+        <animate attributeName="transform" type="translate" values="0,0;0,2;0,0" dur="2s" repeatCount="indefinite"/>
+      </path>
+    </g>
+    <text x="80" y="85" text-anchor="middle" font-family="'Segoe UI', sans-serif" font-size="11.5" fill="#e2e8f0" font-weight="600">Export PDF</text>
+    <text x="80" y="100" text-anchor="middle" font-family="'Segoe UI', sans-serif" font-size="9" fill="#94a3b8">Granular Reports</text>
+    <text x="80" y="130" text-anchor="middle" font-family="'Courier New', monospace" font-size="8.5" fill="#2dd4bf" opacity="0.75">Daily/Monthly View</text>
+    <text x="80" y="142" text-anchor="middle" font-family="'Courier New', monospace" font-size="8" fill="#2dd4bf" opacity="0.55">Clean Document</text>
+  </g>
+
+  <!-- Card 5: PWA Capabilities -->
+  <g transform="translate(715, 15)">
+    <rect width="170" height="150" rx="12" fill="url(#cardBg)" stroke="#fbbf24" stroke-width="1.25" opacity="0.9">
+      <animate attributeName="stroke-opacity" values="0.3;0.8;0.3" dur="3.8s" repeatCount="indefinite"/>
+    </rect>
+    <!-- Lightning Bolt / Mobile PWA Icon -->
+    <g transform="translate(85, 45)" filter="url(#cGlow)">
+      <rect x="-10" y="-15" width="20" height="30" rx="3" fill="none" stroke="#fbbf24" stroke-width="1.5"/>
+      <path d="M -2 4 L 3 -4 L -3 -4 L 2 -12" fill="none" stroke="#34d399" stroke-width="1.5">
+        <animate attributeName="stroke-dasharray" values="30;0;30" dur="3s" repeatCount="indefinite"/>
+      </path>
+    </g>
+    <text x="85" y="85" text-anchor="middle" font-family="'Segoe UI', sans-serif" font-size="11.5" fill="#e2e8f0" font-weight="600">Responsive PWA</text>
+    <text x="85" y="100" text-anchor="middle" font-family="'Segoe UI', sans-serif" font-size="9" fill="#94a3b8">Mobile &amp; Offline</text>
+    <text x="85" y="130" text-anchor="middle" font-family="'Courier New', monospace" font-size="8.5" fill="#fbbf24" opacity="0.75">No-Install Setup</text>
+    <text x="85" y="142" text-anchor="middle" font-family="'Courier New', monospace" font-size="8" fill="#fbbf24" opacity="0.55">Home Screen Ready</text>
+  </g>
+</svg>
