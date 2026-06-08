@@ -29,9 +29,9 @@ service cloud.firestore {
     // ACCESS CONTROL SETTINGS
     // ============================================
     
-    // Access control document - anyone can read (needed before auth), only admin can write
+    // Access control document - anyone signed in can read, only admin can write
     match /artifacts/{appId}/public/data/settings/access_control {
-      allow read: if false;  // Must be readable to check authorization
+      allow read: if isSignedIn();
       allow write: if isAdmin();
     }
     
