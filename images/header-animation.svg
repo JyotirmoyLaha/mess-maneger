@@ -1,0 +1,139 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="300" viewBox="0 0 900 300">
+  <defs>
+    <!-- Dynamic dark green/teal gradient background -->
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#022c22">
+        <animate attributeName="stop-color" values="#022c22;rgb(2, 44, 34);#064e3b;#022c22" dur="8s" repeatCount="indefinite"/>
+      </stop>
+      <stop offset="50%" style="stop-color:#064e3b">
+        <animate attributeName="stop-color" values="#064e3b;#0f766e;#022c22;#064e3b" dur="8s" repeatCount="indefinite"/>
+      </stop>
+      <stop offset="100%" style="stop-color:#0f766e">
+        <animate attributeName="stop-color" values="#0f766e;#022c22;#0f766e;#0f766e" dur="8s" repeatCount="indefinite"/>
+      </stop>
+    </linearGradient>
+
+    <!-- Glowing text gradient -->
+    <linearGradient id="textGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#34d399">
+        <animate attributeName="stop-color" values="#34d399;#2dd4bf;#fbbf24;#34d399" dur="5s" repeatCount="indefinite"/>
+      </stop>
+      <stop offset="50%" style="stop-color:#2dd4bf">
+        <animate attributeName="stop-color" values="#2dd4bf;#fbbf24;#34d399;#2dd4bf" dur="5s" repeatCount="indefinite"/>
+      </stop>
+      <stop offset="100%" style="stop-color:#fbbf24">
+        <animate attributeName="stop-color" values="#fbbf24;#34d399;#2dd4bf;#fbbf24" dur="5s" repeatCount="indefinite"/>
+      </stop>
+    </linearGradient>
+
+    <!-- Glow filters -->
+    <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="4" result="coloredBlur"/>
+      <feMerge>
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+
+    <filter id="elementGlow" x="-30%" y="-30%" width="160%" height="160%">
+      <feGaussianBlur stdDeviation="2.5" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+
+    <!-- 3D Perspective Grid -->
+    <pattern id="grid" width="60" height="60" patternUnits="userSpaceOnUse">
+      <path d="M 60 0 L 0 0 0 60" fill="none" stroke="rgba(52,211,153,0.06)" stroke-width="0.75"/>
+    </pattern>
+  </defs>
+
+  <!-- Background Rect -->
+  <rect width="900" height="300" fill="url(#bgGrad)" rx="16"/>
+
+  <!-- Grid with sliding animation -->
+  <rect width="900" height="300" fill="url(#grid)" rx="16" opacity="0.6">
+    <animateTransform attributeName="transform" type="translate" values="0,0;0,60;0,0" dur="12s" repeatCount="indefinite" />
+  </rect>
+
+  <!-- Floating Food/Expense Emojis & Graphic Objects -->
+  <!-- Plate Emoji/Icon Graphic -->
+  <g transform="translate(100, 70)" opacity="0.15" filter="url(#elementGlow)">
+    <animateTransform attributeName="transform" type="translate" values="100,70;110,50;100,70" dur="8s" repeatCount="indefinite"/>
+    <circle cx="20" cy="20" r="25" fill="none" stroke="#34d399" stroke-width="1.5"/>
+    <circle cx="20" cy="20" r="16" fill="none" stroke="#2dd4bf" stroke-width="1"/>
+    <!-- Fork and Knife -->
+    <line x1="12" y1="12" x2="12" y2="28" stroke="#34d399" stroke-width="2"/>
+    <line x1="28" y1="12" x2="28" y2="28" stroke="#34d399" stroke-width="2"/>
+  </g>
+
+  <!-- Dollar / Expense Symbol Graphic -->
+  <g transform="translate(760, 200)" opacity="0.2" filter="url(#elementGlow)">
+    <animateTransform attributeName="transform" type="translate" values="760,200;740,220;760,200" dur="10s" repeatCount="indefinite"/>
+    <rect x="-10" y="-10" width="40" height="40" rx="8" fill="none" stroke="#2dd4bf" stroke-width="1.5">
+      <animateTransform attributeName="transform" type="rotate" values="0 10 10;360 10 10" dur="15s" repeatCount="indefinite"/>
+    </rect>
+    <text x="10" y="18" font-family="sans-serif" font-size="24" font-weight="bold" fill="#34d399" text-anchor="middle">$</text>
+  </g>
+
+  <!-- Animated Chart Bars visualizer -->
+  <g transform="translate(700, 40)" opacity="0.12" filter="url(#elementGlow)">
+    <animateTransform attributeName="transform" type="translate" values="700,40;710,55;700,40" dur="9s" repeatCount="indefinite"/>
+    <rect x="0" y="40" width="12" height="40" rx="3" fill="#34d399">
+      <animate attributeName="height" values="40;20;60;40" dur="4s" repeatCount="indefinite"/>
+      <animate attributeName="y" values="40;60;20;40" dur="4s" repeatCount="indefinite"/>
+    </rect>
+    <rect x="20" y="20" width="12" height="60" rx="3" fill="#2dd4bf">
+      <animate attributeName="height" values="60;80;30;60" dur="5s" repeatCount="indefinite"/>
+      <animate attributeName="y" values="20;0;50;20" dur="5s" repeatCount="indefinite"/>
+    </rect>
+    <rect x="40" y="50" width="12" height="30" rx="3" fill="#fbbf24">
+      <animate attributeName="height" values="30;70;20;30" dur="3s" repeatCount="indefinite"/>
+      <animate attributeName="y" values="50;10;60;50" dur="3s" repeatCount="indefinite"/>
+    </rect>
+  </g>
+
+  <!-- Tiny floating stars/bubbles -->
+  <circle cx="150" cy="220" r="3.5" fill="#34d399" opacity="0.3" filter="url(#elementGlow)">
+    <animate attributeName="cy" values="220;200;220" dur="6s" repeatCount="indefinite"/>
+    <animate attributeName="opacity" values="0.3;0.7;0.3" dur="6s" repeatCount="indefinite"/>
+  </circle>
+  <circle cx="300" cy="50" r="2" fill="#fbbf24" opacity="0.25">
+    <animate attributeName="opacity" values="0.25;0.6;0.25" dur="4s" repeatCount="indefinite"/>
+  </circle>
+  <circle cx="820" cy="90" r="4.5" fill="#2dd4bf" opacity="0.2" filter="url(#elementGlow)">
+    <animate attributeName="cy" values="90;110;90" dur="7s" repeatCount="indefinite"/>
+    <animate attributeName="opacity" values="0.2;0.5;0.2" dur="7s" repeatCount="indefinite"/>
+  </circle>
+
+  <!-- Main Title -->
+  <text x="450" y="115" text-anchor="middle" font-family="'Plus Jakarta Sans', 'Segoe UI', system-ui, sans-serif" font-size="44" font-weight="800" fill="url(#textGrad)" filter="url(#glow)">
+    🍽️ MESS MANAGER
+  </text>
+
+  <!-- Premium Subtitle -->
+  <text x="450" y="155" text-anchor="middle" font-family="'Courier New', monospace" font-size="15" fill="#94a3b8" letter-spacing="4">
+    COLLABORATIVE · REAL-TIME · SECURE
+    <animate attributeName="opacity" values="0;1" dur="2s" fill="freeze"/>
+  </text>
+
+  <!-- Glowing divider line -->
+  <line x1="320" y1="170" x2="580" y2="170" stroke="url(#textGrad)" stroke-width="2" stroke-linecap="round" opacity="0.7">
+    <animate attributeName="x1" values="450;320;450" dur="4s" repeatCount="indefinite" calcMode="spline" keySplines="0.42 0 0.58 1;0.42 0 0.58 1"/>
+    <animate attributeName="x2" values="450;580;450" dur="4s" repeatCount="indefinite" calcMode="spline" keySplines="0.42 0 0.58 1;0.42 0 0.58 1"/>
+  </line>
+
+  <!-- Dynamic application description tag -->
+  <g transform="translate(450, 215)">
+    <rect x="-140" y="-18" width="280" height="34" rx="8" fill="rgba(15, 118, 110, 0.2)" stroke="rgba(45, 212, 191, 0.4)" stroke-width="1" />
+    <text x="0" y="4" text-anchor="middle" font-family="sans-serif" font-size="12" font-weight="600" fill="#2dd4bf" letter-spacing="1">
+      PROGRESSIVE WEB APP (PWA)
+    </text>
+  </g>
+
+  <!-- Scanner line overlay for technical style -->
+  <rect x="0" y="0" width="900" height="2" fill="url(#textGrad)" opacity="0.12">
+    <animate attributeName="y" values="-2;300" dur="5s" repeatCount="indefinite"/>
+  </rect>
+</svg>
