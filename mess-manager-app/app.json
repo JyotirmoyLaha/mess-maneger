@@ -1,0 +1,51 @@
+{
+  "expo": {
+    "name": "Mess Manager",
+    "slug": "mess-manager-app",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "scheme": "messmanager",
+    "userInterfaceStyle": "dark",
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.jyotirmoylaha.messmanager"
+    },
+    "android": {
+      "package": "com.jyotirmoylaha.messmanager",
+      "adaptiveIcon": {
+        "backgroundColor": "#080c14",
+        "foregroundImage": "./assets/android-icon-foreground.png",
+        "backgroundImage": "./assets/android-icon-background.png",
+        "monochromeImage": "./assets/android-icon-monochrome.png"
+      },
+      "runtimeVersion": {
+        "policy": "appVersion"
+      }
+    },
+    "web": {
+      "favicon": "./assets/favicon.png"
+    },
+    "splash": {
+      "image": "./assets/splash-icon.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#080c14"
+    },
+    "plugins": [
+      "expo-font",
+      "@react-native-google-signin/google-signin"
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "4b3a1aac-606e-4497-b3ef-d86a5ba3e480"
+      }
+    },
+    "owner": "jyotirmoy1",
+    "updates": {
+      "url": "https://u.expo.dev/4b3a1aac-606e-4497-b3ef-d86a5ba3e480"
+    },
+    "runtimeVersion": {
+      "policy": "appVersion"
+    }
+  }
+}
