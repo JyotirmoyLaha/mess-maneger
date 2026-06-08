@@ -141,8 +141,10 @@ mess-maneger/
     <th align="center">Technologies</th>
   </tr>
   <tr>
-    <td align="center"><b>🎨 Frontend</b></td>
+    <td align="center"><b>🎨 Frontend (Web &amp; Mobile)</b></td>
     <td>
+      <img src="https://img.shields.io/badge/React_Native-60A5FA?style=flat-square&logo=react&logoColor=white" />
+      <img src="https://img.shields.io/badge/Expo_SDK_v54-E2E8F0?style=flat-square&logo=expo&logoColor=black" />
       <img src="https://img.shields.io/badge/HTML5-E34F26?style=flat-square&logo=html5&logoColor=white" />
       <img src="https://img.shields.io/badge/Tailwind_CSS_v3-38B2AC?style=flat-square&logo=tailwind-css&logoColor=white" />
       <img src="https://img.shields.io/badge/Vanilla_CSS-1572B6?style=flat-square&logo=css3&logoColor=white" />
@@ -151,18 +153,21 @@ mess-maneger/
     </td>
   </tr>
   <tr>
-    <td align="center"><b>⚙️ Backend &amp; DB</b></td>
+    <td align="center"><b>⚙️ Backend &amp; Services</b></td>
     <td>
       <img src="https://img.shields.io/badge/Firebase_Auth-FFCA28?style=flat-square&logo=firebase&logoColor=black" />
       <img src="https://img.shields.io/badge/Cloud_Firestore-039BE5?style=flat-square&logo=firebase&logoColor=white" />
-      <img src="https://img.shields.io/badge/Google_OAuth_2.0-4285F4?style=flat-square&logo=google&logoColor=white" />
+      <img src="https://img.shields.io/badge/Google_Sign--In-22D3EE?style=flat-square&logo=google&logoColor=white" />
+      <img src="https://img.shields.io/badge/Expo_Updates-EC4899?style=flat-square&logo=expo&logoColor=white" />
     </td>
   </tr>
   <tr>
-    <td align="center"><b>🔒 Security</b></td>
+    <td align="center"><b>🔒 Security &amp; Utils</b></td>
     <td>
       <img src="https://img.shields.io/badge/Firestore_Rules-FFCB2C?style=flat-square&logo=firebase&logoColor=black" />
       <img src="https://img.shields.io/badge/Email_Whitelist-10B981?style=flat-square" />
+      <img src="https://img.shields.io/badge/Async_Storage-38BDF8?style=flat-square" />
+      <img src="https://img.shields.io/badge/Expo_Print-F43F5E?style=flat-square" />
       <img src="https://img.shields.io/badge/Dotenv-1572B6?style=flat-square" />
     </td>
   </tr>
@@ -258,19 +263,7 @@ Open **`http://localhost:8000`** in your browser.
 
 <br/>
 
-<!-- ═══════════════════════════════════════════════════════════════════ -->
-<p align="center"><img src="images/divider.svg" width="100%" /></p>
-<!-- ═══════════════════════════════════════════════════════════════════ -->
 
-## <img src="https://raw.githubusercontent.com/Tarikul-Islam-Anik/Animated-Fluent-Emojis/master/Emojis/Objects/Compass.png" width="25" /> &nbsp;Roadmap
-
-- [x] **PDF Reports:** Export daily/monthly expense breakdowns
-- [ ] **Data Visualizations:** Dynamic graphs and charting metrics
-- [ ] **Multi-Currency:** Support localized currency exchanges
-- [ ] **Email Summaries:** Auto-notifications for monthly billings
-- [ ] **Dark Mode:** High-contrast color adjustments
-
-<br/>
 
 <!-- ═══════════════════════════════════════════════════════════════════ -->
 <!-- ANIMATED FOOTER                                                    -->
