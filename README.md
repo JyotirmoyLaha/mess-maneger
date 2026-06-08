@@ -1,417 +1,291 @@
-# 🍽️ Mess Manager
+<!-- ═══════════════════════════════════════════════════════════════════ -->
+<!-- ✨ ANIMATED HEADER BANNER — 3D wireframe + food visualization     -->
+<!-- ═══════════════════════════════════════════════════════════════════ -->
 
-> A **production-grade Progressive Web App** for real-time expense tracking with premium UI/UX, Firebase real-time synchronization, and secure Google authentication.
+<p align="center">
+  <img src="images/header-animation.svg" alt="Mess Manager — Real-time PWA Expense Tracker" width="100%" />
+</p>
 
-[![GitHub](https://img.shields.io/badge/GitHub-JyotirmoyLaha/mess--maneger-blue?logo=github)](https://github.com/JyotirmoyLaha/mess-maneger)
-[![Firebase](https://img.shields.io/badge/Backend-Firebase-orange)]()
-[![Live Demo](https://img.shields.io/badge/Live-Demo-success?logo=render)](https://mess-maneger.onrender.com/)
+<!-- Badges Row -->
+<p align="center">
+  <a href="https://mess-maneger.onrender.com/"><img src="https://img.shields.io/badge/🌐_Live_Demo-10b981?style=for-the-badge&logoColor=white" alt="Live Demo" /></a>
+  <a href="https://github.com/JyotirmoyLaha/mess-maneger"><img src="https://img.shields.io/badge/GitHub-181717?style=for-the-badge&logo=github&logoColor=white" alt="GitHub Repo" /></a>
+  <a href="https://www.linkedin.com/in/jyotirmoylaha2005/"><img src="https://img.shields.io/badge/LinkedIn-0077b5?style=for-the-badge&logo=linkedin&logoColor=white" alt="LinkedIn" /></a>
+  <a href="mailto:jyotirmoylaha@gmail.com"><img src="https://img.shields.io/badge/Email-D14836?style=for-the-badge&logo=gmail&logoColor=white" alt="Email" /></a>
+</p>
 
----
+<p align="center">
+  <img src="https://img.shields.io/github/stars/JyotirmoyLaha/mess-maneger?style=social" alt="Stars" />
+  <img src="https://img.shields.io/github/forks/JyotirmoyLaha/mess-maneger?style=social" alt="Forks" />
+  <img src="https://img.shields.io/github/last-commit/JyotirmoyLaha/mess-maneger?color=10b981" alt="Last Commit" />
+</p>
 
-## 🌐 Live Demo
+<!-- ═══════════════════════════════════════════════════════════════════ -->
+<p align="center"><img src="images/divider.svg" width="100%" /></p>
+<!-- ═══════════════════════════════════════════════════════════════════ -->
 
-**Experience it now:** [https://mess-maneger.onrender.com/](https://mess-maneger.onrender.com/)
+## <img src="https://raw.githubusercontent.com/Tarikul-Islam-Anik/Animated-Fluent-Emojis/master/Emojis/Food/Bento%20Box.png" width="25" /> &nbsp;About
 
-✨ No installation required - try all features with Google sign-in!
+> **Mess Manager** is a production-grade Progressive Web App designed for real-time expense tracking in shared living situations (hostels, mess halls, co-living spaces). It combines a modern, professional UI with robust backend infrastructure, featuring instant Firebase real-time synchronization, secure Google authentication, and offline capabilities.
 
----
+<br/>
 
-## 🎯 Project Overview
+<!-- ═══════════════════════════════════════════════════════════════════ -->
+<!-- 🏗️ ANIMATED ARCHITECTURE DIAGRAM                                   -->
+<!-- ═══════════════════════════════════════════════════════════════════ -->
 
-**Mess Manager** is a sophisticated real-time expense tracking application designed for shared living situations (hostels, mess halls, co-living spaces). It combines a modern, professional UI with robust backend infrastructure to provide seamless collaborative expense management.
+## <img src="https://raw.githubusercontent.com/Tarikul-Islam-Anik/Animated-Fluent-Emojis/master/Emojis/Travel%20and%20places/Rocket.png" width="25" /> &nbsp;Architecture
 
-### Why This Project Matters
-This project demonstrates **full-stack web development expertise** including:
-- ✅ Modern JavaScript (ES6+ modules with Firebase imports)
-- ✅ Professional UI/UX design with animations
-- ✅ Real-time backend synchronization
-- ✅ Secure authentication & API key management
-- ✅ Responsive mobile-first architecture
-- ✅ Production-ready code organization
+<p align="center">
+  <img src="images/architecture.svg" alt="System Architecture" width="100%" />
+</p>
 
----
+<details>
+<summary>📂 <b>Directory Structure</b></summary>
+<br/>
 
-## ✨ Key Features
-
-### Core Functionality
-- **Real-time Expense Tracking** - Add, edit, delete expenses with instant Firebase synchronization
-- **Smart Fund Management** - Track collected funds vs. spending across months
-- **Automatic Month Detection** - Resets spending tracker monthly and preserves historical data
-- **User Attribution** - Shows who added each expense with Google profile photo
-- **Daily/Monthly Views** - Toggle between granular and aggregated expense views
-- **Real-time Balance** - Instant calculation of remaining funds
-- **PDF Export** - Extract daily and monthly expenses to professional PDF reports
-
-### Premium UI Components
-- **Animated Gradient Background** - Dynamic color-shifting 14-color gradient with blur effects
-- **Floating Particles** - 25 food emoji animations with staggered 11-45s durations
-- **Glass-Morphism Cards** - Modern frosted glass effect with backdrop blur (20px)
-- **Smooth Animations** - Custom CSS keyframes (fadeIn, gradientMove, floatUp, buttonFloat)
-- **Professional Typography** - Plus Jakarta Sans with 400-800 weight hierarchy
-- **Modal Interactions** - Elegant fund update and deletion confirmation flows
-
-### Technical Excellence
-- **Firestore Real-time Listeners** - Multi-device synchronization without polling
-- **Google OAuth 2.0** - Enterprise-grade authentication
-- **Responsive Design** - Mobile-first Tailwind CSS with max-width constraints
-- **Error Handling** - Graceful failures with user-friendly error messages
-- **Performance** - Efficient DOM updates, event delegation, CSS animations
-
-### Security Features
-- **Email Whitelist Authorization** - Only authorized mess members can access
-- **Multi-layer Protection** - Frontend checks + Backend Firestore security rules
-- **User Data Isolation** - Members can only delete their own expenses
-- **Auto-logout Unauthorized** - Rejected users are signed out immediately
-- **Data Validation** - Backend rules enforce required fields and types
-
----
-
-## 🛠️ Tech Stack
-
-### Frontend Architecture
-| Layer | Technology | Purpose |
-|-------|-----------|---------|
-| **Structure** | HTML5 | Semantic, accessibility-focused markup |
-| **Styling** | Tailwind CSS v3 | Utility-first, responsive design |
-| **Icons** | Lucide Icons | 50+ vector icons via CDN |
-| **Typography** | Plus Jakarta Sans | Premium Google Font |
-| **Interactivity** | ES6+ JavaScript | Modern, modular code |
-
-### Backend & Services
-| Service | Purpose | Implementation |
-|---------|---------|-----------------|
-| **Firestore** | Real-time NoSQL database | Collections, real-time listeners |
-| **Firebase Auth** | User authentication | Google OAuth 2.0 integration |
-| **Security** | API key management | `.env` environment variables |
-
-### Data Architecture
 ```
-Firestore Structure:
-├── artifacts/{appId}/public/data/
-│   ├── mess_expenses (collection)
-│   │   └── expense_doc
-│   │       ├── item: string
-│   │       ├── cost: number
-│   │       ├── date: ISO timestamp
-│   │       ├── addedBy: string
-│   │       ├── userPhoto: URL
-│   │       └── userId: string
-│   └── mess_fund/summary (document)
-│       ├── amount: number
-│       ├── currentMonth: YYYY-MM
-│       └── previousMonthSpent: number
+mess-maneger/
+├── index.html              # Clean SPA layout
+├── styles.css              # Custom CSS rules & animations
+├── script.js               # Reactive state & Firebase logic
+├── firestore.rules         # Cloud Firestore security rules
+├── .env                    # Environment credentials
+├── .env.example            # Environment template
+├── .gitignore              # Ignored local configurations
+├── SETUP.md                # Quick local setup guide
+├── SECURITY_SETUP.md       # Secure database setup guide
+└── README.md               # This README document
 ```
 
+</details>
 
----
+<br/>
 
-## � Security Features
+<!-- ═══════════════════════════════════════════════════════════════════ -->
+<p align="center"><img src="images/divider.svg" width="100%" /></p>
+<!-- ═══════════════════════════════════════════════════════════════════ -->
 
-### Multi-Layer Security Architecture
+## <img src="https://raw.githubusercontent.com/Tarikul-Islam-Anik/Animated-Fluent-Emojis/master/Emojis/Travel%20and%20places/Glowing%20Star.png" width="25" /> &nbsp;Core Features
 
-**Mess Manager implements defense-in-depth security** to ensure only authorized mess members can access and modify data.
+<p align="center">
+  <img src="images/features.svg" alt="Core Features" width="100%" />
+</p>
 
-#### 1. **Frontend Email Whitelist** 
-- Email-based authorization after Google OAuth
-- Unauthorized users are immediately signed out
-- Clear error messages for rejected access attempts
-- Configured in `script.js` (AUTHORIZED_EMAILS array)
+<br/>
 
-#### 2. **Backend Firestore Security Rules**
-- Database-level access control (even if frontend is bypassed)
-- Only whitelisted emails can read/write data
-- Users can only delete their own expenses
-- Field-level validation for data integrity
-- Deployed via `firestore.rules`
+<table>
+  <tr>
+    <td width="50%">
 
-#### 3. **Data Integrity Protection**
-- Cost validation (must be positive number)
-- Required fields enforced (item, cost, userId, addedBy)
-- User identity verification (userId must match authenticated user)
-- Fund updates restricted to authorized members
+### 🔄 Real-time Expense Sync
 
-### Security Rule Example
+- Instant database synchronization via Firestore `onSnapshot`
+- Real-time balances and remaining funds calculated instantly
+- Attributions tagged with profile photos from Google OAuth
+- Granular Daily/Monthly filters for flexible spending views
+
+</td>
+<td width="50%">
+
+### 💸 Smart Fund Management
+
+- Intelligent automatic month reset detects YYYY-MM changes
+- Preserves historical records on database transitions
+- Displays previous month's final spending dynamically
+- Responsive design scales seamlessly from mobile to desktop
+
+</td>
+  </tr>
+  <tr>
+    <td width="50%">
+
+### 📄 Professional PDF Exports
+
+- Generate clean daily and monthly billing reports
+- Auto-calculate grand totals and attributions per member
+- Ready-to-print or share PDF formats
+- Seamless frontend document generation
+
+</td>
+<td width="50%">
+
+### ⚡ Premium UI & PWA
+
+- Rich 14-color dynamic shifting background with custom blurs
+- Floating physics emoji particles with staggered animations
+- Frosted glassmorphism layout with backdrop filters
+- Add to Home Screen support with zero-install experience
+
+</td>
+  </tr>
+</table>
+
+<br/>
+
+<!-- ═══════════════════════════════════════════════════════════════════ -->
+<p align="center"><img src="images/divider.svg" width="100%" /></p>
+<!-- ═══════════════════════════════════════════════════════════════════ -->
+
+## <img src="https://raw.githubusercontent.com/Tarikul-Islam-Anik/Animated-Fluent-Emojis/master/Emojis/Objects/Hammer%20and%20Wrench.png" width="25" /> &nbsp;Tech Stack
+
+<p align="center">
+  <img src="images/tech-stack.svg" alt="Tech Stack" width="100%" />
+</p>
+
+<br/>
+
+<table>
+  <tr>
+    <th align="center">Layer</th>
+    <th align="center">Technologies</th>
+  </tr>
+  <tr>
+    <td align="center"><b>🎨 Frontend</b></td>
+    <td>
+      <img src="https://img.shields.io/badge/HTML5-E34F26?style=flat-square&logo=html5&logoColor=white" />
+      <img src="https://img.shields.io/badge/Tailwind_CSS_v3-38B2AC?style=flat-square&logo=tailwind-css&logoColor=white" />
+      <img src="https://img.shields.io/badge/Vanilla_CSS-1572B6?style=flat-square&logo=css3&logoColor=white" />
+      <img src="https://img.shields.io/badge/JavaScript_ES6+-F7DF1E?style=flat-square&logo=javascript&logoColor=black" />
+      <img src="https://img.shields.io/badge/Lucide_Icons-F43F5E?style=flat-square" />
+    </td>
+  </tr>
+  <tr>
+    <td align="center"><b>⚙️ Backend &amp; DB</b></td>
+    <td>
+      <img src="https://img.shields.io/badge/Firebase_Auth-FFCA28?style=flat-square&logo=firebase&logoColor=black" />
+      <img src="https://img.shields.io/badge/Cloud_Firestore-039BE5?style=flat-square&logo=firebase&logoColor=white" />
+      <img src="https://img.shields.io/badge/Google_OAuth_2.0-4285F4?style=flat-square&logo=google&logoColor=white" />
+    </td>
+  </tr>
+  <tr>
+    <td align="center"><b>🔒 Security</b></td>
+    <td>
+      <img src="https://img.shields.io/badge/Firestore_Rules-FFCB2C?style=flat-square&logo=firebase&logoColor=black" />
+      <img src="https://img.shields.io/badge/Email_Whitelist-10B981?style=flat-square" />
+      <img src="https://img.shields.io/badge/Dotenv-1572B6?style=flat-square" />
+    </td>
+  </tr>
+</table>
+
+<br/>
+
+<!-- ═══════════════════════════════════════════════════════════════════ -->
+<p align="center"><img src="images/divider.svg" width="100%" /></p>
+<!-- ═══════════════════════════════════════════════════════════════════ -->
+
+## <img src="https://raw.githubusercontent.com/Tarikul-Islam-Anik/Animated-Fluent-Emojis/master/Emojis/Objects/Shield.png" width="25" /> &nbsp;Security &amp; Rules
+
+> [!IMPORTANT]  
+> Mess Manager implements a robust defense-in-depth security model to ensure that only authorized mess members can view or modify financial data.
+
+### 🛡️ Multi-Layer Protection
+
+#### 1. Frontend Email Whitelist
+- Restricts login capability post Google OAuth to configured member emails.
+- Instantly logs out unauthorized attempts and displays clear alerts.
+- Easily customizable list within `script.js` (`AUTHORIZED_EMAILS` array).
+
+#### 2. Backend Firestore Security Rules
+- Restricts data operations database-side, blocking bypasses.
+- Enforces user-specific deletion boundaries: members can only delete expenses they personally created.
+- Strict field-level checks validate cost ranges, data formats, and user identities.
+- Configured and deployed via `firestore.rules`.
+
 ```javascript
-// Only authorized mess members can access
+// Firestore Security Rule Snippet
 function isAuthorizedUser() {
   return request.auth != null && (
-    request.auth.token.email.lower() == 'member1@gmail.com'
-    || request.auth.token.email.lower() == 'member2@gmail.com'
+    request.auth.token.email.lower() == 'member1@gmail.com' ||
+    request.auth.token.email.lower() == 'member2@gmail.com'
   );
 }
 ```
 
-📖 **Full Security Setup Guide:** See [SECURITY_SETUP.md](SECURITY_SETUP.md)
+📖 **Full Security Setup Guide:** Review [SECURITY_SETUP.md](SECURITY_SETUP.md) for database deployments.
 
----
+<br/>
 
-## �📁 Project Architecture
+<!-- ═══════════════════════════════════════════════════════════════════ -->
+<p align="center"><img src="images/divider.svg" width="100%" /></p>
+<!-- ═══════════════════════════════════════════════════════════════════ -->
 
-### File Organization (Modular Design)
+## <img src="https://raw.githubusercontent.com/Tarikul-Islam-Anik/Animated-Fluent-Emojis/master/Emojis/Objects/Gear.png" width="25" /> &nbsp;Getting Started
+
+<details open>
+<summary><b>1️⃣ Clone &amp; Configure Environment</b></summary>
+<br/>
+
+```bash
+# Clone the repository
+git clone https://github.com/JyotirmoyLaha/mess-maneger.git
+cd mess-maneger
+
+# Prepare environment credentials
+cp .env.example .env
 ```
-mess-maneger/
-├── index.html              # 304 lines - Clean HTML structure only
-├── styles.css              # 220+ lines - All CSS/animations/effects
-├── script.js               # 549 lines - Firebase logic & handlers
-├── firestore.rules         # Firestore security rules (backend protection)
-├── .env                    # Firebase credentials (Git-ignored)
-├── .env.example            # Safe template for developers
-├── .gitignore              # Prevents credential exposure
-├── SETUP.md               # Environment setup guide
-├── SECURITY_SETUP.md      # Security configuration guide
-└── README.md              # This file
-```
 
-### Design Patterns Implemented
-- **Module Pattern** - Separation of concerns (HTML/CSS/JS)
-- **State Management** - Centralized state object with reactive updates
-- **Event Delegation** - Single handler with `.closest()` method
-- **Observer Pattern** - Firebase `onSnapshot()` listeners
-- **Responsive Design** - Mobile-first Tailwind utilities
+Update the values in `.env` with your Firestore app config details.
 
----
+</details>
 
-## 🚀 Quick Start
+<details>
+<summary><b>2️⃣ Configure Whitelisted Members</b></summary>
+<br/>
 
-### Prerequisites
-- Modern browser (Chrome, Firefox, Safari, Edge)
-- Firebase project with Firestore & Google Auth enabled
-
-### Installation
-
-1. **Clone Repository**
-   ```bash
-   git clone https://github.com/JyotirmoyLaha/mess-maneger.git
-   cd mess-maneger
-   ```
-
-2. **Setup Firebase Credentials**
-   ```bash
-   cp .env.example .env
-   ```
-   
-   Update `.env` with your Firebase config:
-   ```
-   VITE_FIREBASE_API_KEY=your_key_here
-   VITE_FIREBASE_AUTH_DOMAIN=your_domain.firebaseapp.com
-   VITE_FIREBASE_PROJECT_ID=your_project_id
-   VITE_FIREBASE_STORAGE_BUCKET=your_storage.app
-   VITE_FIREBASE_MESSAGING_SENDER_ID=your_sender_id
-   VITE_FIREBASE_APP_ID=your_app_id
-   ```
-
-3. **Add Authorized Mess Members**
-   
-   Edit `script.js` (around line 20-25):
-   ```javascript
-   const AUTHORIZED_EMAILS = [
-       'member1@gmail.com',
-       'member2@gmail.com',
-       // Add all your mess members here
-   ];
-   ```
-   
-   📖 See [SECURITY_SETUP.md](SECURITY_SETUP.md) for complete security configuration
-
-4. **Run Locally**
-   ```bash
-   # Python 3
-   python -m http.server 8000
-   
-   # Then visit: http://localhost:8000
-   ```
-
-### Firebase Console Setup
-1. Create project at [Firebase Console](https://console.firebase.google.com/)
-2. Enable Firestore (Test mode for development)
-3. Enable Google Authentication
-4. Add authorized domains
-5. Copy credentials to `.env`
-6. **Deploy security rules** from `firestore.rules` (see [SECURITY_SETUP.md](SECURITY_SETUP.md))
-
----
-
-## 💡 Key Implementation Highlights
-
-### Real-time Synchronization
+Edit `script.js` to whitelist your mess members:
 ```javascript
-// Firebase listeners for instant multi-device updates
-onSnapshot(expensesRef, (snapshot) => {
-  state.expenses = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-  renderDashboardData(); // Re-render only when data changes
-});
+const AUTHORIZED_EMAILS = [
+    'member1@gmail.com',
+    'member2@gmail.com',
+    // Add all your mess members here
+];
 ```
 
-### Automatic Month-Change Detection
-```javascript
-function checkAndUpdateMonthChange() {
-  const currentMonth = getCurrentMonthKey(); // YYYY-MM
-  if (state.currentMonth !== currentMonth) {
-    // Saves previous month's total and resets counter
-    await setDoc(fundRef, { 
-      previousMonthSpent: totalSpent,
-      currentMonth: currentMonth 
-    });
-  }
-}
+</details>
+
+<details>
+<summary><b>3️⃣ Run Server Locally</b></summary>
+<br/>
+
+```bash
+# Run with python static server
+python -m http.server 8000
 ```
+Open **`http://localhost:8000`** in your browser.
 
-### Security: Environment Variables
-```javascript
-// API keys never exposed in source
-const firebaseConfig = {
-  apiKey: "AIzaSyC7z-...", // Used directly, not from import.meta.env
-  authDomain: "messjyotirmoy.firebaseapp.com",
-  // ... other config
-};
-// .env file is .gitignore'd and never committed
-```
+</details>
 
-### Responsive State Management
-```javascript
-let state = {
-  user: null,
-  username: '',
-  expenses: [],
-  totalFund: 0,
-  currentMonth: '',
-  previousMonthSpent: 0,
-  viewMode: 'daily' // Toggle daily/monthly
-};
-```
+<br/>
 
----
+<!-- ═══════════════════════════════════════════════════════════════════ -->
+<p align="center"><img src="images/divider.svg" width="100%" /></p>
+<!-- ═══════════════════════════════════════════════════════════════════ -->
 
-## 🎨 UI/UX Showcase
+## <img src="https://raw.githubusercontent.com/Tarikul-Islam-Anik/Animated-Fluent-Emojis/master/Emojis/Objects/Compass.png" width="25" /> &nbsp;Roadmap
 
-### Design System
-- **Color Palette**: Emerald (#10b981), Teal (#14b8a6), Slate (#64748b)
-- **Typography**: Plus Jakarta Sans 400-800 weights
-- **Spacing**: 4px grid system (Tailwind)
-- **Shadows**: Layered depth with emerald glow effects
-- **Animations**: GPU-accelerated CSS transforms
+- [x] **PDF Reports:** Export daily/monthly expense breakdowns
+- [ ] **Data Visualizations:** Dynamic graphs and charting metrics
+- [ ] **Multi-Currency:** Support localized currency exchanges
+- [ ] **Email Summaries:** Auto-notifications for monthly billings
+- [ ] **Dark Mode:** High-contrast color adjustments
 
-### Component Details
-| Component | Style | Purpose |
-|-----------|-------|---------|
-| Fund Card | Dark gradient + glow | Premium credit card feel |
-| Glass Cards | Blur 20px + backdrop | Modern UI trend |
-| Modals | Centered + fade-in | User interactions |
-| Buttons | Gradient + shadow | Clear CTAs |
-| Particles | Staggered floats | Engaging background |
+<br/>
 
----
+<!-- ═══════════════════════════════════════════════════════════════════ -->
+<!-- ANIMATED FOOTER                                                    -->
+<!-- ═══════════════════════════════════════════════════════════════════ -->
 
-## 📊 Performance Metrics
+<p align="center">
+  <img src="images/footer.svg" alt="Footer" width="100%" />
+</p>
 
-- **Initial Load**: ~2-3 seconds (CDN resources)
-- **Real-time Updates**: <500ms (Firestore)
-- **Rendering**: 60fps animations (GPU accelerated)
-- **Bundle Size**: ~50KB (HTML + CSS + JS)
-- **Mobile**: Optimized for 320px+ screens
+<p align="center">
+  <a href="https://mess-maneger.onrender.com/">
+    <img src="https://img.shields.io/badge/Launch_App-▸-10b981?style=for-the-badge" alt="Launch App" />
+  </a>
+</p>
 
----
-
-## 🔒 Security & Best Practices
-
-### Authentication
-- ✅ Google OAuth 2.0 implementation
-- ✅ Token-based sessions
-- ✅ Secure redirect URIs
-
-### Data Protection
-- ✅ Firebase Firestore security rules
-- ✅ User-data isolation by UID
-- ✅ HTTPS-only communication
-- ✅ No sensitive data in localStorage
-
-### Code Security
-- ✅ Environment variables for credentials
-- ✅ `.gitignore` prevents secret exposure
-- ✅ `.env.example` as safe template
-- ✅ No API keys in version history
-
----
-
-## 🌟 What Makes This Production-Ready
-
-1. **Modular Code Organization** - Separate HTML/CSS/JS files
-2. **Error Handling** - Try-catch blocks and graceful failures
-3. **Real-time Sync** - No manual refreshes needed
-4. **Responsive Design** - Works on all devices
-5. **Security** - API keys protected with .env
-6. **Performance** - Optimized animations and queries
-7. **Documentation** - SETUP.md + inline comments
-8. **Git History** - Clean commits with meaningful messages
-
----
-
-## 🎯 Use Cases
-
-- 🏫 **Hostels** - Manage shared mess expenses
-- 🏠 **Co-living Spaces** - Split apartment costs
-- 👥 **Student Groups** - Track group funding
-- 🎉 **Events** - Collaborative expense tracking
-- ✈️ **Travel Groups** - Split trip costs
-- 🍽️ **Meal Planning** - Grocery fund management
-
----
-
-## 📱 Browser Compatibility
-
-| Browser | Version | Status |
-|---------|---------|--------|
-| Chrome | 90+ | ✅ Full Support |
-| Firefox | 88+ | ✅ Full Support |
-| Safari | 14+ | ✅ Full Support |
-| Edge | 90+ | ✅ Full Support |
-| IE 11 | - | ❌ Not Supported |
-
----
-
-## 📈 Future Roadmap
-
-- [ ] Advanced analytics & charts
-- [ ] Multi-currency support
-- [ ] Email notifications
-- [ ] Expense splitting algorithm
-- [x] Export to PDF (Daily & Monthly)
-- [ ] Dark mode
-- [ ] Budget alerts
----
-
-## 🤝 Contributing
-
-Contributions welcome! Process:
-
-1. Fork repository
-2. Create feature branch (`git checkout -b feature/NewFeature`)
-3. Commit changes (`git commit -m 'Add NewFeature'`)
-4. Push branch (`git push origin feature/NewFeature`)
-5. Open Pull Request
-
----
-
-## 📞 Support & Contact
-
-- **Issues**: [GitHub Issues](https://github.com/JyotirmoyLaha/mess-maneger/issues)
-- **Setup Help**: See [SETUP.md](SETUP.md)
-- **Questions**: Open a discussion on GitHub
-
----
-
-## 👨‍💻 Developer Info
-
-**Jyotirmoy Laha**
-
-This project showcases expertise in:
-- ✅ Full-stack JavaScript (Frontend + Firebase)
-- ✅ Modern UI/UX design principles
-- ✅ Real-time application development
-- ✅ Security best practices
-- ✅ Responsive web design
-- ✅ Git workflow & version control
-
-
-
----
+<p align="center">
+  <sub>⭐ Star this repository if you found it useful!</sub>
+</p>
